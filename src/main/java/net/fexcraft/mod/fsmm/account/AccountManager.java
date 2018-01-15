@@ -8,8 +8,7 @@ import java.util.UUID;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.util.FsmmConfig;
-import net.fexcraft.mod.fsmm.util.Util;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,7 +50,7 @@ public class AccountManager{
 			}
 		}
 		for(IBank bank : banks){
-			if(bank.getIdAsString().equals(FsmmConfig.DEFAULT_BANK.toString())){
+			if(bank.getIdAsString().equals(Config.DEFAULT_BANK.toString())){
 				return bank;
 			}
 		}
@@ -99,7 +98,8 @@ public class AccountManager{
 		File file = new File(account_save_directory, type + "/" + string + ".fd");
 		if(file.exists()){
 			JsonObject obj = JsonUtil.get(file);
-			float balance = obj.get("balance").getAsFloat();
+			Number num = obj.get("balance").getAsNumber();
+			long balance = num.longValue();//TODO CONVERTER
 			String uuid = obj.get("uuid").getAsString();
 			String bank_id = obj.get("bank").getAsString();
 			String tp = obj.get("type").getAsString();
@@ -113,14 +113,14 @@ public class AccountManager{
 
 	public Account createAccount(String type, String string){
 		JsonObject obj = new JsonObject();
-		obj.addProperty("balance", FsmmConfig.STARTING_BALANCE);
+		obj.addProperty("balance", Config.STARTING_BALANCE);
 		obj.addProperty("uuid", string);
-		obj.addProperty("bank", FsmmConfig.DEFAULT_BANK.toString());
+		obj.addProperty("bank", Config.DEFAULT_BANK.toString());
 		obj.add("data", new JsonObject());
 		obj.addProperty("type", type);
 		File file = new File(account_save_directory, type + "/" + string + ".fd");
 		JsonUtil.write(file, obj);
-		Account account = new Account(FsmmConfig.STARTING_BALANCE, string, FsmmConfig.DEFAULT_BANK.toString(), new JsonObject(), type);
+		Account account = new Account(Config.STARTING_BALANCE, string, Config.DEFAULT_BANK.toString(), new JsonObject(), type);
 		accounts.add(account);
 		return account;
 	}
@@ -146,13 +146,13 @@ public class AccountManager{
 	}
 
 	public static class Account{
-		private float balance;
+		private long balance;
 		private String id;
 		private UUID bank_id;
 		private JsonObject data;
 		private String type;
 		
-		public Account(float bal, String id, String bi, JsonObject obj, String type){
+		public Account(long bal, String id, String bi, JsonObject obj, String type){
 			this.balance = bal;
 			this.id = id;//UUID.fromString(id);
 			this.bank_id = UUID.fromString(bi);
@@ -164,19 +164,19 @@ public class AccountManager{
 			return balance;
 		}
 		
-		public void addBalance(float d){
+		public void addBalance(long d){
 			balance += d;
-			balance = Util.round(balance);
+			//balance = Util.round(balance);
 		}
 		
-		public void removeBalance(float d){
+		public void removeBalance(long d){
 			balance -= d;
-			balance = Util.round(balance);
+			//balance = Util.round(balance);
 		}
 		
-		public void setBalance(float d){
+		public void setBalance(long d){
 			balance = d;
-			balance = Util.round(balance);
+			//balance = Util.round(balance);
 		}
 		
 		public String getId(){
@@ -197,12 +197,12 @@ public class AccountManager{
 		
 		public void add(float d){
 			balance += d;
-			balance = Util.round(balance);
+			//balance = Util.round(balance);
 		}
 		
 		public void subtract(float d){
 			balance -= d;
-			balance = Util.round(balance);
+			//balance = Util.round(balance);
 		}
 		
 		public JsonObject getData(){
@@ -235,7 +235,7 @@ public class AccountManager{
 		
 		public DefaultBank(){
 			data = new JsonObject();
-			uuid = FsmmConfig.DEFAULT_BANK;
+			uuid = Config.DEFAULT_BANK;
 			name = "FSMM Bank";
 		}
 		
@@ -265,13 +265,13 @@ public class AccountManager{
 		}
 
 		@Override
-		public boolean processTransfer(Account sender, float amount, Account target){
+		public boolean processTransfer(Account sender, long amount, Account target){
 			if(amount < 0){
 				log(s(sender) + " -> " + s(target) + ": Transfer failed! Amount null or negative. (T:" + amount + ");");
 				Print.log(s(sender) + " tried to transfer a negative amout of money to " + s(target) + "!");
 				return false;
 			}
-			if(Util.round(sender.balance - amount) >= 0){
+			if(sender.balance - amount >= 0){
 				sender.subtract(amount);
 				target.add(amount);
 				log(s(sender) + " -> (T:" + amount + ") -> " + s(target) + ";");
@@ -282,7 +282,7 @@ public class AccountManager{
 		}
 
 		@Override
-		public boolean processWithdraw(EntityPlayer player, Account account, float amount){
+		public boolean processWithdraw(EntityPlayer player, Account account, long amount){
 			if(amount < 0){
 				log(s(account) + ": Withdraw failed! Amount is negative. (W:" + amount + " || B:" + account.balance + ");");
 				Print.log(s(account) + " tried to withdraw a negative amout of money!");
@@ -290,7 +290,7 @@ public class AccountManager{
 			}
 			if(account.getAccountType().equals("player")){
 				if(player != null){
-					if(Util.round(account.balance - amount) >= 0){
+					if(account.balance - amount >= 0){//if(Util.round(account.balance - amount) >= 0){
 						ItemManager.addToInventory(player, amount);
 						account.subtract(amount);
 						log(s(account) + " -> (W:" + amount + ") -> WITHDRAWN;");
@@ -310,7 +310,7 @@ public class AccountManager{
 		}
 
 		@Override
-		public boolean processDeposit(EntityPlayer player, Account account, float amount){
+		public boolean processDeposit(EntityPlayer player, Account account, long amount){
 			if(amount < 0){
 				log(s(account) + ": Deposit failed! Amount is negative. (D:" + amount + " || B:" + account.balance + ");");
 				Print.log(s(account) + " tried to deposit a negative amout of money!");
@@ -318,8 +318,8 @@ public class AccountManager{
 			}
 			if(account.getAccountType().equals("player")){
 				if(player != null){
-					if(Util.round(account.balance + amount) >= 0){
-						if(Util.round(ItemManager.countMoneyInInventoryOf(player) - amount) >= 0){
+					if(account.balance + amount >= 0){
+						if(ItemManager.countMoneyInInventoryOf(player) - amount >= 0){
 							ItemManager.removeFromInventory(player, amount);
 							account.add(amount);
 							log(s(account) + " -> (D:" + amount + ") -> DEPOSITED;");
@@ -381,33 +381,13 @@ public class AccountManager{
 		for(IBank bank : banks){
 			bank.saveBank();
 		}
-		if(FsmmConfig.DEBUG){
+		if(Config.DEBUG){
 			Print.log("[FSMM] Saved Account and Bank data.");
 		}
 	}
 	
-	public static class TickHandler {
-		private static int tick = 0;
-		
-		@SubscribeEvent
-		public void onServerTick(TickEvent.ServerTickEvent event) {
-			if(event.phase == Phase.START){
-				tick++;
-				if(tick >= 1200){
-					tick = 0;
-				}
-				if(tick == 0 || tick == 300 || tick == 600 || tick == 900){
-					int m = Calendar.getInstance().get(Calendar.MINUTE);
-					if(m == 0 || m == 15 || m == 30 || m == 45 || m == 60){
-						FSMM.getInstance().getAccountManager().saveAll();
-					}
-				}
-			}
-		}
-	}
-	
 	private static void log(String s){
-		if(FsmmConfig.DEBUG){
+		if(Config.DEBUG){
 			Print.log(s);
 		}
 	}

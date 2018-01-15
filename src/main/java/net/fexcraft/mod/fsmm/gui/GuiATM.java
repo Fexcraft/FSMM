@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.gui.ArrowButton.EnumSide;
-import net.fexcraft.mod.fsmm.util.FsmmConfig;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.lib.api.network.IPacket;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
@@ -30,7 +30,7 @@ public class GuiATM extends GuiScreen {
 	private static ArrowButton l0, l1, r0, r1;
 	private static final String pktlid = "fsmm_atm_gui";
 	protected static String log = ">_";
-	protected static double balance = -1.111D;
+	protected static double balance = -1l;
 	private GuiTextField amount_field;
 	private GuiTextField receiver_field;
 	
@@ -51,7 +51,7 @@ public class GuiATM extends GuiScreen {
         this.r0.drawButton(mc, mx, my, f);
         this.r1.drawButton(mc, mx, my, f);
         
-        this.fontRenderer.drawString(balance + "F$", ((this.width - sx) / 2) + 33, ((this.height - sy) / 2) + 66, 0x000000);
+        this.fontRenderer.drawString((balance / 1000) + "F$", ((this.width - sx) / 2) + 33, ((this.height - sy) / 2) + 66, 0x000000);
         this.fontRenderer.drawString(log, ((this.width - sx) / 2) + 33, ((this.height - sy) / 2) + 88, 0x000000);
         
         this.amount_field.drawTextBox();
@@ -93,12 +93,12 @@ public class GuiATM extends GuiScreen {
 		@Override
 		public void process(IPacket packet, Object[] objs){
 			PacketJsonObject pkt = (PacketJsonObject)packet;
-			if(FsmmConfig.DEBUG){
+			if(Config.DEBUG){
 				Print.log("PKT R - Client: " + pkt.obj.toString());
 			}
 			boolean reopen = false;
 			if(pkt.obj.has("balance")){
-				balance = pkt.obj.get("balance").getAsDouble();
+				balance = pkt.obj.get("balance").getAsLong();
 				reopen = true;
 			}
 			if(pkt.obj.has("log")){
@@ -166,7 +166,7 @@ public class GuiATM extends GuiScreen {
 		if(reopen){
 			close();
 		}
-		if(FsmmConfig.DEBUG){
+		if(Config.DEBUG){
 			Print.log("PKT S - Client: " + obj.toString());
 		}
 	}

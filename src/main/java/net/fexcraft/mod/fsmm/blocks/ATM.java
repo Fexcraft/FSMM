@@ -2,7 +2,6 @@ package net.fexcraft.mod.fsmm.blocks;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
-import net.fexcraft.mod.fsmm.util.FI;
 import net.fexcraft.mod.lib.api.block.fBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,7 +17,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-@fBlock(modid = FI.MODID, name = "atm")
+@fBlock(modid = FSMM.MODID, name = "atm")
 public class ATM extends Block {
 	
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);

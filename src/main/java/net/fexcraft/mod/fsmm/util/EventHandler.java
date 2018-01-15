@@ -2,19 +2,20 @@ package net.fexcraft.mod.fsmm.util;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.lib.util.common.Formatter;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
-public class FsmmEventHandler {
+public class EventHandler {
 	
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     	if(UpdateHandler.Status != null){
-        	event.player.sendMessage(new TextComponentString(UpdateHandler.Status));
+        	event.player.sendMessage(new TextComponentString(Formatter.format(UpdateHandler.Status)));
     	}
     }
     
@@ -29,7 +30,7 @@ public class FsmmEventHandler {
     	FSMM.getInstance().getAccountManager().saveAll();
     }
     
-    @EventHandler
+    @Mod.EventHandler
     public static void onShutdown(FMLServerStoppingEvent event){
     	FSMM.getInstance().getAccountManager().saveAll();
     }

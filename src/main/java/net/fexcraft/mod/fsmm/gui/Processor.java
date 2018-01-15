@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.account.AccountManager;
 import net.fexcraft.mod.fsmm.account.AccountManager.Account;
-import net.fexcraft.mod.fsmm.util.FsmmConfig;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.lib.api.network.IPacket;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
@@ -15,7 +15,7 @@ import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-public class Processor implements IPacketListener {
+public class Processor implements IPacketListener<PacketJsonObject> {
 
 	@Override
 	public String getId(){
@@ -23,10 +23,9 @@ public class Processor implements IPacketListener {
 	}
 
 	@Override
-	public void process(IPacket packet, Object[] objs){
+	public void process(PacketJsonObject pkt, Object[] objs){
 		try{
-			PacketJsonObject pkt = (PacketJsonObject)packet;
-			if(FsmmConfig.DEBUG){
+			if(Config.DEBUG){
 				Print.log("PKT R - Server: " + pkt.obj.toString());
 			}
 			JsonObject obj = JsonUtil.getJsonForPacket("fsmm_atm_gui");
@@ -40,7 +39,7 @@ public class Processor implements IPacketListener {
 						obj.addProperty("log", "");
 						break;
 					case "deposit":
-						obj.addProperty("log", "Deposited: " + manager.getBank(account.getBankIdAsString()).processDeposit(player, account, pkt.obj.get("amount").getAsFloat()));
+						obj.addProperty("log", "Deposited: " + manager.getBank(account.getBankIdAsString()).processDeposit(player, account, pkt.obj.get("amount").getAsLong()));
 						obj.addProperty("balance", account.getBalance());
 						break;
 					case "transfer":
@@ -53,11 +52,11 @@ public class Processor implements IPacketListener {
 						else{
 							receiver = manager.getAccountOf(FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(rec).getId());
 						}
-						obj.addProperty("log", "Transferred: " + manager.getBank(account.getBankIdAsString()).processTransfer(account, pkt.obj.get("amount").getAsFloat(), receiver));
+						obj.addProperty("log", "Transferred: " + manager.getBank(account.getBankIdAsString()).processTransfer(account, pkt.obj.get("amount").getAsLong(), receiver));
 						obj.addProperty("balance", account.getBalance());
 						break;
 					case "withdraw":
-						obj.addProperty("log", "Withdrawn: " + manager.getBank(account.getBankIdAsString()).processWithdraw(player, account, pkt.obj.get("amount").getAsFloat()));
+						obj.addProperty("log", "Withdrawn: " + manager.getBank(account.getBankIdAsString()).processWithdraw(player, account, pkt.obj.get("amount").getAsLong()));
 						obj.addProperty("balance", account.getBalance());
 						break;
 					default:
@@ -65,17 +64,16 @@ public class Processor implements IPacketListener {
 				}
 			}
 			PacketHandler.getInstance().sendTo(new PacketJsonObject(obj), player);
-			if(FsmmConfig.DEBUG){
+			if(Config.DEBUG){
 				Print.log("PKT S - Client: " + obj.toString());
 			}
 		}
 		catch(Exception ex){
-			PacketJsonObject pkt = (PacketJsonObject)packet;
 			EntityPlayerMP player = FMLCommonHandler.instance().getMinecraftServerInstance().getServer().getPlayerList().getPlayerByUsername(pkt.obj.get("sender").getAsString());
 			JsonObject obj = JsonUtil.getJsonForPacket("fsmm_atm_gui");
 			obj.addProperty("log", ex.getStackTrace().toString());
 			PacketHandler.getInstance().sendTo(new PacketJsonObject(obj), player);
-			if(FsmmConfig.DEBUG){
+			if(Config.DEBUG){
 				Print.log("PKT S - Server: " + obj.toString());
 			}
 		}

@@ -1,21 +1,21 @@
-package net.fexcraft.mod.fsmm.commands;
-
-import java.util.ArrayList;
-import java.util.List;
+package net.fexcraft.mod.fsmm.util;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.account.AccountManager.Account;
 import net.fexcraft.mod.fsmm.account.ItemManager;
-import net.fexcraft.mod.fsmm.util.CCS;
-import net.fexcraft.mod.fsmm.util.FI;
+import net.fexcraft.mod.lib.util.common.Print;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FSMMCommand extends CommandBase{
-	
+
+	//public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
 	private final ArrayList aliases;
   
     public FSMMCommand(){ 
@@ -59,15 +59,15 @@ public class FSMMCommand extends CommandBase{
         	
 	        if (args.length < 1){
 	        	float value = ItemManager.countMoneyInInventoryOf(player);
-				player.sendMessage(new TextComponentString(CCS.DAQUA + "In Inventory: " + CCS.GREEN + value));
-				Account account = FSMM.getInstance().getAccountManager().getAccountOf(player.getUUID(player.getGameProfile())); 
-				player.sendMessage(new TextComponentString(CCS.DAQUA + "In Bank: " + account.getBalance()));
+				Print.chat(player,"&9In Inventory: &a " + value);
+				Account account = FSMM.getInstance().getAccountManager().getAccountOf(player.getUUID(player.getGameProfile()));
+				Print.chat(player, "&9In Bank: " + account.getBalance());
 	        }
 	        else if(args[0].equals("info")){
-				sender.sendMessage(new TextComponentString((CCS.DAQUA + "Main command for FSMM related stuff")));
+	        	Print.chat(player, "&9Main command for FSMM related stuff");
 			}
 	        else if(args[0].equals("version")){
-	        	sender.sendMessage(new TextComponentString((CCS.DAQUA + "FSMM Version: " + FI.VERSION + ".")));   
+	        	Print.chat(player,"&9FSMM Version: " + FSMM.VERSION + ".");
 	        }
 	        /*else if(args[0].equals("set")){
 	        	ItemManager.setInInventory(player, Double.parseDouble(args[1]));
@@ -78,7 +78,8 @@ public class FSMMCommand extends CommandBase{
 	        else if(args[0].equals("remove")){
 	        	ItemManager.removeFromInventory(player, Double.parseDouble(args[1]));
 	        }*///TODO Was only made/used for testing.
-	        else{sender.sendMessage(new TextComponentString("error"));
+	        else{
+	        	sender.sendMessage(new TextComponentString("error"));
 	        }
         }
     }

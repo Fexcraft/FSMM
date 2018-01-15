@@ -27,13 +27,13 @@ public class GuiFactory implements IModGuiFactory {
 
 		public ConfigGui(GuiScreen parent){
 			super(parent, getList(), "fsmm", true, true, "FSMM Settings");
-			titleLine2 = FsmmConfig.getConfig().getConfigFile().getAbsolutePath();
+			titleLine2 = Config.getConfig().getConfigFile().getAbsolutePath();
 		}
 		
 		public static List<IConfigElement> getList(){
 			List<IConfigElement> list = new ArrayList<IConfigElement>();
-			list.add(new ConfigElement(FsmmConfig.getConfig().getCategory("General")));
-			list.add(new ConfigElement(FsmmConfig.getConfig().getCategory("Logging")));
+			list.add(new ConfigElement(Config.getConfig().getCategory("General")));
+			list.add(new ConfigElement(Config.getConfig().getCategory("Logging")));
 			return list;
 		}
 		

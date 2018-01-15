@@ -1,28 +1,28 @@
 package net.fexcraft.mod.fsmm.account;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import net.fexcraft.mod.fsmm.items.IMoneyItem;
-import net.fexcraft.mod.fsmm.items.MoneyItems;
-import net.fexcraft.mod.fsmm.util.Util;
+import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.api.Money;
+import net.fexcraft.mod.fsmm.api.MoneyItem;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 public class ItemManager {
 	
-	public static float countMoneyInInventoryOf(EntityPlayer player){
-		float value = 0.00F;
+	public static long countMoneyInInventoryOf(EntityPlayer player){
+		long value = 0l;
 		for(int in = 0; in < player.inventory.mainInventory.size(); in++){
 			NonNullList<ItemStack> is = player.inventory.mainInventory;
-			if(is.get(in) != null && is.get(in).getItem() instanceof IMoneyItem){
-				value = value + (((IMoneyItem)is.get(in).getItem()).getWorth() * is.get(in).getCount());
+			if(is.get(in) != null && is.get(in).getItem() instanceof MoneyItem){
+				value = value + (((MoneyItem)is.get(in).getItem()).getWorth() * is.get(in).getCount());
 			}
 		}
-		return Util.round(value);
+		return value;//Util.round(value);
 	}
 	
 	public static boolean hasSpace(EntityPlayer player, boolean countMoneyItemAsSpace){
@@ -34,7 +34,7 @@ public class ItemManager {
 			if(stack == null || stack.isEmpty()){
 				i++;
 			}
-			else if(stack.getItem() instanceof IMoneyItem && countMoneyItemAsSpace){
+			else if(stack.getItem() instanceof MoneyItem && countMoneyItemAsSpace){
 				i++;
 			}
 			else{
@@ -44,24 +44,24 @@ public class ItemManager {
 		return i == 0 ? false : true;
 	}
 	
-	public static void addToInventory(EntityPlayer player, float amount){
-		float old = countMoneyInInventoryOf(player);
+	public static void addToInventory(EntityPlayer player, long amount){
+		long old = countMoneyInInventoryOf(player);
 		amount += old;
-		amount = Util.round(amount);
+		//amount = Util.round(amount);
 		removeFromInventory(player, old);
-		ArrayList<Float> list = MoneyItems.getList();
-		list = Util.reverse(list);
+		List<Money> list = FSMM.getSortedList();
+		//list = Util.reverse(list);
 		for(int i = 0; i < list.size(); i++){
-			while(amount - list.get(i) >= 0){
-				amount = Util.round(amount);
-				ItemStack stack = new ItemStack((Item)MoneyItems.getItem(list.get(i)), 1);
+			while(amount - list.get(i).getWorth() >= 0){
+				//amount = Util.round(amount);
+				ItemStack stack = new ItemStack(RegistryUtil.getItem(list.get(i).getRegistryName()), 1);
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
 				}
 				else{
 					player.getEntityWorld().spawnEntity(new EntityItem(player.getEntityWorld(), player.posX, player.posY, player.posZ, stack));
 				}
-				amount -= list.get(i);
+				amount -= list.get(i).getWorth();
 			}
 			continue;
 		}
@@ -70,10 +70,10 @@ public class ItemManager {
 		}
 	}
 
-	public static void removeFromInventory(EntityPlayer player, float amount){
+	public static void removeFromInventory(EntityPlayer player, long amount){
 		float old = countMoneyInInventoryOf(player);
 		old -= amount;
-		old = Util.round(old);
+		//old = Util.round(old);
 		if(old < 0){
 			old = 0;
 		}
@@ -81,7 +81,7 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).getItem() instanceof IMoneyItem){
+			if(player.inventory.mainInventory.get(i).getItem() instanceof MoneyItem){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
@@ -93,24 +93,24 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).getItem() instanceof IMoneyItem){
+			if(player.inventory.mainInventory.get(i).getItem() instanceof MoneyItem){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
 		
-		ArrayList<Float> list = MoneyItems.getList();
-		list = Util.reverse(list);
+		List<Money> list = FSMM.getSortedList();
+		//list = Util.reverse(list);
 		for(int i = 0; i < list.size(); i++){
-			while(amount - list.get(i) >= 0){
-				amount = Util.round(amount);
-				ItemStack stack = new ItemStack((Item)MoneyItems.getItem(list.get(i)), 1);
+			while(amount - list.get(i).getWorth() >= 0){
+				//amount = Util.round(amount);
+				ItemStack stack = new ItemStack(RegistryUtil.getItem(list.get(i).getRegistryName()), 1);
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
 				}
 				else{
 					player.getEntityWorld().spawnEntity(new EntityItem(player.getEntityWorld(), player.posX, player.posY, player.posZ, stack));
 				}
-				amount -= list.get(i);
+				amount -= list.get(i).getWorth();
 			}
 			continue;
 		}

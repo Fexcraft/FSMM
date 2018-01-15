@@ -3,18 +3,20 @@ package net.fexcraft.mod.fsmm.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.lib.FCL;
 import net.fexcraft.mod.lib.network.Network;
+import net.fexcraft.mod.lib.util.common.Formatter;
 
 public class UpdateHandler {
 
-	private static String CV = FI.VERSION, NV, LMCV;
+	private static String CV = FSMM.VERSION, NV, LMCV;
 	public static String Status = null;
 	private static String type;
 	
 	//Color Stuff
-	private static String FSMM = CCS.BLACK + "[" + CCS.AQUA + "FSMM" + CCS.BLACK + "]";
-	private static String grayBracket = CCS.GRAY + ").";
+	private static String PREFIX = Formatter.format("&0[&3FSMM&0]");
+	private static String grayBracket = "&7).";
 	
 	public static void initialize(){
 		getDataFromServer();
@@ -22,17 +24,17 @@ public class UpdateHandler {
 		
 		if(NV != null) {
 			if(!NV.equalsIgnoreCase(CV)) {
-				Status = FSMM + CCS.GRAY + " New Version avaible! (" + CCS.DGREEN + NV + grayBracket
-				+ "\n" + FSMM + CCS.GRAY + " Your Client version: (" + CCS.RED    + CV + grayBracket
-				+ "\n" + FSMM + CCS.GRAY + " Update type: (" + CCS.AQUA + type + grayBracket;
+				Status = PREFIX + "&7 New Version avaible! (&a" + NV + grayBracket
+				+ "\n" + PREFIX + "&7 Your Client version: (&c" + CV + grayBracket
+				+ "\n" + PREFIX + "&7 Update type: (&3" + type + grayBracket;
 			}
 		}
 		if(LMCV != null && !LMCV.equals(FCL.mcv)){
 			if(Status == null){
-				Status = FSMM + CCS.GRAY + " Now avaible for MC " + LMCV + "!";
+				Status = PREFIX + "&7 Now avaible for MC " + LMCV + "!";
 			}
 			else{
-				Status += "\n" + FSMM + CCS.GRAY + " Now avaible for MC " + LMCV + "!";
+				Status += "\n" + PREFIX + "&7 Now avaible for MC " + LMCV + "!";
 			}
 		}
 	}
@@ -49,7 +51,7 @@ public class UpdateHandler {
 		JsonObject json = Network.getModData("fsmm");
 		if(json == null){
 			data = new JsonObject();
-			data.addProperty("latest_version", FI.VERSION);
+			data.addProperty("latest_version", FSMM.VERSION);
 			data.addProperty("latest_mc_version", FCL.mcv);
 			data.addProperty("type", "error.could.not.connect.to.server;\nNo Internet?");
 		}
@@ -64,7 +66,7 @@ public class UpdateHandler {
 				}
 				if(!found){
 					data = new JsonObject();
-					data.addProperty("latest_version", FI.VERSION);
+					data.addProperty("latest_version", FSMM.VERSION);
 					data.addProperty("latest_mc_version", FCL.mcv);
 					data.addProperty("type", "mc.version.not.found;");
 				}
@@ -72,7 +74,7 @@ public class UpdateHandler {
 			catch(Exception e){
 				e.printStackTrace();
 				data = new JsonObject();
-				data.addProperty("latest_version", FI.VERSION);
+				data.addProperty("latest_version", FSMM.VERSION);
 				data.addProperty("latest_mc_version", FCL.mcv);
 				data.addProperty("type", "error.check.console");
 			}

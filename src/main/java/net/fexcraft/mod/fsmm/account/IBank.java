@@ -19,11 +19,11 @@ public interface IBank {
 	
 	public void setData(JsonObject obj);
 	
-	public boolean processTransfer(Account sender, float amount, Account target);
+	public boolean processTransfer(Account sender, long amount, Account target);
 
-	public boolean processWithdraw(EntityPlayer player, Account account, float amount);
+	public boolean processWithdraw(EntityPlayer player, Account account, long amount);
 	
-	public boolean processDeposit(EntityPlayer player, Account account, float amount);
+	public boolean processDeposit(EntityPlayer player, Account account, long amount);
 	
 	public void loadBank();
 	
