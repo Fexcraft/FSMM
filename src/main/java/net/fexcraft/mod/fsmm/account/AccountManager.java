@@ -1,38 +1,88 @@
 package net.fexcraft.mod.fsmm.account;
 
 import java.io.File;
-import java.util.Calendar;
-import java.util.HashSet;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.Bank;
+import net.fexcraft.mod.fsmm.impl.GenericAccount;
 import net.fexcraft.mod.fsmm.util.Config;
-import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class AccountManager{
 	
-	public HashSet<Account> accounts = new HashSet<Account>();
-	public HashSet<IBank> banks = new HashSet<IBank>();
-	public static File account_save_directory;// = new File(FSMM.config_path, "/fsmm/accounts");
-	public static File bank_save_directory;// = new File(FSMM.config_path, "/fsmm/banks");
+	private TreeMap<String, Account> ACCOUNTS = new TreeMap<String, Account>();
+	private TreeMap<UUID, Bank> BANKS = new TreeMap<UUID, Bank>();
+	//
+	public static File ACCOUNT_SAVE_DIRECTORY, BANK_SAVE_DIRECTORY;
 	
 	public void initialize(File file){
-		account_save_directory = new File(file, "/fsmm/accounts/");
-		bank_save_directory = new File(file, "/fsmm/banks/");
-		if(!account_save_directory.exists()){
-			account_save_directory.mkdirs();
+		ACCOUNT_SAVE_DIRECTORY = new File(file, "/fsmm/accounts/");
+		BANK_SAVE_DIRECTORY = new File(file, "/fsmm/banks/");
+		if(!ACCOUNT_SAVE_DIRECTORY.exists()){
+			ACCOUNT_SAVE_DIRECTORY.mkdirs();
 		}
-		if(!bank_save_directory.exists()){
-			bank_save_directory.mkdirs();
+		if(!BANK_SAVE_DIRECTORY.exists()){
+			BANK_SAVE_DIRECTORY.mkdirs();
 		}
 	}
+	
+	public Account loadAccount(String type, String id){
+		if(ACCOUNTS.containsKey(id)){
+			return ACCOUNTS.get(id);
+		}
+		File file = new File(ACCOUNT_SAVE_DIRECTORY, type + "/" + id + ".json");
+		if(!file.exists()){
+			return createAccount(type, id);
+		}
+		Account account = new GenericAccount(type, JsonUtil.get(file));
+		ACCOUNTS.put(id, account);
+		return account;
+	}
+
+	private Account createAccount(String type, String id){
+		File old = new File(ACCOUNT_SAVE_DIRECTORY, type + "/" + id + ".fd");
+		JsonObject obj = null;
+		if(old.exists()){
+			obj = JsonUtil.get(old);
+			obj.addProperty("id", obj.get("uuid").getAsString());
+			double oldbal = obj.get("balance").getAsDouble();
+			oldbal *= 1000;
+			obj.addProperty("balance", Math.round(oldbal));//TODO check this
+		}
+		else{
+			obj = new JsonObject();
+			obj.addProperty("id", id);
+			obj.addProperty("balance", type.equals("player") ? Config.STARTING_BALANCE : 0);
+			obj.addProperty("type", type);
+			obj.addProperty("bank", Config.DEFAULT_BANK.toString());
+		}
+		Account account = new GenericAccount(type, obj);
+		ACCOUNTS.put(id, account);
+		saveAccount(account);
+		return account;
+	}
+
+	public void unloadAccount(Account account){
+		saveAccount(account);
+		ACCOUNTS.remove(account.getId());
+	}
+	
+	public void saveAccount(Account account){
+		JsonObject obj = new JsonObject();
+		obj.addProperty("id", account.getId());
+		obj.addProperty("balance", account.getBalance());
+		obj.addProperty("type", account.getType());
+		obj.addProperty("bank", account.getBankId().toString());
+		JsonUtil.write(new File(ACCOUNT_SAVE_DIRECTORY, account.getType() + "/" + account.getId() + ".json"), obj);
+	}
+	
+	/*public HashSet<Account> accounts = new HashSet<Account>();
+	public HashSet<IBank> banks = new HashSet<IBank>();
+
 	
 	public void registerBank(IBank bank){
 		bank.loadBank();
@@ -394,6 +444,6 @@ public class AccountManager{
 	
 	private static String s(Account acc){
 		return "[" + acc.type + ":" + acc.id + "]";
-	}
+	}*/
 	
 }

@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.fexcraft.mod.fsmm.account.AccountManager;
-import net.fexcraft.mod.fsmm.account.AccountManager.DefaultBank;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.gui.GuiATM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.EventHandler;
-import net.fexcraft.mod.fsmm.util.FSMMCommand;
+import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.PacketHandler.PacketHandlerType;
+import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -40,20 +41,20 @@ public class FSMM {
 	public static final String VERSION = "@VERSION@";
 
     @Mod.Instance(MODID)
-    private static FSMM instance;
-	
-	private static AccountManager account_manager;
+    private static FSMM INSTANCE;
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
+		AccountManager accman = new AccountManager();
+		accman.initialize(event.getModConfigurationDirectory());
 		RegistryUtil.newAutoRegistry("fsmm");
 		Config.initialize(event);
 		//
-		account_manager = new AccountManager();
-		account_manager.initialize(event.getModConfigurationDirectory());
-		account_manager.registerBank(new DefaultBank());
+		//
+		Print.debug(getSortedMoneyList());
+		Static.halt();
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -65,12 +66,12 @@ public class FSMM {
 	
 	@Mod.EventHandler
 	public void serverLoad(FMLServerStartingEvent event){
-		event.registerServerCommand(new FSMMCommand());
+		event.registerServerCommand(new Command());
 	}
 	
 	@Mod.EventHandler
     public void init(FMLInitializationEvent event){
-		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		UpdateHandler.initialize();
     }
@@ -84,16 +85,12 @@ public class FSMM {
     }
     
     public static FSMM getInstance(){
-    	return instance;
+    	return INSTANCE;
     }
-
-	public AccountManager getAccountManager() {
-		return account_manager;
-	}
 	
-	public static List<Money> getSortedList(){
+	public static List<Money> getSortedMoneyList(){
 		return CURRENCY.getValues().stream().sorted(new Comparator<Money>(){
-			@Override public int compare(Money o1, Money o2){ return o1.getWorth() > o2.getWorth() ? 1 : -1; }
+			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
 		}).collect(Collectors.toList());
 	}
 	

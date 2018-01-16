@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.items;
+package net.fexcraft.mod.fsmm.impl;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;

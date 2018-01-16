@@ -39,4 +39,9 @@ public class GenericMoney implements Money {
 		return worth;
 	}
 	
+	@Override
+	public String toString(){
+		return super.toString() + "#" + this.getWorth();
+	}
+	
 }

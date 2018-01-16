@@ -13,12 +13,12 @@ import net.minecraft.util.text.TextComponentString;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FSMMCommand extends CommandBase{
+public class Command extends CommandBase{
 
 	//public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
 	private final ArrayList aliases;
   
-    public FSMMCommand(){ 
+    public Command(){ 
         aliases = new ArrayList(); 
         aliases.add("money"); 
         aliases.add("balance");

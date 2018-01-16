@@ -49,7 +49,7 @@ public class ItemManager {
 		amount += old;
 		//amount = Util.round(amount);
 		removeFromInventory(player, old);
-		List<Money> list = FSMM.getSortedList();
+		List<Money> list = FSMM.getSortedMoneyList();
 		//list = Util.reverse(list);
 		for(int i = 0; i < list.size(); i++){
 			while(amount - list.get(i).getWorth() >= 0){
@@ -98,7 +98,7 @@ public class ItemManager {
 			}
 		}
 		
-		List<Money> list = FSMM.getSortedList();
+		List<Money> list = FSMM.getSortedMoneyList();
 		//list = Util.reverse(list);
 		for(int i = 0; i < list.size(); i++){
 			while(amount - list.get(i).getWorth() >= 0){

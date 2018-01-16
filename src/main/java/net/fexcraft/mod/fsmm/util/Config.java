@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
-import net.fexcraft.mod.fsmm.items.GenericMoneyItem;
+import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraftforge.common.MinecraftForge;
