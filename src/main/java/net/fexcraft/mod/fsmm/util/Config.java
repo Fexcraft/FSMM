@@ -23,9 +23,10 @@ public class Config {
 	public static File CONFIG_PATH;
 	public static long STARTING_BALANCE;
 	public static UUID DEFAULT_BANK;
-	public static boolean DEBUG, NOTIFY_BALANCE_ON_JOIN;
+	public static boolean DEBUG, NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS;
 	public static String CURRENCY_SIGN;
 	private static Configuration config;
+	private static String COMMA = ",", DOT = ".";
 	//
 	private static final TreeMap<String, Long> DEFAULT = new TreeMap<String, Long>();
 	static {
@@ -125,7 +126,12 @@ public class Config {
 		DEBUG = config.getBoolean("debug", "Display/Logging", false, "Prints some maybe useful data into console, suggested for bug-hunting.");
 		NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
 		CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
+		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' dispplay.");
+		SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
 		config.save();
+		//
+		COMMA = INVERT_COMMA ? "." : ",";
+		DOT = INVERT_COMMA ? "," : ".";
 	}
 	
 	private static class EventHandler {
@@ -137,8 +143,32 @@ public class Config {
 		}
 	}
 
-	public static Configuration getConfig(){
+	public static final Configuration getConfig(){
 		return config;
+	}
+	
+	public static final String getWorthAsString(long value){
+		return getWorthAsString(value, true, false);
+	}
+
+	public static final String getWorthAsString(long value, boolean append){
+		return getWorthAsString(value, append, false);
+	}
+	
+	public static final String getWorthAsString(long value, boolean append, boolean ignore){
+		String str = value + "";
+		if(value < 1000){
+			str = value + "";
+			str = str.length() == 1 ? "00" + str : str.length() == 2 ? "0" + str : str;
+			return ((str = "0" + COMMA + str).length() == 5 && (ignore ? false : !SHOW_CENTESIMALS) ? str.substring(0, 4) : str) + (append ? CURRENCY_SIGN : "");
+		}
+		else{
+			str = new StringBuilder(str).reverse().toString();
+			str = str.replace("000", "000" + DOT);
+			str = str.substring(0, str.indexOf(DOT)) + COMMA + str.substring(str.indexOf(DOT) + 1, str.length());
+			str = new StringBuilder(str).reverse().toString();
+			return (str = SHOW_CENTESIMALS || ignore ? str : str.substring(0, str.length() - 1)) + (append ? CURRENCY_SIGN : "");
+		}
 	}
 	
 }

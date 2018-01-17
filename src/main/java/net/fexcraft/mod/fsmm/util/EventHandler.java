@@ -19,8 +19,8 @@ public class EventHandler {
     	}
     	Account account = AccountManager.INSTANCE.getAccount("player", event.player.getGameProfile().getId().toString(), true);
     	if(Config.NOTIFY_BALANCE_ON_JOIN){
-    		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + (account.getBalance() / 1000) + "F$");
-    		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + (ItemManager.countInInventory(event.player) / 1000) + "F$");
+    		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + Config.getWorthAsString(account.getBalance()));
+    		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));
     	}
     }
     

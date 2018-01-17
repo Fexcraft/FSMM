@@ -65,12 +65,12 @@ public class ItemManager {
 			continue;
 		}
 		if(amount > 0){
-			Print.chat(player, amount + Config.CURRENCY_SIGN + " couldn't be added to inventory cause no matching items were found.");
+			Print.chat(player, Config.getWorthAsString(amount, true, true) + " couldn't be added to inventory cause no matching items were found.");
 		}
 	}
 
 	public static void removeFromInventory(EntityPlayer player, long amount){
-		float old = countInInventory(player);
+		long old = countInInventory(player);
 		old -= amount;
 		if(old < 0){
 			old = 0;
@@ -86,7 +86,7 @@ public class ItemManager {
 		setInInventory(player, old);
 	}
 	
-	public static void setInInventory(EntityPlayer player, float amount){
+	public static void setInInventory(EntityPlayer player, long amount){
 		for(int i = 0; i < player.inventory.mainInventory.size(); i++){
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
@@ -110,7 +110,7 @@ public class ItemManager {
 			continue;
 		}
 		if(amount > 0){
-			Print.chat(player, amount + Config.CURRENCY_SIGN + " couldn't be added to inventory cause no matching items were found.");
+			Print.chat(player, Config.getWorthAsString(amount, true, true) + " couldn't be added to inventory cause no matching items were found.");
 		}
 	}
 
