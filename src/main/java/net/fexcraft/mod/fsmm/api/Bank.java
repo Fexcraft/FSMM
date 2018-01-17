@@ -2,6 +2,9 @@ package net.fexcraft.mod.fsmm.api;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 
 public interface Bank {
@@ -16,8 +19,12 @@ public interface Bank {
 	
 	public boolean processDeposit(EntityPlayer player, Account account, long amount);
 	
-	public void loadBank();
+	public JsonObject getData();
 	
-	public void saveBank();
+	public void setData(JsonObject obj);
+	
+	public long getBalance();
+	
+	public boolean modifyBalance(String action, long amount, ICommandSender sender);
 	
 }

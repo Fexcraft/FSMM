@@ -3,9 +3,9 @@ package net.fexcraft.mod.fsmm.gui;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.account.AccountManager;
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.AccountManager.Account;
 import net.fexcraft.mod.lib.api.network.IPacket;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;

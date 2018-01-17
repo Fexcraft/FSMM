@@ -4,19 +4,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.fexcraft.mod.fsmm.account.AccountManager;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.gui.GuiATM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.EventHandler;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.PacketHandler.PacketHandlerType;
-import net.fexcraft.mod.lib.util.common.Print;
-import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -51,10 +49,6 @@ public class FSMM {
 		accman.initialize(event.getModConfigurationDirectory());
 		RegistryUtil.newAutoRegistry("fsmm");
 		Config.initialize(event);
-		//
-		//
-		Print.debug(getSortedMoneyList());
-		Static.halt();
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {

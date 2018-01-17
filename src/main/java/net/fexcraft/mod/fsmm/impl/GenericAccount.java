@@ -63,6 +63,12 @@ public class GenericAccount implements Account {
 			default: return false;
 		}
 	}
+	
+	/** Extend this class and Override this method to modify access to the account, if it's e.g. of another type. */
+	@Override
+	public boolean canModifyBalance(String action, String type, String id){
+		return action.equals("add") ? true : type.equals("player") && this.getType().equals("player") && this.getId().equals(id);
+	}
 
 	@Override
 	public UUID getBankId(){

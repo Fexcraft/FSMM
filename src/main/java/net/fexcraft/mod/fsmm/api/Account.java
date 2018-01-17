@@ -12,6 +12,8 @@ public interface Account {
 	
 	public boolean modifyBalance(String action, long amount, ICommandSender sender);
 	
+	public boolean canModifyBalance(String action, String type, String id);
+	
 	public UUID getBankId();
 	
 	public boolean setBankId(UUID uuid);

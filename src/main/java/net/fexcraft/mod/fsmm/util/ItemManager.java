@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.account;
+package net.fexcraft.mod.fsmm.util;
 
 import java.util.List;
 

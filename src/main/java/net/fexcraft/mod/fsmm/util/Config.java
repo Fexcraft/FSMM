@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
@@ -23,7 +23,8 @@ public class Config {
 	public static File CONFIG_PATH;
 	public static long STARTING_BALANCE;
 	public static UUID DEFAULT_BANK;
-	public static boolean DEBUG;
+	public static boolean DEBUG, NOTIFY_BALANCE_ON_JOIN;
+	public static String CURRENCY_SIGN;
 	private static Configuration config;
 	//
 	private static final TreeMap<String, Long> DEFAULT = new TreeMap<String, Long>();
@@ -73,7 +74,15 @@ public class Config {
 			});
 		}
 		if(obj.has("Banks")){
-			//TODO
+			obj.get("Banks").getAsJsonArray().forEach((elm) -> {
+				UUID uuid = UUID.fromString(elm.getAsJsonObject().get("uuid").getAsString());
+				if(!AccountManager.INSTANCE.getBanks().containsKey(uuid)){
+					AccountManager.INSTANCE.getBanks().put(uuid, new GenericBank(uuid, elm.getAsJsonObject()));
+				}
+				else{
+					//TODO fancy explanation
+				}
+			});
 		}
 	}
 	
@@ -87,7 +96,15 @@ public class Config {
 			items.add(jsn);
 		});
 		obj.add("Items", items);
-		//TODO banks
+		//
+		JsonObject def = new JsonObject();
+		def.addProperty("uuid", DEFAULT_BANK.toString());
+		def.addProperty("name", "Default Server Bank");
+		def.add("data", new JsonObject());
+		//
+		obj.add("Banks", new JsonArray());
+		obj.get("Banks").getAsJsonArray().add(def);
+		//
 		return obj;
 	}
 
@@ -99,13 +116,15 @@ public class Config {
 		if(b){
 			config.setCategoryRequiresMcRestart("General", true);
 			config.setCategoryRequiresWorldRestart("General", true);
-			config.setCategoryRequiresMcRestart("Logging", false);
-			config.setCategoryRequiresWorldRestart("Logging", false);
+			config.setCategoryRequiresMcRestart("Display/Logging", false);
+			config.setCategoryRequiresWorldRestart("Display/Logging", false);
 			config.load();
 		}
 		STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
 		DEFAULT_BANK = UUID.fromString(config.getString("default_bank", "General", "00000000-0000-0000-0000-000000000000", "Default Bank the player will have an account in.\nMust be an valid UUID!"));
-		DEBUG = config.getBoolean("debug", "Logging", false, "Prints some maybe useful data into console, suggested for bug-hunting.");
+		DEBUG = config.getBoolean("debug", "Display/Logging", false, "Prints some maybe useful data into console, suggested for bug-hunting.");
+		NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
+		CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
 		config.save();
 	}
 	

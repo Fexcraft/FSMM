@@ -1,8 +1,8 @@
 package net.fexcraft.mod.fsmm.util;
 
-import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.lib.util.common.Formatter;
+import net.fexcraft.mod.lib.util.common.Print;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -17,22 +17,27 @@ public class EventHandler {
     	if(UpdateHandler.Status != null){
         	event.player.sendMessage(new TextComponentString(Formatter.format(UpdateHandler.Status)));
     	}
+    	Account account = AccountManager.INSTANCE.getAccount("player", event.player.getGameProfile().getId().toString(), true);
+    	if(Config.NOTIFY_BALANCE_ON_JOIN){
+    		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + (account.getBalance() / 1000) + "F$");
+    		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + "//TODO");
+    	}
     }
     
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
-    	Account account = FSMM.getInstance().getAccountManager().getAccountOf(event.player.getUUID(event.player.getGameProfile()));
-    	FSMM.getInstance().getAccountManager().saveAccount(account);
+    	Account account = AccountManager.INSTANCE.getAccount("player", event.player.getGameProfile().getId().toString());
+		AccountManager.INSTANCE.unloadAccount(account);
     }
     
     @SubscribeEvent
     public void onWorldSave(WorldEvent.Unload event){
-    	FSMM.getInstance().getAccountManager().saveAll();
+    	AccountManager.INSTANCE.saveAll();
     }
     
     @Mod.EventHandler
     public static void onShutdown(FMLServerStoppingEvent event){
-    	FSMM.getInstance().getAccountManager().saveAll();
+    	AccountManager.INSTANCE.saveAll();
     }
     
 }
