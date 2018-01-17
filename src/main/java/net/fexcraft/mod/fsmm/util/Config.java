@@ -163,11 +163,20 @@ public class Config {
 			return ((str = "0" + COMMA + str).length() == 5 && (ignore ? false : !SHOW_CENTESIMALS) ? str.substring(0, 4) : str) + (append ? CURRENCY_SIGN : "");
 		}
 		else{
-			str = new StringBuilder(str).reverse().toString();
-			str = str.replace("000", "000" + DOT);
-			str = str.substring(0, str.indexOf(DOT)) + COMMA + str.substring(str.indexOf(DOT) + 1, str.length());
-			str = new StringBuilder(str).reverse().toString();
-			return (str = SHOW_CENTESIMALS || ignore ? str : str.substring(0, str.length() - 1)) + (append ? CURRENCY_SIGN : "");
+			try{
+				str = new StringBuilder(str).reverse().toString();
+				String[] arr = str.split("(?<=\\G...)");
+				str = arr[0] + COMMA;
+				for(int i = 1; i < arr.length; i++){
+					str += arr[i] + ((i >= arr.length - 1) ? "" : DOT);
+				}
+				str = new StringBuilder(str).reverse().toString();
+				return (str = SHOW_CENTESIMALS || ignore ? str : str.substring(0, str.length() - 1)) + (append ? CURRENCY_SIGN : "");
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				return value + "ERR";
+			}
 		}
 	}
 	
