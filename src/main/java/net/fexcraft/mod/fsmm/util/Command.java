@@ -1,89 +1,144 @@
 package net.fexcraft.mod.fsmm.util;
 
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.Bank;
+import net.fexcraft.mod.lib.perms.PermManager;
+import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.mod.lib.util.common.Static;
+import net.fexcraft.mod.lib.util.registry.UCResourceLocation;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
-
+import net.minecraft.util.ResourceLocation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Command extends CommandBase{
 
-	//public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
-	private final ArrayList aliases;
+	public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
+	private final ArrayList<String> aliases;
   
     public Command(){ 
-        aliases = new ArrayList(); 
+        aliases = new ArrayList<String>(); 
         aliases.add("money"); 
         aliases.add("balance");
         aliases.add("currency");
     }
     
     @Override 
-    public String getName() 
-    { 
-        return "fsmm"; 
-
+    public String getName(){ 
+        return "fsmm";
     } 
 
     @Override         
-    public String getUsage(ICommandSender var1) { 
-        return "/fsmm <args>"; 
-
+    public String getUsage(ICommandSender sender){ 
+        return "/fsmm <args>";
     }
     
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender){
-    	if(sender instanceof EntityPlayer){
-    		return true;
-    	}
-    	else return false;
+    	return true;
     }
 
     @Override 
-    public List getAliases() { 
+    public List<String> getAliases(){ 
         return this.aliases;
-
     } 
 
     @Override 
     public void execute(MinecraftServer server, ICommandSender sender, String[] args){ 
-        if (sender.getCommandSenderEntity() instanceof EntityPlayer){
-        	EntityPlayer player = (EntityPlayer)sender;
-        	
-	        if (args.length < 1){
-	        	float value = ItemManager.countMoneyInInventoryOf(player);
-				Print.chat(player,"&9In Inventory: &a " + value);
-				Account account = FSMM.getInstance().getAccountManager().getAccountOf(player.getUUID(player.getGameProfile()));
-				Print.chat(player, "&9In Bank: " + account.getBalance());
-	        }
-	        else if(args[0].equals("info")){
-	        	Print.chat(player, "&9Main command for FSMM related stuff");
-			}
-	        else if(args[0].equals("version")){
-	        	Print.chat(player,"&9FSMM Version: " + FSMM.VERSION + ".");
-	        }
-	        /*else if(args[0].equals("set")){
-	        	ItemManager.setInInventory(player, Double.parseDouble(args[1]));
-	        }
-	        else if(args[0].equals("add")){
-	        	ItemManager.addToInventory(player, Double.parseDouble(args[1]));
-	        }
-	        else if(args[0].equals("remove")){
-	        	ItemManager.removeFromInventory(player, Double.parseDouble(args[1]));
-	        }*///TODO Was only made/used for testing.
-	        else{
-	        	sender.sendMessage(new TextComponentString("error"));
-	        }
-        }
+    	boolean isp = sender instanceof EntityPlayer;
+    	if(args.length <= 0){
+    		if(isp){
+            	long value = ItemManager.countInInventory((EntityPlayer)sender);
+    			Print.chat(sender,"&9In Inventory&0: &a " + (value / 1000) + Config.CURRENCY_SIGN);
+    			Account account = AccountManager.INSTANCE.getAccount("player", ((EntityPlayer)sender).getGameProfile().getId().toString(), true);
+    			Print.chat(sender, "&9In Bank&0: &a" + (account.getBalance() / 1000) + Config.CURRENCY_SIGN);
+    		}
+    		else if(AccountManager.INSTANCE.getBank(Config.DEFAULT_BANK) != null){
+    			Bank bank = AccountManager.INSTANCE.getBank(Config.DEFAULT_BANK);
+    			Print.chat(sender, "&9Default Bank Balance&0: &a" + (bank.getBalance() / 1000) + Config.CURRENCY_SIGN);
+    		}
+    		else{
+    			Print.chat(sender, "No default bank found to display balance.");
+    		}
+    		return;
+    	}
+    	boolean op = isp ? Static.isOp(sender.getName()) || PermManager.getPlayerPerms((EntityPlayer)sender).hasPermission("fsmm.admin") : true;
+    	switch(args[0]){
+	    	case "help":{
+	        	Print.chat(sender, PREFIX + "= = = = = = = = = = =");
+	        	Print.chat(sender, "&9User commands:");
+	        	Print.chat(sender, "&7/fsmm (shows balance/money)");
+	        	Print.chat(sender, "&7/fsmm help");
+	        	Print.chat(sender, "&7/fsmm info");
+	        	Print.chat(sender, "&7/fsmm version");
+	        	Print.chat(sender, "&5Admin commands:");
+	        	Print.chat(sender, "&7/fsmm set <type:id/name> <amount>");
+	        	Print.chat(sender, "&7/fsmm add <type:id/name> <amount>");
+	        	Print.chat(sender, "&7/fsmm sub <type:id/name> <amount>");
+	    		return;
+	    	}
+    		case "info":{
+	        	Print.chat(sender, "&9Main command for FSMM related stuff");
+    			return;
+    		}
+    		case "version":{
+	        	Print.chat(sender,"&9FSMM Version: &e" + FSMM.VERSION + "&0.");
+    			return;
+    		}
+    		case "set":
+    		case "add":
+    		case "sub":{
+    			if(!op){
+        			Print.chat(sender, "&cNo Permission.");
+    				return;
+    			}
+    			if(args.length < 3){
+        			Print.chat(sender, "&cMissing Arguments.");
+        			return;
+    			}
+    			modify(sender, args);
+    			return;
+    		}
+    		default:{
+    			Print.chat(sender, "&cInvalid Argument.");
+    			return;
+    		}
+    	}
     }
 
-    @Override 
-    public boolean isUsernameIndex(String[] var1, int var2) { 
+	private void modify(ICommandSender sender, String[] args){
+		ResourceLocation rs = new UCResourceLocation(args[1]);
+		if(rs.getResourceDomain().equals("player")){
+			try{
+				UUID.fromString(rs.getResourcePath());
+				//all OK
+			}
+			catch(Exception e){
+				//not an UUID, let's convert
+				UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getResourcePath()).getId();
+				rs = new UCResourceLocation(rs.getResourceDomain(), uuid.toString());
+			}
+		}
+		Account account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath());
+		boolean loaded = account == null;
+		if(!loaded){
+			account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath(), true);
+		}
+		account.modifyBalance("set", Long.parseLong(args[2]), sender);
+		Print.chat(sender, "&9New Balance&0: &7" + (account.getBalance() / 1000) + Config.CURRENCY_SIGN);
+		if(!loaded){
+			AccountManager.INSTANCE.unloadAccount(account);
+		}
+	}
+
+	@Override 
+    public boolean isUsernameIndex(String[] var1, int var2){ 
     	return false;
     }
     

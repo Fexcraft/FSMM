@@ -14,15 +14,17 @@ import net.minecraft.util.NonNullList;
 
 public class ItemManager {
 	
-	public static long countMoneyInInventoryOf(EntityPlayer player){
+	public static long countInInventory(EntityPlayer player){
 		long value = 0l;
 		for(int in = 0; in < player.inventory.mainInventory.size(); in++){
 			NonNullList<ItemStack> is = player.inventory.mainInventory;
-			if(is.get(in) != null && is.get(in).getItem() instanceof MoneyItem){
-				value = value + (((MoneyItem)is.get(in).getItem()).getWorth() * is.get(in).getCount());
+			if(!is.get(in).isEmpty() && is.get(in).getItem() instanceof MoneyItem){
+				MoneyItem item = (MoneyItem)is.get(in).getItem();
+				Print.debug(item, item.getMoneyType());
+				value += item.getWorth() * is.get(in).getCount();
 			}
 		}
-		return value;//Util.round(value);
+		return value;
 	}
 	
 	public static boolean hasSpace(EntityPlayer player, boolean countMoneyItemAsSpace){
@@ -45,15 +47,12 @@ public class ItemManager {
 	}
 	
 	public static void addToInventory(EntityPlayer player, long amount){
-		long old = countMoneyInInventoryOf(player);
-		amount += old;
-		//amount = Util.round(amount);
+		long old = countInInventory(player);
+		amount = amount + old > Long.MAX_VALUE ? Long.MAX_VALUE : amount;
 		removeFromInventory(player, old);
 		List<Money> list = FSMM.getSortedMoneyList();
-		//list = Util.reverse(list);
 		for(int i = 0; i < list.size(); i++){
 			while(amount - list.get(i).getWorth() >= 0){
-				//amount = Util.round(amount);
 				ItemStack stack = new ItemStack(RegistryUtil.getItem(list.get(i).getRegistryName()), 1);
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
@@ -66,14 +65,13 @@ public class ItemManager {
 			continue;
 		}
 		if(amount > 0){
-			Print.chat(player, amount  + "F$ couldn't be added to inventory cause no matching items were found.");
+			Print.chat(player, amount + Config.CURRENCY_SIGN + " couldn't be added to inventory cause no matching items were found.");
 		}
 	}
 
 	public static void removeFromInventory(EntityPlayer player, long amount){
-		float old = countMoneyInInventoryOf(player);
+		float old = countInInventory(player);
 		old -= amount;
-		//old = Util.round(old);
 		if(old < 0){
 			old = 0;
 		}
@@ -97,12 +95,9 @@ public class ItemManager {
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
-		
 		List<Money> list = FSMM.getSortedMoneyList();
-		//list = Util.reverse(list);
 		for(int i = 0; i < list.size(); i++){
 			while(amount - list.get(i).getWorth() >= 0){
-				//amount = Util.round(amount);
 				ItemStack stack = new ItemStack(RegistryUtil.getItem(list.get(i).getRegistryName()), 1);
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
@@ -115,7 +110,7 @@ public class ItemManager {
 			continue;
 		}
 		if(amount > 0){
-			Print.chat(player, amount  + "F$ couldn't be added to inventory cause no matching items were found.");
+			Print.chat(player, amount + Config.CURRENCY_SIGN + " couldn't be added to inventory cause no matching items were found.");
 		}
 	}
 

@@ -15,6 +15,8 @@ import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.PacketHandler.PacketHandlerType;
+import net.fexcraft.mod.lib.perms.PermManager;
+import net.fexcraft.mod.lib.perms.PermissionNode;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -49,6 +51,8 @@ public class FSMM {
 		accman.initialize(event.getModConfigurationDirectory());
 		RegistryUtil.newAutoRegistry("fsmm");
 		Config.initialize(event);
+		//
+		PermManager.add("fsmm.admin", PermissionNode.Type.BOOLEAN, false, true);
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
