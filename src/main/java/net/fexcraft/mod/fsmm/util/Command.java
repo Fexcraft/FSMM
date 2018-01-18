@@ -113,7 +113,7 @@ public class Command extends CommandBase{
     }
 
 	private void modify(ICommandSender sender, String[] args){
-		ResourceLocation rs = new UCResourceLocation(args[1]);
+		ResourceLocation rs = new UCResourceLocation(args[1].split(":"));
 		if(rs.getResourceDomain().equals("player")){
 			try{
 				UUID.fromString(rs.getResourcePath());
@@ -129,6 +129,9 @@ public class Command extends CommandBase{
 		boolean loaded = account == null;
 		if(!loaded){
 			account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath(), true);
+		}
+		if(account == null){
+			Print.chat(sender, "ACC:NULL:ERR");
 		}
 		account.modifyBalance("set", Long.parseLong(args[2]), sender);
 		Print.chat(sender, "&9New Balance&0: &7" + Config.getWorthAsString(account.getBalance()));

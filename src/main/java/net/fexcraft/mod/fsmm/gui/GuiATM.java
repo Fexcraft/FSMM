@@ -30,7 +30,7 @@ public class GuiATM extends GuiScreen {
 	private static ArrowButton l0, l1, r0, r1;
 	private static final String pktlid = "fsmm_atm_gui";
 	protected static String log = ">_";
-	protected static double balance = -1l;
+	protected static long balance = -1l;
 	private GuiTextField amount_field;
 	private GuiTextField receiver_field;
 	
@@ -46,12 +46,10 @@ public class GuiATM extends GuiScreen {
         this.mc.getTextureManager().bindTexture(bg);
         this.drawTexturedModalRect((this.width - sx) / 2, (this.height - sy) / 2, 0, 0, sx, sy);
         
-        this.l0.drawButton(mc, mx, my, f);
-        this.l1.drawButton(mc, mx, my, f);
-        this.r0.drawButton(mc, mx, my, f);
-        this.r1.drawButton(mc, mx, my, f);
+        l0.drawButton(mc, mx, my, f); l1.drawButton(mc, mx, my, f);
+        r0.drawButton(mc, mx, my, f); r1.drawButton(mc, mx, my, f);
         
-        this.fontRenderer.drawString((balance / 1000) + "F$", ((this.width - sx) / 2) + 33, ((this.height - sy) / 2) + 66, 0x000000);
+        this.fontRenderer.drawString(Config.getWorthAsString(balance), ((this.width - sx) / 2) + 33, ((this.height - sy) / 2) + 66, 0x000000);
         this.fontRenderer.drawString(log, ((this.width - sx) / 2) + 33, ((this.height - sy) / 2) + 88, 0x000000);
         
         this.amount_field.drawTextBox();
@@ -83,7 +81,7 @@ public class GuiATM extends GuiScreen {
 		return false;
 	}
 	
-	public static class Receiver implements IPacketListener {
+	public static class Receiver implements IPacketListener<PacketJsonObject> {
 
 		@Override
 		public String getId(){
@@ -91,8 +89,7 @@ public class GuiATM extends GuiScreen {
 		}
 
 		@Override
-		public void process(IPacket packet, Object[] objs){
-			PacketJsonObject pkt = (PacketJsonObject)packet;
+		public void process(PacketJsonObject pkt, Object[] objs){
 			if(Config.DEBUG){
 				Print.log("PKT R - Client: " + pkt.obj.toString());
 			}
