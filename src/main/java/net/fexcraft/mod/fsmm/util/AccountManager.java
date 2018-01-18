@@ -76,6 +76,9 @@ public class AccountManager{
 			double oldbal = obj.get("balance").getAsDouble();
 			oldbal *= 1000;
 			obj.addProperty("balance", Math.round(oldbal));//TODO check this
+			if(!obj.has("data")){
+				obj.add("data", new JsonObject());
+			}
 		}
 		else{
 			obj = new JsonObject();
@@ -83,6 +86,7 @@ public class AccountManager{
 			obj.addProperty("balance", type.equals("player") ? Config.STARTING_BALANCE : 0);
 			obj.addProperty("type", type);
 			obj.addProperty("bank", Config.DEFAULT_BANK.toString());
+			obj.add("data", new JsonObject());
 		}
 		Account account = null;
 		try{
@@ -115,6 +119,7 @@ public class AccountManager{
 		obj.addProperty("balance", account.getBalance());
 		obj.addProperty("type", account.getType());
 		obj.addProperty("bank", account.getBankId().toString());
+		obj.add("data", account.getData());
 		JsonUtil.write(new File(ACCOUNT_SAVE_DIRECTORY, account.getType() + "/" + account.getId() + ".json"), obj);
 	}
 	
@@ -242,88 +247,5 @@ public class AccountManager{
     		AccountManager.INSTANCE.saveBank(val);
     	});
 	}
-	
-	/*
-
-		@Override
-		public boolean processTransfer(Account sender, long amount, Account target){
-			if(amount < 0){
-				log(s(sender) + " -> " + s(target) + ": Transfer failed! Amount null or negative. (T:" + amount + ");");
-				Print.log(s(sender) + " tried to transfer a negative amout of money to " + s(target) + "!");
-				return false;
-			}
-			if(sender.balance - amount >= 0){
-				sender.subtract(amount);
-				target.add(amount);
-				log(s(sender) + " -> (T:" + amount + ") -> " + s(target) + ";");
-				return true;
-			}
-			log(s(sender) + " -> " + s(target) + ": Transfer failed! Sender don't has enough money. (T:" + amount + ");");
-			return false;
-		}
-
-		@Override
-		public boolean processWithdraw(EntityPlayer player, Account account, long amount){
-			if(amount < 0){
-				log(s(account) + ": Withdraw failed! Amount is negative. (W:" + amount + " || B:" + account.balance + ");");
-				Print.log(s(account) + " tried to withdraw a negative amout of money!");
-				return false;
-			}
-			if(account.getAccountType().equals("player")){
-				if(player != null){
-					if(account.balance - amount >= 0){//if(Util.round(account.balance - amount) >= 0){
-						ItemManager.addToInventory(player, amount);
-						account.subtract(amount);
-						log(s(account) + " -> (W:" + amount + ") -> WITHDRAWN;");
-						return true;
-					}
-					log(s(account) + ": Withdraw failed! Player don't has enough money. (W:" + amount + " || B:" + account.balance + ");");
-					return false;
-				}
-				log(s(account) + ": Withdraw failed! Player Entity is null. (W:" + amount + " || B:" + account.balance + ");");
-				return false;
-			}
-			else{
-				Print.log("[FSMM] Default FSMM Bank has only methods for player accounts!");
-				Print.log("[FSMM] Account with ID '" + account.getIdAsString() + "' and type '" + account.getAccountType() + "' tried to withdraw " + amount + "F$.");
-				return false;
-			}
-		}
-
-		@Override
-		public boolean processDeposit(EntityPlayer player, Account account, long amount){
-			if(amount < 0){
-				log(s(account) + ": Deposit failed! Amount is negative. (D:" + amount + " || B:" + account.balance + ");");
-				Print.log(s(account) + " tried to deposit a negative amout of money!");
-				return false;
-			}
-			if(account.getAccountType().equals("player")){
-				if(player != null){
-					if(account.balance + amount >= 0){
-						if(ItemManager.countMoneyInInventoryOf(player) - amount >= 0){
-							ItemManager.removeFromInventory(player, amount);
-							account.add(amount);
-							log(s(account) + " -> (D:" + amount + ") -> DEPOSITED;");
-							return true;
-						}
-						else{
-							log(s(account) + ": Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + account.balance + ");");
-							return false;
-						}
-					}
-					log(s(account) + ": Deposit failed! Result is negative. (D:" + amount + " || B:" + account.balance + ");");
-					return false;
-				}
-				log(s(account) + ": Deposit failed! Player Entity is null. (D:" + amount + " || B:" + account.balance + ");");
-				return false;
-			}
-			else{
-				Print.log("[FSMM] Default FSMM Bank has only methods for player accounts!");
-				Print.log("[FSMM] Account with ID '" + account.getIdAsString() + "' and type '" + account.getAccountType() + "' tried to deposit " + amount + "F$.");
-				return false;
-			}
-		}
-		
-	*/
 	
 }

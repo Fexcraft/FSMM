@@ -15,12 +15,14 @@ public class GenericAccount implements Account {
 	private String type, id;
 	private long balance;
 	private UUID bank;
+	private JsonObject data;
 	
 	public GenericAccount(String type, JsonObject obj){
 		this.type = type;
 		this.id = JsonUtil.getIfExists(obj, "id", obj.get("id").getAsString());
 		this.balance = JsonUtil.getIfExists(obj, "balance", 0).longValue();
 		this.bank = UUID.fromString(JsonUtil.getIfExists(obj, "bank", Config.DEFAULT_BANK));
+		this.data = JsonUtil.getIfExists(obj, "data", new JsonObject()).getAsJsonObject();
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class GenericAccount implements Account {
 					return true;
 				}
 				else{
-					Print.chat(sender, "Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
+					Print.chat(sender, "Not enough money to subtract this amount! (B:" + Config.getWorthAsString(balance, false) + " - S:" + Config.getWorthAsString(amount, false) + ")");
 					return false;
 				}
 			}
@@ -64,10 +66,10 @@ public class GenericAccount implements Account {
 		}
 	}
 	
-	/** Extend this class and Override this method to modify access to the account, if it's e.g. of another type. */
+	/** Extend this class and Override this method to modify access to the account, to for example grand access to specific other accounts/players. */
 	@Override
 	public boolean canModifyBalance(String action, String type, String id){
-		return action.equals("add") ? true : type.equals("player") && this.getType().equals("player") && this.getId().equals(id);
+		return action.equals("add") ? true : this.getType().equals(type) && this.getId().equals(id);
 	}
 
 	@Override
@@ -83,6 +85,16 @@ public class GenericAccount implements Account {
 	@Override
 	public String getType(){
 		return type;
+	}
+
+	@Override
+	public JsonObject getData(){
+		return data;
+	}
+
+	@Override
+	public void setData(JsonObject obj){
+		data = obj;
 	}
 
 }

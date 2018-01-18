@@ -13,7 +13,7 @@ public interface Bank {
 	
 	public String getName();
 	
-	public boolean processTransfer(Account sender, long amount, Account target);
+	public boolean processTransfer(ICommandSender ics, Account sender, long amount, Account receiver);
 
 	public boolean processWithdraw(EntityPlayer player, Account account, long amount);
 	

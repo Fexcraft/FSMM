@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.gui.ArrowButton.EnumSide;
 import net.fexcraft.mod.fsmm.util.Config;
-import net.fexcraft.mod.lib.api.network.IPacket;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.packet.PacketJsonObject;

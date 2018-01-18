@@ -47,26 +47,7 @@ public class ItemManager {
 	}
 	
 	public static void addToInventory(EntityPlayer player, long amount){
-		long old = countInInventory(player);
-		amount = amount + old > Long.MAX_VALUE ? Long.MAX_VALUE : amount;
-		removeFromInventory(player, old);
-		List<Money> list = FSMM.getSortedMoneyList();
-		for(int i = 0; i < list.size(); i++){
-			while(amount - list.get(i).getWorth() >= 0){
-				ItemStack stack = new ItemStack(RegistryUtil.getItem(list.get(i).getRegistryName()), 1);
-				if(hasSpace(player, false)){
-					player.inventory.addItemStackToInventory(stack);
-				}
-				else{
-					player.getEntityWorld().spawnEntity(new EntityItem(player.getEntityWorld(), player.posX, player.posY, player.posZ, stack));
-				}
-				amount -= list.get(i).getWorth();
-			}
-			continue;
-		}
-		if(amount > 0){
-			Print.chat(player, Config.getWorthAsString(amount, true, true) + " couldn't be added to inventory cause no matching items were found.");
-		}
+		setInInventory(player, (amount += countInInventory(player)) > Long.MAX_VALUE ? Long.MAX_VALUE : amount);
 	}
 
 	public static void removeFromInventory(EntityPlayer player, long amount){
