@@ -139,10 +139,10 @@ public class GenericBank implements Bank {
 			return false;
 		}
 		if(account.canModifyBalance("add", "player", player.getGameProfile().getId().toString())){
-			String feestr = prices.get("player:" + (account.getId().equals(player.getGameProfile().getId().toString()) ? "self" : account.getType()), "transfer");
+			String feestr = prices.get("self:" + account.getType(), "transfer");
 			long fee = parseFee(feestr, amount);
 			if(account.getBalance() + amount <= Long.MAX_VALUE){
-				if(ItemManager.countInInventory(player) - amount < 0){
+				if(ItemManager.countInInventory(player) - amount >= 0){
 					ItemManager.removeFromInventory(player, amount);
 					account.modifyBalance("add", amount - fee, player);
 					Print.debug(player.getName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + account.getAsResourceLocation().toString() + ";");
