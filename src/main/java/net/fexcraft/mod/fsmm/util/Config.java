@@ -123,7 +123,7 @@ public class Config {
 		return obj;
 	}
 	
-	private static void refresh(){
+	public static void refresh(){
 		STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
 		DEFAULT_BANK = UUID.fromString(config.getString("default_bank", "General", "00000000-0000-0000-0000-000000000000", "Default Bank the player will have an account in.\nMust be an valid UUID!"));
 		DEBUG = config.getBoolean("debug", "Display/Logging", false, "Prints some maybe useful data into console, suggested for bug-hunting.");

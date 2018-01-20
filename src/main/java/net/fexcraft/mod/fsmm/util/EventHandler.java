@@ -17,6 +17,7 @@ public class EventHandler {
     	if(UpdateHandler.Status != null){
         	event.player.sendMessage(new TextComponentString(Formatter.format(UpdateHandler.Status)));
     	}
+		Print.debug("Loading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
     	Account account = AccountManager.INSTANCE.getAccount("player", event.player.getGameProfile().getId().toString(), true);
     	if(Config.NOTIFY_BALANCE_ON_JOIN){
     		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + Config.getWorthAsString(account.getBalance()));
@@ -26,6 +27,7 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
+		Print.debug("Unloading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
     	Account account = AccountManager.INSTANCE.getAccount("player", event.player.getGameProfile().getId().toString());
 		AccountManager.INSTANCE.unloadAccount(account);
     }

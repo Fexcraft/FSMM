@@ -120,7 +120,11 @@ public class AccountManager{
 		obj.addProperty("type", account.getType());
 		obj.addProperty("bank", account.getBankId().toString());
 		obj.add("data", account.getData());
-		JsonUtil.write(new File(ACCOUNT_SAVE_DIRECTORY, account.getType() + "/" + account.getId() + ".json"), obj);
+		File file = new File(ACCOUNT_SAVE_DIRECTORY, account.getType() + "/" + account.getId() + ".json");
+		if(!file.getParentFile().exists()){
+			file.getParentFile().mkdirs();
+		}
+		JsonUtil.write(file, obj);
 	}
 	
 	public Account getAccount(String type, String id){
