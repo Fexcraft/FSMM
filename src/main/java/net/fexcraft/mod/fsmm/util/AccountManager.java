@@ -107,7 +107,9 @@ public class AccountManager{
 
 	public void unloadAccount(Account account){
 		saveAccount(account);
-		ACCOUNTS.remove(account.getType(), account.getId());
+		if(account != null){
+			ACCOUNTS.remove(account.getType(), account.getId());
+		}
 	}
 	
 	public void saveAccount(Account account){

@@ -55,7 +55,7 @@ public class Command extends CommandBase{
     	if(args.length <= 0){
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
-    			Print.chat(sender,"&9In Inventory&0: &a " + Config.getWorthAsString(value));
+    			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
     			Account account = AccountManager.INSTANCE.getAccount("player", ((EntityPlayer)sender).getGameProfile().getId().toString(), true);
     			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(account.getBalance()));
     		}
