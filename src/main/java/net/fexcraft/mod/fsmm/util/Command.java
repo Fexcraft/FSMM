@@ -126,7 +126,7 @@ public class Command extends CommandBase{
 			}
 		}
 		Account account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath());
-		boolean loaded = account == null;
+		boolean loaded = account != null;
 		if(!loaded){
 			account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath(), true);
 		}
