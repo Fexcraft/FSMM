@@ -63,8 +63,8 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 								catch(Exception e){
 									uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(ar.length > 1 ? ar[1] : ar[0]).getId();
 								}
+								receiver = AccountManager.INSTANCE.getAccount("player", uuid.toString());
 							}
-							receiver = AccountManager.INSTANCE.getAccount("player", uuid.toString());
 							loaded = receiver != null;
 							if(!loaded){
 								receiver = AccountManager.INSTANCE.getAccount("player", uuid.toString(), true);
