@@ -175,6 +175,7 @@ public class GuiATM extends GuiScreen {
 	}
 	
 	public static class ArrowButton extends GuiButton {
+		
 		private static ResourceLocation texture = new ResourceLocation("fsmm:textures/gui/GuiATM.png");
 		private EnumSide type;
 		
@@ -203,9 +204,11 @@ public class GuiATM extends GuiScreen {
 				}
 			}
 		}
+		
 	}
 	
 	public static enum EnumSide {
+		
 		RIGHT(2, "right"), LEFT(21, "left");
 
 		public int pos;
@@ -223,6 +226,7 @@ public class GuiATM extends GuiScreen {
 		public String getId(){
 			return id;
 		}
+		
 	}
 	
 }

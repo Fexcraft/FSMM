@@ -122,7 +122,7 @@ public class Config {
 					EXTERNAL_ITEMS.put(rs, worth);
 				}
 				if(jsn.has("register") && jsn.get("register").getAsBoolean()){
-					FSMM.CURRENCY.register(new GenericMoney(elm.getAsJsonObject()));
+					FSMM.CURRENCY.register(new GenericMoney(jsn));
 				}
 			});
 		}
