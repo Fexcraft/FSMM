@@ -12,10 +12,12 @@ public class GenericMoney implements Money {
 	
 	private ResourceLocation regname;
 	private long worth;
+	private int meta;
 	
 	public GenericMoney(JsonObject obj){
 		regname = new ResourceLocation(FSMM.MODID, JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
 		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
+		meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
 	}
 
 	@Override
@@ -42,6 +44,16 @@ public class GenericMoney implements Money {
 	@Override
 	public String toString(){
 		return super.toString() + "#" + this.getWorth();
+	}
+
+	@Override
+	public boolean hasItemMeta(){
+		return meta >= 0;
+	}
+
+	@Override
+	public int getItemMeta(){
+		return hasItemMeta() ? meta : 0;
 	}
 	
 }

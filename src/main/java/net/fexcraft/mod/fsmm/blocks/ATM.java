@@ -32,9 +32,9 @@ public class ATM extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World w, BlockPos pos, IBlockState state, EntityPlayer p, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY){
-		if (!p.isSneaking()) {
-			p.openGui(FSMM.getInstance(), GuiHandler.atm, w, pos.getX(), pos.getY(), pos.getZ());
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
+		if(!player.isSneaking() && side == world.getBlockState(pos).getValue(FACING) && hitY > 0.5f){
+			player.openGui(FSMM.getInstance(), GuiHandler.NEW_ATM, world, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		else{

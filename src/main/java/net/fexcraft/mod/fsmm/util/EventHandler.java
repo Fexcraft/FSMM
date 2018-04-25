@@ -1,9 +1,15 @@
 package net.fexcraft.mod.fsmm.util;
 
 import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.MoneyCapability;
+import net.fexcraft.mod.fsmm.api.MoneyItem;
+import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
@@ -40,6 +46,24 @@ public class EventHandler {
     @Mod.EventHandler
     public static void onShutdown(FMLServerStoppingEvent event){
     	AccountManager.INSTANCE.saveAll();
+    }
+    
+    @SubscribeEvent
+    public void onItemTooltip(ItemTooltipEvent event){
+    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP){ return; }
+    	if(event.getItemStack().hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
+    		event.getToolTip().add(Formatter.format("&9[&8FSMM&9]&3 Worth: &7" + Config.getWorthAsString(event.getItemStack().getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth())));
+    		if(event.getItemStack().getCount() > 1){
+    			event.getToolTip().add(Formatter.format("&9[&8FSMM&9]&3 Stack: &7" + Config.getWorthAsString(event.getItemStack().getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() * event.getItemStack().getCount())));
+    		}
+    	}
+    }
+    
+    @SubscribeEvent
+    public void onAttackCapabilities(AttachCapabilitiesEvent<ItemStack> event){
+    	if(event.getObject().getItem() instanceof MoneyItem || Config.containsAsExternalItemStack(event.getObject())){
+    		event.addCapability(MoneyCapability.REGISTRY_NAME, new MoneyCapabilityUtil(event.getObject()));
+    	}
     }
     
 }

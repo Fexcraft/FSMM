@@ -4,7 +4,9 @@ import java.util.List;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
+import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.api.MoneyItem;
+import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.entity.item.EntityItem;
@@ -16,12 +18,13 @@ public class ItemManager {
 	
 	public static long countInInventory(EntityPlayer player){
 		long value = 0l;
+		NonNullList<ItemStack> is = player.inventory.mainInventory;
+		ItemStack stack = null;
 		for(int in = 0; in < player.inventory.mainInventory.size(); in++){
-			NonNullList<ItemStack> is = player.inventory.mainInventory;
-			if(!is.get(in).isEmpty() && is.get(in).getItem() instanceof MoneyItem){
-				MoneyItem item = (MoneyItem)is.get(in).getItem();
-				Print.debug(item, item.getMoneyType());
-				value += item.getWorth() * is.get(in).getCount();
+			if(!(stack = is.get(in)).isEmpty() && stack.hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
+				MoneyCapability cap = stack.getCapability(MoneyCapabilityUtil.CAPABILITY, null);
+				Print.debug(stack.toString(), stack.getItem() instanceof MoneyItem ? ((MoneyItem)stack.getItem()).getMoneyType().toString() : "not internal money item");
+				value += cap.getWorth() * is.get(in).getCount();
 			}
 		}
 		return value;
@@ -36,7 +39,7 @@ public class ItemManager {
 			if(stack == null || stack.isEmpty()){
 				i++;
 			}
-			else if(stack.getItem() instanceof MoneyItem && countMoneyItemAsSpace){
+			else if(stack.hasCapability(MoneyCapabilityUtil.CAPABILITY, null) && countMoneyItemAsSpace){
 				i++;
 			}
 			else{
@@ -60,7 +63,7 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).getItem() instanceof MoneyItem){
+			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
@@ -72,21 +75,22 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).getItem() instanceof MoneyItem){
+			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
 		List<Money> list = FSMM.getSortedMoneyList();
+		Money money = null;
 		for(int i = 0; i < list.size(); i++){
-			while(amount - list.get(i).getWorth() >= 0){
-				ItemStack stack = new ItemStack(RegistryUtil.getItem(list.get(i).getRegistryName()), 1);
+			while(amount - (money = list.get(i)).getWorth() >= 0){
+				ItemStack stack = new ItemStack(RegistryUtil.getItem(money.getRegistryName()), 1, money.getItemMeta());
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
 				}
 				else{
 					player.getEntityWorld().spawnEntity(new EntityItem(player.getEntityWorld(), player.posX, player.posY, player.posZ, stack));
 				}
-				amount -= list.get(i).getWorth();
+				amount -= money.getWorth();
 			}
 			continue;
 		}

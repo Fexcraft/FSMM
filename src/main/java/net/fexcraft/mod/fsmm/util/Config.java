@@ -9,12 +9,15 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.api.MoneyItem;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
@@ -28,7 +31,8 @@ public class Config {
 	public static File CONFIG_PATH;
 	public static long STARTING_BALANCE;
 	public static UUID DEFAULT_BANK;
-	public static boolean DEBUG, NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS;
+	public static boolean DEBUG, NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
+	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
 	public static String CURRENCY_SIGN;
 	private static Configuration config;
 	private static String COMMA = ",", DOT = ".";
@@ -60,6 +64,8 @@ public class Config {
 		DEFAULT.put("200kfoney", 200000000l);
 		DEFAULT.put("500kfoney", 500000000l);
 	}
+	private static TreeMap<ResourceLocation, Long> EXTERNAL_ITEMS = new TreeMap<ResourceLocation, Long>();
+	private static TreeMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new TreeMap<String, Long>();
 	
 	public static void initialize(FMLPreInitializationEvent event){
 		CONFIG_PATH = event.getSuggestedConfigurationFile().getParentFile();
@@ -95,7 +101,28 @@ public class Config {
 					AccountManager.INSTANCE.getBanks().put(uuid, new GenericBank(uuid, elm.getAsJsonObject()));
 				}
 				else{
-					//TODO fancy explanation
+					//TODO
+				}
+			});
+		}
+		if(obj.has("ExternalItems")){
+			obj.get("ExternalItems").getAsJsonArray().forEach(elm -> {
+				JsonObject jsn = elm.getAsJsonObject();
+				ResourceLocation rs = new ResourceLocation(jsn.get("id").getAsString());
+				long worth = jsn.get("worth").getAsLong();
+				int meta = jsn.has("meta") ? jsn.get("meta").getAsInt() : -1;
+				//
+				if(meta >= 0){
+					EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
+					if(!EXTERNAL_ITEMS.containsKey(rs)){
+						EXTERNAL_ITEMS.put(rs, 0l);
+					}
+				}
+				else{
+					EXTERNAL_ITEMS.put(rs, worth);
+				}
+				if(jsn.has("register") && jsn.get("register").getAsBoolean()){
+					FSMM.CURRENCY.register(new GenericMoney(elm.getAsJsonObject()));
 				}
 			});
 		}
@@ -120,6 +147,14 @@ public class Config {
 		banks.add(def);
 		obj.add("Banks", banks);
 		//
+		JsonObject extexp = new JsonObject();
+		JsonArray ext = new JsonArray();
+		extexp.addProperty("id", "minecraft:nether_star");
+		extexp.addProperty("worth", 100000);
+		extexp.addProperty("register", false);
+		ext.add(extexp);
+		obj.add("ExternalItems", ext);
+		//
 		return obj;
 	}
 	
@@ -131,6 +166,7 @@ public class Config {
 		CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
 		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' dispplay.");
 		SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
+		SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
 		//
 		COMMA = INVERT_COMMA ? "." : ",";
 		DOT = INVERT_COMMA ? "," : ".";
@@ -186,6 +222,23 @@ public class Config {
 		list.add(new ConfigElement(Config.getConfig().getCategory("General")));
 		list.add(new ConfigElement(Config.getConfig().getCategory("Display/Logging")));
 		return list;
+	}
+
+	public static final long getItemStackWorth(ItemStack stack){
+		if(stack.getItem() instanceof MoneyItem){
+			return ((MoneyItem)stack.getItem()).getWorth(stack);
+		}
+		if(EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage())){
+			return EXTERNAL_ITEMS_METAWORTH.get(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
+		}
+		if(EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName())){
+			return EXTERNAL_ITEMS.get(stack.getItem().getRegistryName());
+		}
+		return 0;
+	}
+
+	public static boolean containsAsExternalItemStack(ItemStack stack){
+		return EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName()) || EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
 	}
 	
 }

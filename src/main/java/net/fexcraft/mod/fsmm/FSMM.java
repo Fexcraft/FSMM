@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.fexcraft.mod.fsmm.api.Money;
+import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.gui.GuiATM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
+import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.EventHandler;
 import net.fexcraft.mod.fsmm.util.AccountManager;
@@ -22,6 +24,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -80,6 +83,7 @@ public class FSMM {
         	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new GuiATM.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.JSON, Side.SERVER, new Processor());
+    	CapabilityManager.INSTANCE.register(MoneyCapability.class, new MoneyCapabilityUtil.Storage(), new MoneyCapabilityUtil.Callable());
     }
     
     public static FSMM getInstance(){
