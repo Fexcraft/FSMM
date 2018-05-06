@@ -6,6 +6,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.gson.JsonObject;
 
+import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.util.ItemManager;
@@ -86,7 +87,9 @@ public class GenericBank implements Bank {
 		if(sender.getBalance() - amount >= 0){
 			sender.modifyBalance("sub", amount, ics);
 			receiver.modifyBalance("add", amount - fee, ics);
-			Print.debug(sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";");
+			String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
+			Print.debug(str);
+			FSMM.LOGGER.info(str);
 			return true;
 		}
 		Print.chat(ics, "Transfer failed! Not enough money on your Account.");
@@ -112,7 +115,9 @@ public class GenericBank implements Bank {
 			if(account.getBalance() - amount >= 0){
 				account.modifyBalance("sub", amount, player);
 				ItemManager.addToInventory(player, amount - fee);
-				Print.debug(account.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getName() + ";");
+				String str = account.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getName() + ";";
+				Print.debug(str);
+				FSMM.LOGGER.info(str);
 				return true;
 			}
 			Print.chat(player, "Withdraw failed! Not enough money. (W:" + amount + " || B:" + account.getBalance() + ");");
@@ -145,7 +150,9 @@ public class GenericBank implements Bank {
 				if(ItemManager.countInInventory(player) - amount >= 0){
 					ItemManager.removeFromInventory(player, amount);
 					account.modifyBalance("add", amount - fee, player);
-					Print.debug(player.getName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + account.getAsResourceLocation().toString() + ";");
+					String str = player.getName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + account.getAsResourceLocation().toString() + ";";
+					Print.debug(str);
+					FSMM.LOGGER.info(str);
 					return true;
 				}
 				else{

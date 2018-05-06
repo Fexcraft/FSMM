@@ -13,7 +13,6 @@ import net.fexcraft.mod.fsmm.api.MoneyItem;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
-import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.item.ItemStack;
@@ -31,7 +30,7 @@ public class Config {
 	public static File CONFIG_PATH;
 	public static long STARTING_BALANCE;
 	public static UUID DEFAULT_BANK;
-	public static boolean DEBUG, NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
+	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
 	public static String CURRENCY_SIGN;
 	private static Configuration config;
@@ -161,7 +160,6 @@ public class Config {
 	public static void refresh(){
 		STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
 		DEFAULT_BANK = UUID.fromString(config.getString("default_bank", "General", "00000000-0000-0000-0000-000000000000", "Default Bank the player will have an account in.\nMust be an valid UUID!"));
-		DEBUG = config.getBoolean("debug", "Display/Logging", false, "Prints some maybe useful data into console, suggested for bug-hunting.");
 		NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
 		CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
 		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' dispplay.");
@@ -170,7 +168,6 @@ public class Config {
 		//
 		COMMA = INVERT_COMMA ? "." : ",";
 		DOT = INVERT_COMMA ? "," : ".";
-		if(Static.dev() != DEBUG){ Static.toggleDebug(); }
 	}
 	
 	private static class EventHandler {
@@ -239,6 +236,14 @@ public class Config {
 
 	public static boolean containsAsExternalItemStack(ItemStack stack){
 		return EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName()) || EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
+	}
+
+	public static String getComma(){
+		return COMMA;
+	}
+
+	public static String getDot(){
+		return DOT;
 	}
 	
 }

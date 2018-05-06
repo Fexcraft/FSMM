@@ -2,14 +2,22 @@ package net.fexcraft.mod.fsmm.gui;
 
 import java.io.IOException;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import net.fexcraft.mod.fsmm.gui.buttons.NumberButton;
 import net.fexcraft.mod.fsmm.gui.buttons.SideButton;
+import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.lib.api.network.IPacketListener;
+import net.fexcraft.mod.lib.network.PacketHandler;
+import net.fexcraft.mod.lib.network.packet.PacketJsonObject;
+import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class AutomatedTellerMashineGui extends GuiScreen {
@@ -18,20 +26,25 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	//
 	private int xhalf, yhalf;
 	private EntityPlayer player;
-	private World world;
-	private BlockPos tile;
+	//private World world;
+	//private BlockPos tile;
+	private static AutomatedTellerMashineGui instance;
 	//
-	private String input, pswd, window;
-	private boolean hiddeninput;
+	private String[] lines = new String[]{ "", "", "", "" };
+	private String window, rec_cat = "", rec_id = "";
+	private long input = 0l;
+	private boolean selectbox;
+	private JsonArray catlist, idlist;
 	//
 	private SideButton[] sidebuttons = new SideButton[8];
 	private NumberButton[] numberbuttons = new NumberButton[13];
 	
 	public AutomatedTellerMashineGui(EntityPlayer player, World world, int x, int y, int z){
 		this.player = player;
-		this.world = world;
-		this.tile = new BlockPos(x, y, z);
-		window = "main";
+		//this.world = world;
+		//this.tile = new BlockPos(x, y, z);
+		this.openPerspective("loading", null);
+		instance = this;
 	}
 	
 	@Override
@@ -47,16 +60,16 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		buttonList.add(numberbuttons[ 0] = new NumberButton( 8, xhalf + 57, yhalf + 145,  0));
 		buttonList.add(numberbuttons[ 1] = new NumberButton( 9, xhalf +  6, yhalf + 111,  1));
 		buttonList.add(numberbuttons[ 2] = new NumberButton(10, xhalf + 23, yhalf + 111,  2));
-		buttonList.add(numberbuttons[ 3] = new NumberButton(12, xhalf + 40, yhalf + 111,  3));
-		buttonList.add(numberbuttons[ 4] = new NumberButton(13, xhalf +  6, yhalf + 128,  4));
-		buttonList.add(numberbuttons[ 5] = new NumberButton(14, xhalf + 23, yhalf + 128,  5));
-		buttonList.add(numberbuttons[ 6] = new NumberButton(15, xhalf + 40, yhalf + 128,  6));
-		buttonList.add(numberbuttons[ 7] = new NumberButton(16, xhalf +  6, yhalf + 145,  7));
-		buttonList.add(numberbuttons[ 8] = new NumberButton(17, xhalf + 23, yhalf + 145,  8));
-		buttonList.add(numberbuttons[ 9] = new NumberButton(18, xhalf + 40, yhalf + 145,  9));
-		buttonList.add(numberbuttons[10] = new NumberButton(19, xhalf + 57, yhalf + 111, 10));
-		buttonList.add(numberbuttons[11] = new NumberButton(20, xhalf + 57, yhalf + 128, 11));
-		buttonList.add(numberbuttons[12] = new NumberButton(21, xhalf + 74, yhalf + 145, 12));
+		buttonList.add(numberbuttons[ 3] = new NumberButton(11, xhalf + 40, yhalf + 111,  3));
+		buttonList.add(numberbuttons[ 4] = new NumberButton(12, xhalf +  6, yhalf + 128,  4));
+		buttonList.add(numberbuttons[ 5] = new NumberButton(13, xhalf + 23, yhalf + 128,  5));
+		buttonList.add(numberbuttons[ 6] = new NumberButton(14, xhalf + 40, yhalf + 128,  6));
+		buttonList.add(numberbuttons[ 7] = new NumberButton(15, xhalf +  6, yhalf + 145,  7));
+		buttonList.add(numberbuttons[ 8] = new NumberButton(16, xhalf + 23, yhalf + 145,  8));
+		buttonList.add(numberbuttons[ 9] = new NumberButton(17, xhalf + 40, yhalf + 145,  9));
+		buttonList.add(numberbuttons[10] = new NumberButton(18, xhalf + 57, yhalf + 111, 10));
+		buttonList.add(numberbuttons[11] = new NumberButton(19, xhalf + 57, yhalf + 128, 11));
+		buttonList.add(numberbuttons[12] = new NumberButton(20, xhalf + 74, yhalf + 145, 12));
 	}
 	
 	@Override
@@ -66,6 +79,9 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         this.drawTexturedModalRect(xhalf, yhalf, 0, 0, 176, 166);
         this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
         //
+        for(int i = 0; i < lines.length; i++){
+        	this.fontRenderer.drawString(lines[i], xhalf + 23, yhalf + 16 + (i * 23), MapColor.BLACK.colorValue);
+        }
 	}
 	
 	@Override
@@ -74,28 +90,248 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	}
 	
 	@Override
+	public void onGuiClosed(){
+		super.onGuiClosed();
+		instance = null;
+	}
+	
+	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
-		//TODO
-        if(keyCode == 1){
+        /*if(keyCode == 1){
             this.mc.displayGuiScreen((GuiScreen)null);
             if(this.mc.currentScreen == null){
                 this.mc.setIngameFocus();
             }
-        }
+        }*/
+		super.keyTyped(typedChar, keyCode);
     }
 	
 	@Override
     protected void actionPerformed(GuiButton button){
 		Print.debug(window, button.id);
+		if(button.id == 20){
+			this.mc.displayGuiScreen((GuiScreen)null);
+            if(this.mc.currentScreen == null){
+                this.mc.setIngameFocus();
+            }
+		}
 		switch(window){
+			case "main":{
+				if(button.id == 4 || button.id == 5){
+					this.openPerspective("manage_account", null);
+					break;
+				}
+				if(button.id == 6 || button.id == 7){
+					this.openPerspective("view_balance", null);
+					break;
+				}
+				return;
+			}
+			case "show_balance":{
+				if(button.id == 6 || button.id == 7){
+					this.openPerspective("loading", null);
+					break;
+				}
+				return;
+			}
+			case "manage_account":{
+				switch(button.id){
+					case 0: case 1:{
+						this.openPerspective("transfer", null);
+						break;
+					}
+					case 2: case 3:{
+						this.openPerspective("deposit", null);
+						break;
+					}
+					case 4: case 5:{
+						this.openPerspective("withdraw", null);
+						break;
+					}
+					case 6: case 7:{
+						//this.openPerspective("//TODO", null);
+						break;
+					}
+				}
+				return;
+			}
+			case "transfer":{
+				if(!selectbox){
+					if(button.id == 2 || button.id == 3){
+						selectbox = true;
+						break;
+					}
+					if(button.id == 19){
+						input = 0;
+						lines[2] = Config.getWorthAsString(input, true, true);
+					}
+					if(button.id == 18 && rec_cat.length() > 0 && rec_id.length() > 0){
+						this.openPerspective("request_transfer", null);
+					}
+				}
+				//TODO
+				return;
+			}
+			case "deposit": case "withdraw":{
+				if(button.id == 6 || button.id == 7){
+					this.openPerspective("loading", null);
+				}
+				if(button.id >= 8 && button.id <= 17){
+					int i = button.id - 8;
+					input = (input * 10) + i;
+					lines[2] = Config.getWorthAsString(input, true, true);
+				}
+				if(button.id == 19){
+					input = 0;
+					lines[2] = Config.getWorthAsString(input, true, true);
+				}
+				if(button.id == 18){
+					this.openPerspective(window.equals("deposit") ? "request_deposit" : "request_withdraw", null);
+				}
+				return;
+			}
+			case "deposit_result":
+			case "withdraw_result":{
+				if(button.id == 6 || button.id == 7){
+					this.openPerspective("loading", null);
+				}
+				return;
+			}
 			default: return;
 		}
 	}
 	
-	public void openPerspective(String window){
+	public void openPerspective(String window, JsonObject obj){
 		this.window = window;
-		input = "";
-		hiddeninput = window.equals("password");
+		selectbox = false;
+		switch(window){
+			case "loading":{
+				lines[0] = "Loading....";
+				lines[1] = "Please wait.";
+				lines[2] = lines[3] = "";
+				rec_cat = rec_id = "";
+				sendRequest("main_data");
+				break;
+			}
+			case "main":{
+				lines[0] = Formatter.PARAGRAPH_SIGN + "8[" + obj.get("bank_name").getAsString() + "]";
+				lines[1] = Formatter.PARAGRAPH_SIGN + "2Welcome back " + player.getGameProfile().getName() + "!";
+				lines[2] = "Manage Account";
+				lines[3] = "View Balance";
+				break;
+			}
+			case "view_balance":{
+				lines[0] = "Getting balance data...";
+				lines[1] = "Please wait.";
+				lines[2] = lines[3] = "";
+				sendRequest("show_balance");
+				break;
+			}
+			case "show_balance":{
+				lines[0] = "Your current balance:";
+				lines[1] = Config.getWorthAsString(obj.get("balance").getAsLong());
+				lines[2] = "";
+				lines[3] = " << Return";
+				break;
+			}
+			case "manage_account":{
+				lines[0] = "Transfer";
+				lines[1] = "Deposit";
+				lines[2] = "Widthdraw";
+				lines[3] = " - - - ";
+				break;
+			}
+			case "transfer":{
+				input = 0;
+				lines[0] = Formatter.PARAGRAPH_SIGN + "2Receiver:";
+				lines[1] = rec_cat + ":" + rec_id;
+				lines[2] = Formatter.PARAGRAPH_SIGN + "9Amount:";
+				lines[3] = Config.getWorthAsString(input, true, true);
+				break;
+			}
+			case "deposit":
+			case "withdraw":{
+				input = 0;
+				lines[0] = Formatter.PARAGRAPH_SIGN + "2" + (window.equals("deposit") ? "Deposit" : "Withdraw");
+				lines[1] = Formatter.PARAGRAPH_SIGN + "9Amount:";
+				lines[2] = Config.getWorthAsString(input, true, true);
+				lines[3] = "<< Return";
+				break;
+			}
+			case "request_deposit":
+			case "request_withdraw":{
+				lines[0] = "Contacting Server...";
+				lines[1] = "Please wait.";
+				lines[2] = lines[3] = "";
+				if(input > 0){
+					sendRequest(window.equals("request_deposit") ? "deposit_result" : "withdraw_result", true, false);
+				}
+				break;
+			}
+			case "deposit_result":
+			case "withdraw_result":{
+				boolean success = obj.get("success").getAsBoolean();
+				boolean dep = window.equals("deposit_result");
+				lines[0] = (dep ? "Deposit" : "Withdraw") + (success ? " Processed." : " Failed!");
+				if(success){
+					lines[1] = "Amount:";
+					lines[2] = Config.getWorthAsString(input, true, true);
+				}
+				else{
+					lines[1] = lines[2] = "";
+				}
+				input = 0;
+				lines[3] = "<< Return";
+			}
+		}
+	}
+	
+	private static void sendRequest(String str){
+		sendRequest(str, false, false);
+	}
+	
+	private static void sendRequest(String str, boolean sinput, boolean srec){
+		JsonObject obj = new JsonObject();
+		obj.addProperty("target_listener", "fsmm:atm_gui");
+		obj.addProperty("request", str);
+		if(sinput){
+			obj.addProperty("input", instance.input);
+		}
+		if(srec){
+			obj.addProperty("receiver", instance.rec_cat + ":" + instance.rec_id);
+		}
+		PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
+	}
+	
+	public static class Receiver implements IPacketListener<PacketJsonObject> {
+
+		@Override
+		public String getId(){
+			return "fsmm:atm_gui";
+		}
+		
+		@Override
+		public void process(PacketJsonObject pkt, Object[] objs){
+			Print.debug(pkt.obj);
+			if(pkt.obj.has("payload")){
+				switch(pkt.obj.get("payload").getAsString()){
+					case "main_data":{
+						instance.openPerspective("main", pkt.obj);
+						break;
+					}
+					case "show_balance":{
+						instance.openPerspective("show_balance", pkt.obj);
+						break;
+					}
+					case "deposit_result":
+					case "withdraw_result":{
+						instance.openPerspective(pkt.obj.get("payload").getAsString(), pkt.obj);
+						break;
+					}
+				}
+			}
+		}
+		
 	}
 	
 }

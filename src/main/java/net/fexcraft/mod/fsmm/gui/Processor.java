@@ -1,30 +1,59 @@
 package net.fexcraft.mod.fsmm.gui;
 
-import java.util.UUID;
-
 import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.util.AccountManager;
-import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.packet.PacketJsonObject;
 import net.fexcraft.mod.lib.util.common.Print;
-import net.fexcraft.mod.lib.util.common.Static;
-import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Processor implements IPacketListener<PacketJsonObject> {
 
 	@Override
 	public String getId(){
-		return "fsmm_atm_gui";
+		return "fsmm:atm_gui";
 	}
 
 	@Override
 	public void process(PacketJsonObject pkt, Object[] objs){
-		try{
+		Print.debug(pkt.obj);
+		if(pkt.obj.has("request")){
+			EntityPlayerMP player = (EntityPlayerMP)objs[0];
+			Account playeracc = AccountManager.INSTANCE.getAccount("player", player.getGameProfile().getId().toString(), true);
+			JsonObject reply = new JsonObject();
+			switch(pkt.obj.get("request").getAsString()){
+				case "main_data":{
+					reply.addProperty("bank_id", playeracc.getBankId().toString());
+					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
+					reply.addProperty("bank_name", bank == null ? "Invalid Null Bank" : bank.getName());
+					break;
+				}
+				case "show_balance":{
+					reply.addProperty("balance", playeracc.getBalance());
+					break;
+				}
+				case "deposit_result":{
+					long input = pkt.obj.get("input").getAsLong();
+					if(input <= 0){ return; }
+					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
+					reply.addProperty("success", bank.processDeposit(player, playeracc, input));
+					break;
+				}
+				case "withdraw_result":{
+					long input = pkt.obj.get("input").getAsLong();
+					if(input <= 0){ return; }
+					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
+					reply.addProperty("success", bank.processWithdraw(player, playeracc, input));
+				}
+			}
+			reply.addProperty("payload", pkt.obj.get("request").getAsString());
+			reply.addProperty("target_listener", "fsmm:atm_gui");
+			PacketHandler.getInstance().sendTo(new PacketJsonObject(reply), player);
+		}
+		/*try{
 			if(Config.DEBUG){
 				Print.log("PKT R - Server: " + pkt.obj.toString());
 			}
@@ -97,7 +126,7 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 				Print.log("PKT S - Server: " + obj.toString());
 				ex.printStackTrace();
 			}
-		}
+		}*/
 	}
 	
 }

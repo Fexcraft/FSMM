@@ -10,7 +10,7 @@ public class NumberButton extends GuiButton {
 	private int number;
 	
 	public NumberButton(int id, int x, int y, int number){
-		super(id, x, y, number > 9 ? number == 12 ? 33 : 49 : 15, 15, "");
+		super(id, x, y, number > 9 ? number == 12 ? 32 : 49 : 15, 15, "");
 		this.number = number;
 	}
 	

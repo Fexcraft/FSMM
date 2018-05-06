@@ -6,19 +6,17 @@ import org.lwjgl.input.Keyboard;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.util.Config;
-import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.packet.PacketJsonObject;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiATM extends GuiScreen {
@@ -80,35 +78,6 @@ public class GuiATM extends GuiScreen {
 		return false;
 	}
 	
-	public static class Receiver implements IPacketListener<PacketJsonObject> {
-
-		@Override
-		public String getId(){
-			return pktlid;
-		}
-
-		@Override
-		public void process(PacketJsonObject pkt, Object[] objs){
-			if(Config.DEBUG){
-				Print.log("PKT R - Client: " + pkt.obj.toString());
-			}
-			boolean reopen = false;
-			if(pkt.obj.has("balance")){
-				balance = pkt.obj.get("balance").getAsLong();
-				reopen = true;
-			}
-			if(pkt.obj.has("log")){
-				log = pkt.obj.get("log").getAsString();
-				reopen = true;
-			}
-			if(reopen){
-				EntityPlayer player = Minecraft.getMinecraft().player;
-				player.openGui(FSMM.getInstance(), 1, player.world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ());
-			}
-		}
-		
-	}
-	
 	@Override
     public void initGui(){
 		super.initGui();
@@ -162,7 +131,7 @@ public class GuiATM extends GuiScreen {
 		if(reopen){
 			close();
 		}
-		if(Config.DEBUG){
+		if(Static.dev()){
 			Print.log("PKT S - Client: " + obj.toString());
 		}
 	}

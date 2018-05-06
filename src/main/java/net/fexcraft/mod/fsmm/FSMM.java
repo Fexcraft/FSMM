@@ -4,9 +4,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.Logger;
+
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
-import net.fexcraft.mod.fsmm.gui.GuiATM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
 import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
@@ -19,6 +20,7 @@ import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.mod.lib.perms.PermManager;
 import net.fexcraft.mod.lib.perms.PermissionNode;
+import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -45,6 +47,8 @@ public class FSMM {
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
+    
+    public static final Logger LOGGER = Print.getCustomLogger("fsmm", "transfers", "FSMM", null);
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
@@ -80,7 +84,7 @@ public class FSMM {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
     	if(event.getSide().isClient()){
-        	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new GuiATM.Receiver());
+        	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.JSON, Side.SERVER, new Processor());
     	CapabilityManager.INSTANCE.register(MoneyCapability.class, new MoneyCapabilityUtil.Storage(), new MoneyCapabilityUtil.Callable());
