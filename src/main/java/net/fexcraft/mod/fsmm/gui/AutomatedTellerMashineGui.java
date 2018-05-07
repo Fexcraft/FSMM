@@ -2,10 +2,14 @@ package net.fexcraft.mod.fsmm.gui;
 
 import java.io.IOException;
 
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.gui.buttons.NumberButton;
+import net.fexcraft.mod.fsmm.gui.buttons.SelectBoxField;
 import net.fexcraft.mod.fsmm.gui.buttons.SideButton;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
@@ -23,21 +27,24 @@ import net.minecraft.world.World;
 public class AutomatedTellerMashineGui extends GuiScreen {
 	
 	public static final ResourceLocation TEXTURE = new ResourceLocation("fsmm:textures/gui/atm_main.png");
+	public static final ResourceLocation SELECT_TEX = new ResourceLocation("fsmm:textures/gui/atm_select.png");
 	//
 	private int xhalf, yhalf;
 	private EntityPlayer player;
 	//private World world;
 	//private BlockPos tile;
-	private static AutomatedTellerMashineGui instance;
+	public static AutomatedTellerMashineGui instance;
 	//
 	private String[] lines = new String[]{ "", "", "", "" };
 	private String window, rec_cat = "", rec_id = "";
 	private long input = 0l;
 	private boolean selectbox;
+	private int scroll;
 	private JsonArray catlist, idlist;
 	//
 	private SideButton[] sidebuttons = new SideButton[8];
 	private NumberButton[] numberbuttons = new NumberButton[13];
+	private SelectBoxField[] fieldbuttons = new SelectBoxField[7];
 	
 	public AutomatedTellerMashineGui(EntityPlayer player, World world, int x, int y, int z){
 		this.player = player;
@@ -70,6 +77,9 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		buttonList.add(numberbuttons[10] = new NumberButton(18, xhalf + 57, yhalf + 111, 10));
 		buttonList.add(numberbuttons[11] = new NumberButton(19, xhalf + 57, yhalf + 128, 11));
 		buttonList.add(numberbuttons[12] = new NumberButton(20, xhalf + 74, yhalf + 145, 12));
+		for(int i = 0; i < 7; i++){
+			buttonList.add(fieldbuttons[i] = new SelectBoxField(21 + i, xhalf + 25, yhalf + 13));
+		}
 	}
 	
 	@Override
@@ -77,16 +87,48 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		this.drawDefaultBackground();
         this.mc.getTextureManager().bindTexture(TEXTURE);
         this.drawTexturedModalRect(xhalf, yhalf, 0, 0, 176, 166);
-        this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
         //
-        for(int i = 0; i < lines.length; i++){
-        	this.fontRenderer.drawString(lines[i], xhalf + 23, yhalf + 16 + (i * 23), MapColor.BLACK.colorValue);
+        for(SideButton button : sidebuttons){
+        	button.enabled = !selectbox;
         }
+        for(NumberButton button : numberbuttons){
+        	button.enabled = !selectbox;
+        }
+        for(int i = 0; i < fieldbuttons.length; i++){
+        	fieldbuttons[i].visible = selectbox;
+        	int j = i + scroll;
+        	if(rec_cat.equals("") && catlist != null && catlist.size() > 0 && idlist == null){
+        		fieldbuttons[i].displayString = j + "| " + (j >= catlist.size() ? "" : catlist.get(j).getAsString());
+        	}
+        	if(rec_id.equals("") && idlist != null && idlist.size() > 0){
+        		fieldbuttons[i].displayString = j + "| " + (j >= idlist.size() ? "" : idlist.get(j).getAsString());
+        	}
+        }
+        //
+        if(selectbox){
+        	this.mc.getTextureManager().bindTexture(SELECT_TEX);
+        	this.drawTexturedModalRect(xhalf + 20, yhalf + 8, 20, 8, 136, 92);
+        }
+        else{
+            for(int i = 0; i < lines.length; i++){
+            	int x = xhalf + 23, y = yhalf + 16 + (i * 23);
+            	if(fontRenderer.getStringWidth(lines[i]) > 130){
+            		GL11.glScaled(0.5, 0.5, 0.5);
+            		this.fontRenderer.drawSplitString(lines[i], x * 2, y * 2, 130, MapColor.CYAN.colorValue);
+            		GL11.glScaled(2.0, 2.0, 2.0);
+            	}
+            	else{
+            		this.fontRenderer.drawString(lines[i], x, y, MapColor.BLACK.colorValue);
+            	}
+            }
+        }
+        //
+        this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
 	}
 	
 	@Override
 	public boolean doesGuiPauseGame(){
-		return true;
+		return false;
 	}
 	
 	@Override
@@ -97,14 +139,32 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
-        /*if(keyCode == 1){
-            this.mc.displayGuiScreen((GuiScreen)null);
-            if(this.mc.currentScreen == null){
-                this.mc.setIngameFocus();
-            }
-        }*/
-		super.keyTyped(typedChar, keyCode);
+        if(keyCode == 1){
+        	if(selectbox){
+        		selectbox = false;
+				rec_cat = rec_id = "";
+				catlist = idlist = null;
+        	}
+        	else{
+                this.mc.displayGuiScreen((GuiScreen)null);
+                if(this.mc.currentScreen == null){
+                    this.mc.setIngameFocus();
+                }
+        	}
+            return;
+        }
+        super.keyTyped(typedChar, keyCode);
     }
+	
+	@Override
+	public void handleMouseInput() throws IOException{
+		super.handleMouseInput();
+		if(!window.equals("transfer") && !selectbox){ return; }
+		int e = Mouse.getEventDWheel();
+		if(e == 0){ return; }
+		scroll += e > 0 ? -7 : 7;;
+		scroll = scroll <= 0 ? 0 : scroll;
+	}
 	
 	@Override
     protected void actionPerformed(GuiButton button){
@@ -159,17 +219,57 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				if(!selectbox){
 					if(button.id == 2 || button.id == 3){
 						selectbox = true;
+						rec_cat = rec_id = "";
+						for(SelectBoxField sbfbutton : fieldbuttons){
+							sbfbutton.displayString = "loading...";
+						}
+						JsonObject obj = new JsonObject();
+						obj.addProperty("target_listener", "fsmm:atm_gui");
+						obj.addProperty("request", "account_types");
+						PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
 						break;
+					}
+					if(button.id >= 8 && button.id <= 17){
+						int i = button.id - 8;
+						input = (input * 10) + i;
+						lines[3] = Config.getWorthAsString(input, true, true);
 					}
 					if(button.id == 19){
 						input = 0;
-						lines[2] = Config.getWorthAsString(input, true, true);
+						lines[3] = Config.getWorthAsString(input, true, true);
 					}
 					if(button.id == 18 && rec_cat.length() > 0 && rec_id.length() > 0){
 						this.openPerspective("request_transfer", null);
 					}
 				}
-				//TODO
+				else{
+					if(button.id >= 21){
+						int i = (button.id - 21) + scroll;
+						if(rec_cat.equals("")){
+							String sel = i >= catlist.size() ? "" : catlist.get(i).getAsString();
+							if(sel != null && !sel.equals("")){
+								rec_cat = sel;
+								JsonObject obj = new JsonObject();
+								obj.addProperty("target_listener", "fsmm:atm_gui");
+								obj.addProperty("request", "accounts_of_type");
+								obj.addProperty("type", rec_cat);
+								PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
+								for(SelectBoxField sbfbutton : fieldbuttons){
+									sbfbutton.displayString = "loading...";
+								}
+							}
+						}
+						else if(rec_id.equals("")){
+							String sel = i >= idlist.size() ? "" : idlist.get(i).getAsString();
+							if(sel != null && !sel.equals("")){
+								rec_id = sel;
+								selectbox = false;
+								catlist = null; idlist = null;
+								lines[1] = rec_cat + ":" + rec_id;
+							}
+						}
+					}
+				}
 				return;
 			}
 			case "deposit": case "withdraw":{
@@ -282,6 +382,30 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				}
 				input = 0;
 				lines[3] = "<< Return";
+				break;
+			}
+			case "request_transfer":{
+				lines[0] = "Contacting Server...";
+				lines[1] = "Please wait.";
+				lines[2] = lines[3] = "";
+				if(input > 0){
+					sendRequest("transfer_result", true, true);
+				}
+				break;
+			}
+			case "transfer_result":{
+				boolean success = obj.get("success").getAsBoolean();
+				lines[0] = "Transfer " + (success ? " Processed." : "Failed!");
+				if(success){
+					lines[1] = "Amount:";
+					lines[2] = Config.getWorthAsString(input, true, true);
+					lines[3] = obj.get("receiver").getAsString();
+				}
+				else{
+					lines[1] = lines[2] = lines[3] = "";
+				}
+				input = 0;
+				break;
 			}
 		}
 	}
@@ -325,6 +449,18 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 					}
 					case "deposit_result":
 					case "withdraw_result":{
+						instance.openPerspective(pkt.obj.get("payload").getAsString(), pkt.obj);
+						break;
+					}
+					case "account_types":{
+						instance.catlist = pkt.obj.get("types").getAsJsonArray();
+						break;
+					}
+					case "accounts_of_type":{
+						instance.idlist = pkt.obj.get("accounts").getAsJsonArray();
+						break;
+					}
+					case "transfer_result":{
 						instance.openPerspective(pkt.obj.get("payload").getAsString(), pkt.obj);
 						break;
 					}
