@@ -52,9 +52,10 @@ public class EventHandler {
     public void onItemTooltip(ItemTooltipEvent event){
     	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP){ return; }
     	if(event.getItemStack().hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
-    		String str = "&9" + Config.getWorthAsString(event.getItemStack().getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth());
+    		long worth = event.getItemStack().getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth();
+    		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
     		if(event.getItemStack().getCount() > 1){
-    			str += " &8(&7" + Config.getWorthAsString(event.getItemStack().getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() * event.getItemStack().getCount()) + "&8)";
+    			str += " &8(&7" + Config.getWorthAsString(worth * event.getItemStack().getCount(), true, worth < 10) + "&8)";
     		}
     		event.getToolTip().add(Formatter.format(str));
     	}

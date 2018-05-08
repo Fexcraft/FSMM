@@ -81,7 +81,7 @@ public class Config {
 		//
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		//
-		File file = new File(event.getSuggestedConfigurationFile().getParentFile(), "/fsmm/configuration.json");
+		File file = new File(CONFIG_PATH, "/fsmm/configuration.json");
 		if(!file.exists()){
 			JsonUtil.write(file, getDefaultContent());
 		}
@@ -89,10 +89,11 @@ public class Config {
 		if(obj.has("Items")){
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				GenericMoney money = null;
-				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject()));
+				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
 				RegistryUtil.get("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
 			});
 		}
+		//
 		if(obj.has("Banks")){
 			obj.get("Banks").getAsJsonArray().forEach((elm) -> {
 				UUID uuid = UUID.fromString(elm.getAsJsonObject().get("uuid").getAsString());
@@ -121,7 +122,7 @@ public class Config {
 					EXTERNAL_ITEMS.put(rs, worth);
 				}
 				if(jsn.has("register") && jsn.get("register").getAsBoolean()){
-					FSMM.CURRENCY.register(new GenericMoney(jsn));
+					FSMM.CURRENCY.register(new GenericMoney(jsn, false));
 				}
 			});
 		}

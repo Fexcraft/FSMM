@@ -329,7 +329,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			}
 			case "show_balance":{
 				lines[0] = "Your current balance:";
-				lines[1] = Config.getWorthAsString(obj.get("balance").getAsLong());
+				lines[1] = Config.getWorthAsString(obj.get("balance").getAsLong(), true, true);
 				lines[2] = "";
 				lines[3] = " << Return";
 				break;

@@ -39,7 +39,9 @@ public class ItemManager {
 			if(stack == null || stack.isEmpty()){
 				i++;
 			}
-			else if(stack.hasCapability(MoneyCapabilityUtil.CAPABILITY, null) && countMoneyItemAsSpace){
+			else if(stack.hasCapability(MoneyCapabilityUtil.CAPABILITY, null)
+				&& stack.getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() > 0
+				&& countMoneyItemAsSpace){
 				i++;
 			}
 			else{
@@ -63,7 +65,8 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
+			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)
+				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() > 0){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
@@ -75,15 +78,17 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
+			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)
+				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() > 0){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
 		List<Money> list = FSMM.getSortedMoneyList();
 		Money money = null;
 		for(int i = 0; i < list.size(); i++){
+			Print.debug(list.get(i).getWorth(), list.get(i).getRegistryName());
 			while(amount - (money = list.get(i)).getWorth() >= 0){
-				ItemStack stack = new ItemStack(RegistryUtil.getItem(money.getRegistryName()), 1, money.getItemMeta());
+				ItemStack stack = new ItemStack(money.getItem() == null ? RegistryUtil.getItem(money.getRegistryName()) : money.getItem(), 1, money.getItemMeta());
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
 				}
