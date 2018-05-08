@@ -15,6 +15,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventHandler {
 	
@@ -48,9 +50,9 @@ public class EventHandler {
     	AccountManager.INSTANCE.saveAll();
     }
     
-    @SubscribeEvent
+    @SideOnly(Side.CLIENT) @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event){
-    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP){ return; }
+    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP || MoneyCapabilityUtil.CAPABILITY == null){ return; }
     	if(event.getItemStack().hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
     		long worth = event.getItemStack().getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth();
     		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);

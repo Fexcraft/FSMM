@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyItem;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
@@ -20,10 +21,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class Config {
 	
@@ -105,6 +108,14 @@ public class Config {
 				}
 			});
 		}
+	}
+
+	public static void checkForExternalItems(IForgeRegistry<Money> registry){
+		File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
+		if(!file.exists()){
+			return;
+		}
+		JsonObject obj = JsonUtil.get(file);
 		if(obj.has("ExternalItems")){
 			obj.get("ExternalItems").getAsJsonArray().forEach(elm -> {
 				JsonObject jsn = elm.getAsJsonObject();
@@ -122,7 +133,7 @@ public class Config {
 					EXTERNAL_ITEMS.put(rs, worth);
 				}
 				if(jsn.has("register") && jsn.get("register").getAsBoolean()){
-					FSMM.CURRENCY.register(new GenericMoney(jsn, false));
+					registry.register(new GenericMoney(jsn, false));
 				}
 			});
 		}
@@ -172,10 +183,17 @@ public class Config {
 	}
 	
 	private static class EventHandler {
+		
 		@SubscribeEvent
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event){
 			if(event.getModID().equals("fsmm")){ refresh(); if(config.hasChanged()){ config.save(); }}
 		}
+		
+	    @SubscribeEvent
+	    public void onRegistry(RegistryEvent.Register<Money> event){
+			Config.checkForExternalItems(event.getRegistry());
+	    }
+	    
 	}
 
 	public static final Configuration getConfig(){

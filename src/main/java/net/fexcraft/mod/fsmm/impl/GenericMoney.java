@@ -32,6 +32,9 @@ public class GenericMoney implements Money {
 		}
 		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
 		meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
+		if(meta >= 0 && !internal){
+			regname = new ResourceLocation(regname.toString() + "_" + meta);
+		}
 	}
 
 	@Override

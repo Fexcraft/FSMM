@@ -77,8 +77,8 @@ public class FSMM {
 	@Mod.EventHandler
     public void init(FMLInitializationEvent event){
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		UpdateHandler.initialize();
+		MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     @Mod.EventHandler

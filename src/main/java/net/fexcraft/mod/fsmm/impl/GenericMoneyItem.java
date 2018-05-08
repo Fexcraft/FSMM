@@ -27,9 +27,4 @@ public class GenericMoneyItem extends Item implements MoneyItem {
 		return type.getWorth();
 	}
 	
-	/*@SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag){
-		tooltip.add(Formatter.format("&9Worth&0: &a" + Config.getWorthAsString(type.getWorth())));
-    }*/
-	
 }
