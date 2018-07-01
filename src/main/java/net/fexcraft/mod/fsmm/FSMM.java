@@ -18,8 +18,6 @@ import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.PacketHandler.PacketHandlerType;
-import net.fexcraft.mod.lib.perms.PermManager;
-import net.fexcraft.mod.lib.perms.PermissionNode;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.creativetab.CreativeTabs;
@@ -36,6 +34,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.server.permission.DefaultPermissionLevel;
+import net.minecraftforge.server.permission.PermissionAPI;
 
 @Mod(modid = FSMM.MODID, name = "Fex's Small Money Mod", version = FSMM.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*",
 		updateJSON = "http://fexcraft.net/minecraft/fcl/request?mode=getForgeUpdateJson&modid=fsmm", dependencies = "required-after:fcl", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
@@ -43,7 +43,7 @@ public class FSMM {
 
 	public static IForgeRegistry<Money> CURRENCY;
 	public static final String MODID = "fsmm";
-	public static final String VERSION = "2.1.1";
+	public static final String VERSION = "@VERSION@";
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
@@ -58,8 +58,6 @@ public class FSMM {
 		accman.initialize(event.getModConfigurationDirectory());
 		RegistryUtil.newAutoRegistry("fsmm");
 		Config.initialize(event);
-		//
-		PermManager.add("fsmm.admin", PermissionNode.Type.BOOLEAN, false, true);
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -79,6 +77,7 @@ public class FSMM {
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 		UpdateHandler.initialize();
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
+		PermissionAPI.registerNode("fsmm.admin", DefaultPermissionLevel.OP, "FSMM Admin Permission");
     }
 
     @Mod.EventHandler

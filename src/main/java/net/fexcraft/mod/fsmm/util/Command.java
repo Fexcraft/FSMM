@@ -3,7 +3,6 @@ package net.fexcraft.mod.fsmm.util;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.lib.perms.PermManager;
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.common.Static;
@@ -13,6 +12,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.server.permission.PermissionAPI;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -68,7 +69,7 @@ public class Command extends CommandBase{
     		}
     		return;
     	}
-    	boolean op = isp ? server.isSinglePlayer() ? true : Static.isOp(sender.getName()) || PermManager.getPlayerPerms((EntityPlayer)sender).hasPermission("fsmm.admin") : true;
+    	boolean op = isp ? server.isSinglePlayer() ? true : PermissionAPI.hasPermission((EntityPlayer)sender, "fsmm.admin") : true;
     	switch(args[0]){
 	    	case "help":{
 	        	Print.chat(sender, PREFIX + "= = = = = = = = = = =");
