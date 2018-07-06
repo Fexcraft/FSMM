@@ -65,7 +65,7 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onAttackCapabilities(AttachCapabilitiesEvent<ItemStack> event){
-    	if(event.getObject().getItem() instanceof MoneyItem || Config.containsAsExternalItemStack(event.getObject())){
+    	if(MoneyCapabilityUtil.CAPABILITY != null && (event.getObject().getItem() instanceof MoneyItem || Config.containsAsExternalItemStack(event.getObject()))){
     		event.addCapability(MoneyCapability.REGISTRY_NAME, new MoneyCapabilityUtil(event.getObject()));
     	}
     }

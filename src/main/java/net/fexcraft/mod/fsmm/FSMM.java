@@ -52,6 +52,7 @@ public class FSMM {
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
+    	CapabilityManager.INSTANCE.register(MoneyCapability.class, new MoneyCapabilityUtil.Storage(), new MoneyCapabilityUtil.Callable());
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
 		AccountManager accman = new AccountManager();
@@ -86,13 +87,13 @@ public class FSMM {
         	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.JSON, Side.SERVER, new Processor());
-    	CapabilityManager.INSTANCE.register(MoneyCapability.class, new MoneyCapabilityUtil.Storage(), new MoneyCapabilityUtil.Callable());
     }
     
     public static FSMM getInstance(){
     	return INSTANCE;
     }
 	
+	@SuppressWarnings("deprecation")
 	public static List<Money> getSortedMoneyList(){
 		return CURRENCY.getValues().stream().sorted(new Comparator<Money>(){
 			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
