@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.api.Account;
@@ -21,7 +19,8 @@ import net.fexcraft.mod.lib.util.json.JsonUtil;
 public class AccountManager{
 	
 	/** &lt; Type, Id, Account &gt; */
-	private final Table<String, String, Account> ACCOUNTS = TreeBasedTable.create();
+	//private final Table<String, String, Account> ACCOUNTS = TreeBasedTable.create();
+	private final TreeMap<String, TreeMap<String, Account>> ACCOUNTS = new TreeMap<>();
 	private final TreeMap<UUID, Bank> BANKS = new TreeMap<UUID, Bank>();
 	private final List<String> LOADED_TYPES = new ArrayList<String>();
 	//
@@ -46,9 +45,16 @@ public class AccountManager{
 	
 	//ACCOUNTS
 	
+	private void putAccount(String type, String id, Account account){
+		if(!ACCOUNTS.containsKey(type)){
+			ACCOUNTS.put(type, new TreeMap<>());
+		}
+		ACCOUNTS.get(type).put(id, account);
+	}
+	
 	public Account loadAccount(String type, String id, Class<? extends Account> clazz){
-		if(ACCOUNTS.contains(type, id)){
-			return ACCOUNTS.get(type, id);
+		if(ACCOUNTS.containsKey(type) && ACCOUNTS.get(type).containsKey(id)){
+			return ACCOUNTS.get(type).get(id);
 		}
 		File file = new File(ACCOUNT_SAVE_DIRECTORY, type + "/" + id + ".json");
 		if(!file.exists()){
@@ -63,7 +69,7 @@ public class AccountManager{
 			e.printStackTrace();
 			//This shouldn't happen unless someone passes an invalid class to construct.
 		}
-		ACCOUNTS.put(type, id, account);
+		putAccount(type, id, account);
 		return account;
 	}
 
@@ -97,7 +103,7 @@ public class AccountManager{
 			e.printStackTrace();
 			//This shouldn't happen unless someone passes an invalid class to construct.
 		}
-		ACCOUNTS.put(type, id, account);
+		putAccount(type, id, account);
 		saveAccount(account);
 		if(!LOADED_TYPES.contains(type)){
 			LOADED_TYPES.add(type);
@@ -138,11 +144,11 @@ public class AccountManager{
 	}
 	
 	public Account getAccount(String type, String id, boolean create, Class<? extends Account> clazz){
-		Account account = ACCOUNTS.get(type, id);
+		Account account = ACCOUNTS.containsKey(type) ? ACCOUNTS.get(type).get(id) : null;
 		return account == null ? create ? loadAccount(type, id, clazz == null ? GenericAccount.class : clazz) : null : account;
 	}
 	
-	public Table<String, String, Account> getAccounts(){
+	public TreeMap<String, TreeMap<String, Account>> getAccounts(){
 		return ACCOUNTS;
 	}
 	
@@ -233,25 +239,25 @@ public class AccountManager{
 		return LOADED_TYPES;
 	}
 	
-	public final void saveAll(){
+	public static final void saveAll(){
 		saveAccounts();
 		saveBanks();
 	}
 
-	public final void saveAccounts(){
-		AccountManager.INSTANCE.getAccounts().rowMap().forEach((str, map) -> {
-    		map.forEach((key, val) -> {
-        		Print.debug("Saving... ( " + str + " || " + key + " );");
-    			AccountManager.INSTANCE.saveAccount(val);
-    		});
-    	});
+	public static final void saveAccounts(){
+		INSTANCE.getAccounts().forEach((key, value) -> {
+			value.forEach((id, account) -> {
+        		Print.debug("Saving... ( " + key + " || " + id + " );");
+        		INSTANCE.saveAccount(account);
+			});
+		});
 	}
 
-	public final void saveBanks(){
-    	AccountManager.INSTANCE.getBanks().forEach((key, val) -> {
+	public static final void saveBanks(){
+		INSTANCE.getBanks().forEach((key, value) -> {
     		Print.debug("Saving... ( bank || " + key.toString() + " );");
-    		AccountManager.INSTANCE.saveBank(val);
-    	});
+    		INSTANCE.saveBank(value);
+		});
 	}
 	
 }

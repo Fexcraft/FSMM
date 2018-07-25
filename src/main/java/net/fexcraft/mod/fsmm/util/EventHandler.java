@@ -42,12 +42,12 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onWorldSave(WorldEvent.Unload event){
-    	AccountManager.INSTANCE.saveAll();
+    	AccountManager.saveAll();
     }
     
     @Mod.EventHandler
     public static void onShutdown(FMLServerStoppingEvent event){
-    	AccountManager.INSTANCE.saveAll();
+    	AccountManager.saveAll();
     }
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
