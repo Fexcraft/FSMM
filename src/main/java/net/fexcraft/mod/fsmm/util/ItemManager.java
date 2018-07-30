@@ -5,10 +5,8 @@ import java.util.List;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
-import net.fexcraft.mod.fsmm.api.MoneyItem;
-import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.lib.util.common.Print;
-import net.fexcraft.mod.lib.util.registry.RegistryUtil;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,14 +14,18 @@ import net.minecraft.util.NonNullList;
 
 public class ItemManager {
 	
+	public static long countInInventory(ICommandSender sender){
+		return sender instanceof EntityPlayer ? countInInventory((EntityPlayer)sender) : -1;
+	}
+	
 	public static long countInInventory(EntityPlayer player){
 		long value = 0l;
 		NonNullList<ItemStack> is = player.inventory.mainInventory;
 		ItemStack stack = null;
 		for(int in = 0; in < player.inventory.mainInventory.size(); in++){
-			if(!(stack = is.get(in)).isEmpty() && stack.hasCapability(MoneyCapabilityUtil.CAPABILITY, null)){
-				MoneyCapability cap = stack.getCapability(MoneyCapabilityUtil.CAPABILITY, null);
-				Print.debug(stack.toString(), stack.getItem() instanceof MoneyItem ? ((MoneyItem)stack.getItem()).getMoneyType().toString() : "not internal money item");
+			if(!(stack = is.get(in)).isEmpty() && stack.hasCapability(MoneyCapability.CAPABILITY, null)){
+				MoneyCapability cap = stack.getCapability(MoneyCapability.CAPABILITY, null);
+				Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
 				value += cap.getWorth() * is.get(in).getCount();
 			}
 		}
@@ -39,8 +41,8 @@ public class ItemManager {
 			if(stack == null || stack.isEmpty()){
 				i++;
 			}
-			else if(stack.hasCapability(MoneyCapabilityUtil.CAPABILITY, null)
-				&& stack.getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() > 0
+			else if(stack.hasCapability(MoneyCapability.CAPABILITY, null)
+				&& stack.getCapability(MoneyCapability.CAPABILITY, null).getWorth() > 0
 				&& countMoneyItemAsSpace){
 				i++;
 			}
@@ -65,8 +67,8 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)
-				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() > 0){
+			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapability.CAPABILITY, null)
+				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapability.CAPABILITY, null).getWorth() > 0){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
@@ -78,8 +80,8 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapabilityUtil.CAPABILITY, null)
-				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapabilityUtil.CAPABILITY, null).getWorth() > 0){
+			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapability.CAPABILITY, null)
+				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapability.CAPABILITY, null).getWorth() > 0){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
@@ -88,7 +90,7 @@ public class ItemManager {
 		for(int i = 0; i < list.size(); i++){
 			Print.debug(list.get(i).getWorth(), list.get(i).getRegistryName());
 			while(amount - (money = list.get(i)).getWorth() >= 0){
-				ItemStack stack = new ItemStack(money.getItem() == null ? RegistryUtil.getItem(money.getRegistryName()) : money.getItem(), 1, money.getItemMeta());
+				ItemStack stack = money.getItemStack().copy();
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
 				}

@@ -57,11 +57,11 @@ public class Command extends CommandBase{
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
-    			Account account = AccountManager.INSTANCE.getAccount("player", ((EntityPlayer)sender).getGameProfile().getId().toString(), true);
+    			Account account = DataManager.getAccount("player:" + ((EntityPlayer)sender).getGameProfile().getId().toString(), true, false);
     			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(account.getBalance()));
     		}
-    		else if(AccountManager.INSTANCE.getBank(Config.DEFAULT_BANK) != null){
-    			Bank bank = AccountManager.INSTANCE.getBank(Config.DEFAULT_BANK);
+    		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
+    			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);
     			Print.chat(sender, "&9Default Bank Balance&0: &a" + Config.getWorthAsString(bank.getBalance()));
     		}
     		else{
@@ -126,18 +126,18 @@ public class Command extends CommandBase{
 				rs = new UCResourceLocation(rs.getResourceDomain(), uuid.toString());
 			}
 		}
-		Account account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath());
+		Account account = DataManager.getAccount(rs.toString(), false, false);
 		boolean loaded = account != null;
 		if(!loaded){
-			account = AccountManager.INSTANCE.getAccount(rs.getResourceDomain(), rs.getResourcePath(), true);
+			account = DataManager.getAccount(rs.toString(), true, false);
 		}
 		if(account == null){
 			Print.chat(sender, "ACC:NULL:ERR");
 		}
-		account.modifyBalance("set", Long.parseLong(args[2]), sender);
+		account.setBalance(Long.parseLong(args[2]));
 		Print.chat(sender, "&9New Balance&0: &7" + Config.getWorthAsString(account.getBalance()));
 		if(!loaded){
-			AccountManager.INSTANCE.unloadAccount(account);
+			DataManager.unloadAccount(account);
 		}
 	}
 

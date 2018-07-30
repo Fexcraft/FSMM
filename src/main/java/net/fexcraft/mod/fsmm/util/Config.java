@@ -4,16 +4,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.UUID;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.MoneyItem;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
+import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.item.ItemStack;
@@ -32,7 +30,7 @@ public class Config {
 	
 	public static File CONFIG_PATH;
 	public static long STARTING_BALANCE;
-	public static UUID DEFAULT_BANK;
+	public static String DEFAULT_BANK;
 	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
 	public static String CURRENCY_SIGN;
@@ -97,14 +95,14 @@ public class Config {
 			});
 		}
 		//
-		if(obj.has("Banks")){
+		if(obj.has("Banks") && ((file = new File(event.getModConfigurationDirectory(), "/fsmm/banks/")).exists() ? file.listFiles().length <= 0 : true)){
 			obj.get("Banks").getAsJsonArray().forEach((elm) -> {
-				UUID uuid = UUID.fromString(elm.getAsJsonObject().get("uuid").getAsString());
-				if(!AccountManager.INSTANCE.getBanks().containsKey(uuid)){
-					AccountManager.INSTANCE.getBanks().put(uuid, new GenericBank(uuid, elm.getAsJsonObject()));
+				String uuid = elm.getAsJsonObject().get("uuid").getAsString();
+				if(DataManager.getBanks().containsKey(uuid)){
+					DataManager.addBank(new GenericBank(elm.getAsJsonObject()));
 				}
 				else{
-					//TODO
+					Print.log("Tried to load bank with ID '" + uuid + "' from config, but there is already a bank with that ID loaded!");
 				}
 			});
 		}
@@ -152,7 +150,7 @@ public class Config {
 		//
 		JsonArray banks = new JsonArray();
 		JsonObject def = new JsonObject();
-		def.addProperty("uuid", DEFAULT_BANK.toString());
+		def.addProperty("uuid", DEFAULT_BANK);
 		def.addProperty("name", "Default Server Bank");
 		def.add("data", new JsonObject());
 		banks.add(def);
@@ -171,7 +169,7 @@ public class Config {
 	
 	public static void refresh(){
 		STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
-		DEFAULT_BANK = UUID.fromString(config.getString("default_bank", "General", "00000000-0000-0000-0000-000000000000", "Default Bank the player will have an account in.\nMust be an valid UUID!"));
+		DEFAULT_BANK = config.getString("default_bank", "General", "00000000", "Default Bank the player will have an account in.!");
 		NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
 		CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
 		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' dispplay.");
@@ -241,8 +239,8 @@ public class Config {
 	}
 
 	public static final long getItemStackWorth(ItemStack stack){
-		if(stack.getItem() instanceof MoneyItem){
-			return ((MoneyItem)stack.getItem()).getWorth(stack);
+		if(stack.getItem() instanceof Money.Item){
+			return ((Money.Item)stack.getItem()).getWorth(stack);
 		}
 		if(EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage())){
 			return EXTERNAL_ITEMS_METAWORTH.get(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
