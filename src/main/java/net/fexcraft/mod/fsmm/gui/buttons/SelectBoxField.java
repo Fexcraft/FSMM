@@ -24,9 +24,9 @@ public class SelectBoxField extends GuiButton {
         if(mc.fontRenderer.getStringWidth(displayString) > 110){
         	GL11.glScaled(0.5, 0.5, 0.5);
         	String[] str = displayString.split(" ");
-        	mc.fontRenderer.drawString(str[0], (x + 3) * 2, (y + 1) * 2, MapColor.CYAN.colorValue);
+        	mc.fontRenderer.drawString(str[0], (x + 3) * 2, (y + 1) * 2, MapColor.SNOW.colorValue);
         	if(str.length > 1){
-            	mc.fontRenderer.drawString(str[1], (x + 3) * 2, (y + 5) * 2, MapColor.CYAN.colorValue);
+            	mc.fontRenderer.drawString(str[1], (x + 3) * 2, (y + 5) * 2, MapColor.SNOW.colorValue);
         	}
         	GL11.glScaled(2.0, 2.0, 2.0);
         }

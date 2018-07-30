@@ -2,18 +2,21 @@ package net.fexcraft.mod.fsmm;
  
 import java.util.Comparator;
 import java.util.List;
+import java.util.Timer;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
+import net.fexcraft.mod.fsmm.api.WorldCapability;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
 import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
+import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.EventHandler;
-import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.fexcraft.mod.lib.network.PacketHandler;
@@ -30,6 +33,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -47,18 +51,17 @@ public class FSMM {
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
-    
+    public static DataManager CACHE;
     public static final Logger LOGGER = Print.getCustomLogger("fsmm", "transfers", "FSMM", null);
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
     	CapabilityManager.INSTANCE.register(MoneyCapability.class, new MoneyCapabilityUtil.Storage(), new MoneyCapabilityUtil.Callable());
+    	CapabilityManager.INSTANCE.register(WorldCapability.class, new WorldCapabilityUtil.Storage(), new WorldCapabilityUtil.Callable());
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
-		AccountManager accman = new AccountManager();
-		accman.initialize(event.getModConfigurationDirectory());
-		RegistryUtil.newAutoRegistry("fsmm");
-		Config.initialize(event);
+		RegistryUtil.newAutoRegistry("fsmm"); Config.initialize(event);
+		CACHE = new DataManager(event.getModConfigurationDirectory(), new Timer());
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -69,8 +72,13 @@ public class FSMM {
 	};
 	
 	@Mod.EventHandler
-	public void serverLoad(FMLServerStartingEvent event){
+	public void serverStarting(FMLServerStartingEvent event){
 		event.registerServerCommand(new Command());
+	}
+	
+	@Mod.EventHandler
+	public void serverStopping(FMLServerStoppingEvent event){
+		DataManager.saveAll();
 	}
 	
 	@Mod.EventHandler
@@ -87,6 +95,7 @@ public class FSMM {
         	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.JSON, Side.SERVER, new Processor());
+    	CACHE.schedule();
     }
     
     public static FSMM getInstance(){

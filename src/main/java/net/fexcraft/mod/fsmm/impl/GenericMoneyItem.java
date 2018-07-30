@@ -2,11 +2,10 @@ package net.fexcraft.mod.fsmm.impl;
 
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.MoneyItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class GenericMoneyItem extends Item implements MoneyItem {
+public class GenericMoneyItem extends Item implements Money.Item {
 	
 	private final Money type;
 	
@@ -18,13 +17,13 @@ public class GenericMoneyItem extends Item implements MoneyItem {
 	}
 
 	@Override
-	public Money getMoneyType(){
+	public Money getType(){
 		return type;
 	}
 
 	@Override
 	public long getWorth(ItemStack stack){
-		return type.getWorth();
+		return type.getWorth() * stack.getCount();
 	}
 	
 }

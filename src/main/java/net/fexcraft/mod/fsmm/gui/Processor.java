@@ -6,7 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.util.AccountManager;
+import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.packet.PacketJsonObject;
@@ -25,12 +25,12 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 		Print.debug(pkt.obj);
 		if(pkt.obj.has("request")){
 			EntityPlayerMP player = (EntityPlayerMP)objs[0];
-			Account playeracc = AccountManager.INSTANCE.getAccount("player", player.getGameProfile().getId().toString(), true);
+			Account playeracc = DataManager.getAccount("player:" + player.getGameProfile().getId().toString(), false, false, null);
 			JsonObject reply = new JsonObject();
 			switch(pkt.obj.get("request").getAsString()){
 				case "main_data":{
 					reply.addProperty("bank_id", playeracc.getBankId().toString());
-					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
+					Bank bank = DataManager.getBank(playeracc.getBankId(), true, true);
 					reply.addProperty("bank_name", bank == null ? "Invalid Null Bank" : bank.getName());
 					break;
 				}
@@ -41,20 +41,20 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 				case "deposit_result":{
 					long input = pkt.obj.get("input").getAsLong();
 					if(input <= 0){ return; }
-					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
-					reply.addProperty("success", bank.processDeposit(player, playeracc, input));
+					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
+					reply.addProperty("success", bank.processAction(Bank.Action.DEPOSIT, player, null, input, playeracc));
 					break;
 				}
 				case "withdraw_result":{
 					long input = pkt.obj.get("input").getAsLong();
 					if(input <= 0){ return; }
-					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
-					reply.addProperty("success", bank.processWithdraw(player, playeracc, input));
+					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
+					reply.addProperty("success", bank.processAction(Bank.Action.WITHDRAW, player, playeracc, input, null));
 					break;
 				}
 				case "account_types":{
 					JsonArray types = new JsonArray();
-					for(File fl : AccountManager.ACCOUNT_SAVE_DIRECTORY.listFiles()){
+					for(File fl : DataManager.ACCOUNT_DIR.listFiles()){
 						if(fl.isDirectory() && !fl.isHidden()){
 							types.add(fl.getName());
 						}
@@ -66,7 +66,7 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 					break;
 				}
 				case "accounts_of_type":{
-					File file = new File(AccountManager.ACCOUNT_SAVE_DIRECTORY, pkt.obj.get("type").getAsString() + "/");
+					File file = new File(DataManager.ACCOUNT_DIR, pkt.obj.get("type").getAsString() + "/");
 					JsonArray accounts = new JsonArray();
 					if(file.exists() && file.isDirectory()){
 						for(File fl : file.listFiles()){
@@ -87,14 +87,14 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 				case "transfer_result":{
 					long input = pkt.obj.get("input").getAsLong();
 					if(input <= 0){ return; }
-					Bank bank = AccountManager.INSTANCE.getBank(playeracc.getBankId());
+					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
 					String[] str = pkt.obj.get("receiver").getAsString().split(":");
-					Account receiver = AccountManager.INSTANCE.getAccount(str[0], str[1], true);
+					Account receiver = DataManager.getAccount(str[0] + ":" + str[1], true, false);
 					if(receiver == null){
 						Print.chat(player, "Error loading Receiver account.");
 						return;
 					}
-					reply.addProperty("success", bank.processTransfer(player, playeracc, input, receiver));
+					reply.addProperty("success", bank.processAction(Bank.Action.TRANSFER, player, playeracc, input, receiver));
 					reply.addProperty("receiver", receiver.getAsResourceLocation().toString());
 					break;
 				}

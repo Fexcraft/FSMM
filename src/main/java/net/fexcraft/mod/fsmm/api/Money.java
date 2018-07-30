@@ -1,18 +1,22 @@
 package net.fexcraft.mod.fsmm.api;
 
-import javax.annotation.Nullable;
-
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public interface Money extends IForgeRegistryEntry<Money> {
 
 	public long getWorth();
 	
-	public boolean hasItemMeta();
+	public ItemStack getItemStack();
 	
-	public int getItemMeta();
+	//
 	
-	public @Nullable Item getItem();
+	public static interface Item {
+		
+		public Money getType();
+		
+		public long getWorth(ItemStack stack);
+		
+	}
 
 }
