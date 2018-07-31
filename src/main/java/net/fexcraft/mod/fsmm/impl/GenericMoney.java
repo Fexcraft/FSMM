@@ -17,41 +17,41 @@ import net.minecraft.util.ResourceLocation;
 public class GenericMoney implements Money {
 	
 	private ResourceLocation regname;
-	private long worth;
 	private ItemStack stack;
+	private long worth;
 	
 	public GenericMoney(JsonObject obj, boolean internal){
-		net.minecraft.item.Item item = null; int meta; NBTTagCompound compound = null;
-		if(internal){
-			regname = new ResourceLocation(FSMM.MODID, JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
+		regname = new ResourceLocation((internal ? FSMM.MODID + ":" : "") + JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
+		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
+		int meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
+		if(meta >= 0 && !internal){ regname = new ResourceLocation(regname.toString() + "_" + meta); }
+		if(!internal){
+			stackload(null, obj, internal);
 		}
-		else{
-			regname = new ResourceLocation(JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
-			item = net.minecraft.item.Item.getByNameOrId(regname.toString());
+	}
+	
+	public void stackload(net.minecraft.item.Item item, JsonObject obj, boolean internal){
+		if(item == null || !internal){
+			String id = JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate());
+			item = net.minecraft.item.Item.getByNameOrId(internal ? FSMM.MODID + ":" + id : id);
 			if(item == null){
 				Print.log("[FSMM] ERROR - External Item with ID '" + regname.toString() + "' couldn't be found! This is bad!");
 				Static.halt();
 			}
-			if(obj.has("nbt")){
-				try{
-					compound = JsonToNBT.getTagFromJson(obj.get("nbt").getAsString());
-				}
-				catch(NBTException e){
-					Print.log("[FSMM] ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
-					Static.halt();
-				}
+		}
+		NBTTagCompound compound = null;
+		if(obj.has("nbt")){
+			try{
+				compound = JsonToNBT.getTagFromJson(obj.get("nbt").getAsString());
+			}
+			catch(NBTException e){
+				Print.log("[FSMM] ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
+				Static.halt();
 			}
 		}
-		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
-		meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
-		if(meta >= 0 && !internal){
-			regname = new ResourceLocation(regname.toString() + "_" + meta);
-		}
 		//
-		stack = new ItemStack(item, 1, meta);
-		if(compound != null){
-			stack.setTagCompound(compound);
-		}
+		stack = new ItemStack(item, 1, JsonUtil.getIfExists(obj, "meta", -1).intValue());
+		if(compound != null){ stack.setTagCompound(compound); }
 	}
 
 	@Override

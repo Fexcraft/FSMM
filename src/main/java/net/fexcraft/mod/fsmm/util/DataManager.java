@@ -1,12 +1,15 @@
 package net.fexcraft.mod.fsmm.util;
 
 import java.io.File;
-import java.util.Calendar;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
-
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
@@ -27,10 +30,11 @@ public class DataManager extends TimerTask {
 	private static final TreeMap<String, TreeMap<String, Account>> ACCOUNTS = new TreeMap<>();
 	private static final TreeMap<String, Bank> BANKS = new TreeMap<>();
 	public static File ACCOUNT_DIR, BANK_DIR;
-	protected Timer timer;
+	public static long LAST_TIMERTASK;
+	protected static Timer timer;
 
-	public DataManager(File file, Timer timer){
-		this.timer = timer;
+	public DataManager(File file){
+		timer = new Timer();
 		ACCOUNT_DIR = new File(file, "/fsmm/accounts/");
 		if(!ACCOUNT_DIR.exists()){ ACCOUNT_DIR.mkdirs(); }
 		BANK_DIR = new File(file, "/fsmm/banks/");
@@ -40,9 +44,9 @@ public class DataManager extends TimerTask {
 	@Override
 	public void run(){
 		ImmutableSet<String> set = ImmutableSet.copyOf(ACCOUNTS.keySet());
-		long date = Time.getDate();
-		long mndt = date - 601000;
-		Print.debug("Starting scheduled account and bank clearance. (" + date + ")");
+		LAST_TIMERTASK = Time.getDate();
+		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY - 5000);
+		Print.debug("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
 		for(String type : set){
 			ImmutableMap<String, Account> map = ImmutableMap.copyOf(ACCOUNTS.get(type));
 			for(Entry<String, Account> entry : map.entrySet()){
@@ -105,7 +109,7 @@ public class DataManager extends TimerTask {
 
 	@Nullable
 	public static final Account getAccount(String accid, boolean tempload, boolean create){
-		return getAccount(accid, create, create, null);
+		return getAccount(accid, tempload, create, null);
 	}
 	
 	@Nullable
@@ -146,7 +150,9 @@ public class DataManager extends TimerTask {
 				return null;
 			}
 		}
-		else return null;
+		else{
+			return null;
+		}
 	}
 	
 	public static boolean addAccount(String type, Account account){
@@ -156,6 +162,10 @@ public class DataManager extends TimerTask {
 		return getAccountsOfType(type).put(account.getId(), account) == null;
 	}
 	
+	public static boolean addAccount(Account account){
+		return addAccount(account.getType(), account);
+	}
+	
 	@Nullable
 	public static final TreeMap<String, Account> getAccountsOfType(String type){
 		return ACCOUNTS.get(type);
@@ -163,7 +173,7 @@ public class DataManager extends TimerTask {
 	
 	@Nullable
 	public static final Bank getBank(String id, boolean tempload, boolean create){
-		return getBank(id, create, create, null);
+		return getBank(id, tempload, create, null);
 	}
 	
 	@Nullable
@@ -188,7 +198,7 @@ public class DataManager extends TimerTask {
 			}
 			else if(create){
 				try{
-					Bank bank = impl.getConstructor(String.class, String.class, long.class, JsonObject.class, TreeMap.class).newInstance(id, "Generated Bank", Config.STARTING_BALANCE, null, null);
+					Bank bank = impl.getConstructor(String.class, String.class, long.class, JsonObject.class, TreeMap.class).newInstance(id, id.equals(Config.DEFAULT_BANK) ? "Default Server Bank" : "Generated Bank", Config.STARTING_BALANCE, null, null);
 					addBank(bank); FSMM.LOGGER.info("Created new bank with ID " + id + ".");
 					return bank.setTemporary(tempload);
 				}
@@ -212,9 +222,18 @@ public class DataManager extends TimerTask {
 	}
 
 	public void schedule(){
-		Calendar calendar = Calendar.getInstance(); calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0); calendar.set(Calendar.SECOND, 0); calendar.set(Calendar.MILLISECOND, 0);
-        timer.schedule(this, calendar.getTime(), Time.MIN_MS * 10);
+		LocalDateTime midnight = LocalDateTime.of(LocalDate.now(ZoneOffset.systemDefault()), LocalTime.MIDNIGHT);
+		long mid = midnight.toInstant(ZoneOffset.UTC).toEpochMilli(); long date = Time.getDate();
+		while((mid += Config.UNLOAD_FREQUENCY) < date);
+        timer.schedule(this, new Date(mid), Config.UNLOAD_FREQUENCY);
+	}
+
+	/** @param offline show all account types or only loaded ones */
+	public static String[] getAccountTypes(boolean offline){
+		if(offline){
+			return ACCOUNT_DIR.list();
+		}
+		return ACCOUNTS.keySet().toArray(new String[0]);
 	}
 	
 }

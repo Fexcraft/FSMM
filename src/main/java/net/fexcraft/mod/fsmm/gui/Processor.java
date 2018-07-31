@@ -85,15 +85,14 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 					break;
 				}
 				case "transfer_result":{
-					long input = pkt.obj.get("input").getAsLong();
-					if(input <= 0){ return; }
-					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
-					String[] str = pkt.obj.get("receiver").getAsString().split(":");
-					Account receiver = DataManager.getAccount(str[0] + ":" + str[1], true, false);
+					long input = pkt.obj.get("input").getAsLong(); if(input <= 0){ return; }
+					Account receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
 					if(receiver == null){
-						Print.chat(player, "Error loading Receiver account.");
+						Print.chat(player, "Error loading Receiver account.\n(" + pkt.obj.get("receiver").getAsString() + ");");
 						return;
 					}
+					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
+					if(bank == null){ Print.chat(player, "Error, bank not loaded."); return; }
 					reply.addProperty("success", bank.processAction(Bank.Action.TRANSFER, player, playeracc, input, receiver));
 					reply.addProperty("receiver", receiver.getAsResourceLocation().toString());
 					break;

@@ -14,12 +14,10 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class GenericBank extends Bank {
 
-	public GenericBank(JsonObject obj){
-		super(obj);
-	}
+	public GenericBank(JsonObject obj){ super(obj); }
 	
 	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
-		super(name, name, balance, data, map);
+		super(id, name, balance, data, map);
 	}
 	
 	private long parseFee(String fee, long amount){
@@ -40,7 +38,7 @@ public class GenericBank extends Bank {
 
 	@Override
 	public boolean processAction(Bank.Action action, ICommandSender log, Account sender, long amount, Account receiver){
-		EntityPlayer player; String feestr; long fee;
+		EntityPlayer player; long fee = 0;
 		switch(action){
 			case WITHDRAW:{
 				if(sender == null){
@@ -54,8 +52,10 @@ public class GenericBank extends Bank {
 					return false;
 				}
 				player = (EntityPlayer)log;
-				feestr = fees.get("player:" + (sender.getId().equals(player.getGameProfile().getId().toString()) ? "self" : sender.getType()));
-				fee = parseFee(feestr, amount);
+				if(fees != null){
+					String feestr = fees.get("player:" + (sender.getId().equals(player.getGameProfile().getId().toString()) ? "self" : sender.getType()));
+					fee = parseFee(feestr, amount);
+				}
 				if(sender.getBalance() - amount >= 0){
 					sender.modifyBalance(Manageable.Action.SUB, amount, player);
 					ItemManager.addToInventory(player, amount - fee);
@@ -81,8 +81,7 @@ public class GenericBank extends Bank {
 				player = (EntityPlayer)log;
 				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
 					if(ItemManager.countInInventory(player) - amount >= 0){
-						feestr = fees.get("self:" + receiver.getType());
-						fee = parseFee(feestr, amount);
+						fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
 						ItemManager.removeFromInventory(player, amount);
 						receiver.modifyBalance(Manageable.Action.ADD, amount - fee, player);
 						String str = player.getName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
@@ -115,8 +114,7 @@ public class GenericBank extends Bank {
 					Print.debug(log.getName() + " tried to transfer a negative amout of money to " + receiver.getAsResourceLocation().toString() + "!");
 					return false;
 				}
-				feestr = fees.get(sender.getType() + ":" + receiver.getType());
-				fee = parseFee(feestr, amount);
+				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
 				if(sender.getBalance() - amount >= 0){
 					sender.modifyBalance(Manageable.Action.SUB, amount, log);
 					receiver.modifyBalance(Manageable.Action.ADD, amount - fee, log);

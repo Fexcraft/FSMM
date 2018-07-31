@@ -3,14 +3,15 @@ package net.fexcraft.mod.fsmm.util;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
+import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.api.WorldCapability;
 import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
+import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -54,16 +55,23 @@ public class EventHandler {
     }
     
     @SubscribeEvent
-    public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event){
+    public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<net.minecraft.item.ItemStack> event){
     	if(MoneyCapability.CAPABILITY != null && (event.getObject().getItem() instanceof Money.Item || Config.containsAsExternalItemStack(event.getObject()))){
     		event.addCapability(MoneyCapability.REGISTRY_NAME, new MoneyCapabilityUtil(event.getObject()));
     	}
     }
     
     @SubscribeEvent
-    public void onAttachWorldCapabilities(AttachCapabilitiesEvent<World> event){
+    public void onAttachWorldCapabilities(AttachCapabilitiesEvent<net.minecraft.world.World> event){
     	if(WorldCapability.CAPABILITY != null && event.getObject() != null){
-    		event.addCapability(MoneyCapability.REGISTRY_NAME, new WorldCapabilityUtil(event.getObject()));
+    		event.addCapability(WorldCapability.REGISTRY_NAME, new WorldCapabilityUtil(event.getObject()));
+    	}
+    }
+    
+    @SubscribeEvent
+    public void onAttachEntityCapabilities(AttachCapabilitiesEvent<net.minecraft.entity.Entity> event){
+    	if(PlayerCapability.CAPABILITY != null && event.getObject() instanceof EntityPlayer){
+    		event.addCapability(PlayerCapability.REGISTRY_NAME, new PlayerCapabilityUtil((EntityPlayer)event.getObject()));
     	}
     }
     

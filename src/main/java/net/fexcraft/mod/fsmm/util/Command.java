@@ -3,9 +3,11 @@ package net.fexcraft.mod.fsmm.util;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
+import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.common.Static;
+import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.lib.util.registry.UCResourceLocation;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -16,19 +18,16 @@ import net.minecraftforge.server.permission.PermissionAPI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.UUID;
 
 public class Command extends CommandBase{
 
 	public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
-	private final ArrayList<String> aliases;
+	private final static ArrayList<String> aliases = new ArrayList<String>();
+	static{ aliases.add("money"); aliases.add("balance"); aliases.add("currency"); }
   
-    public Command(){ 
-        aliases = new ArrayList<String>(); 
-        aliases.add("money"); 
-        aliases.add("balance");
-        aliases.add("currency");
-    }
+    public Command(){ return; }
     
     @Override 
     public String getName(){ 
@@ -47,7 +46,7 @@ public class Command extends CommandBase{
 
     @Override 
     public List<String> getAliases(){ 
-        return this.aliases;
+        return aliases;
     } 
 
     @Override 
@@ -57,8 +56,7 @@ public class Command extends CommandBase{
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
-    			Account account = DataManager.getAccount("player:" + ((EntityPlayer)sender).getGameProfile().getId().toString(), true, false);
-    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(account.getBalance()));
+    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(PlayerCapability.CAPABILITY, null).getAccount().getBalance()));
     		}
     		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
     			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);
@@ -82,10 +80,11 @@ public class Command extends CommandBase{
 	        	Print.chat(sender, "&7/fsmm set <type:id/name> <amount>");
 	        	Print.chat(sender, "&7/fsmm add <type:id/name> <amount>");
 	        	Print.chat(sender, "&7/fsmm sub <type:id/name> <amount>");
+	        	Print.chat(sender, "&7/fsmm status");
 	    		return;
 	    	}
     		case "info":{
-	        	Print.chat(sender, "&9Main command for FSMM related stuff");
+	        	Print.chat(sender, "&9Main command for FSMM related things. ");
     			return;
     		}
     		case "version":{
@@ -104,6 +103,19 @@ public class Command extends CommandBase{
         			return;
     			}
     			modify(sender, args);
+    			return;
+    		}
+    		case "status":{
+    			Print.chat(sender, "&9Accounts loaded (by type): &7");
+    			long temp = 0;
+    			for(String str : DataManager.getAccountTypes(false)){
+    				TreeMap<String, Account> map = DataManager.getAccountsOfType(str);
+    				temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
+    				Print.chat(sender, "&2> &3" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
+    			}
+    			temp = DataManager.getBanks().values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
+    			Print.chat(sender, "&9Banks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
+    			Print.chat(sender, "&5Last scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
     			return;
     		}
     		default:{
@@ -127,16 +139,13 @@ public class Command extends CommandBase{
 			}
 		}
 		Account account = DataManager.getAccount(rs.toString(), false, false);
-		boolean loaded = account != null;
-		if(!loaded){
-			account = DataManager.getAccount(rs.toString(), true, false);
-		}
-		if(account == null){
-			Print.chat(sender, "ACC:NULL:ERR");
-		}
+		boolean online = account != null;
+		if(!online){ account = DataManager.getAccount(rs.toString(), true, false); }
+		if(account == null){ Print.chat(sender, "Account not found."); }
 		account.setBalance(Long.parseLong(args[2]));
 		Print.chat(sender, "&9New Balance&0: &7" + Config.getWorthAsString(account.getBalance()));
-		if(!loaded){
+		if(!online){
+			Print.chat(sender, "&7&oYou modified the balance of an Offline Account.");
 			DataManager.unloadAccount(account);
 		}
 	}

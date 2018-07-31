@@ -24,12 +24,11 @@ import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.registries.IForgeRegistry;
 
 public class Config {
 	
 	public static File CONFIG_PATH;
-	public static long STARTING_BALANCE;
+	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
 	public static String DEFAULT_BANK;
 	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
@@ -92,10 +91,11 @@ public class Config {
 				GenericMoney money = null;
 				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
 				RegistryUtil.get("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
+				money.stackload(RegistryUtil.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
 			});
 		}
 		//
-		if(obj.has("Banks") && ((file = new File(event.getModConfigurationDirectory(), "/fsmm/banks/")).exists() ? file.listFiles().length <= 0 : true)){
+		if(obj.has("Banks") && ((file = new File(CONFIG_PATH, "/fsmm/banks/")).exists() ? file.listFiles().length <= 0 : true)){
 			obj.get("Banks").getAsJsonArray().forEach((elm) -> {
 				String uuid = elm.getAsJsonObject().get("uuid").getAsString();
 				if(DataManager.getBanks().containsKey(uuid)){
@@ -103,35 +103,6 @@ public class Config {
 				}
 				else{
 					Print.log("Tried to load bank with ID '" + uuid + "' from config, but there is already a bank with that ID loaded!");
-				}
-			});
-		}
-	}
-
-	public static void checkForExternalItems(IForgeRegistry<Money> registry){
-		File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
-		if(!file.exists()){
-			return;
-		}
-		JsonObject obj = JsonUtil.get(file);
-		if(obj.has("ExternalItems")){
-			obj.get("ExternalItems").getAsJsonArray().forEach(elm -> {
-				JsonObject jsn = elm.getAsJsonObject();
-				ResourceLocation rs = new ResourceLocation(jsn.get("id").getAsString());
-				long worth = jsn.get("worth").getAsLong();
-				int meta = jsn.has("meta") ? jsn.get("meta").getAsInt() : -1;
-				//
-				if(meta >= 0){
-					EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
-					if(!EXTERNAL_ITEMS.containsKey(rs)){
-						EXTERNAL_ITEMS.put(rs, 0l);
-					}
-				}
-				else{
-					EXTERNAL_ITEMS.put(rs, worth);
-				}
-				if(jsn.has("register") && jsn.get("register").getAsBoolean()){
-					registry.register(new GenericMoney(jsn, false));
 				}
 			});
 		}
@@ -175,6 +146,7 @@ public class Config {
 		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' dispplay.");
 		SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
 		SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
+		UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
 		//
 		COMMA = INVERT_COMMA ? "." : ",";
 		DOT = INVERT_COMMA ? "," : ".";
@@ -189,7 +161,32 @@ public class Config {
 		
 	    @SubscribeEvent
 	    public void onRegistry(RegistryEvent.Register<Money> event){
-			Config.checkForExternalItems(event.getRegistry());
+			File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
+			if(!file.exists()){
+				return;
+			}
+			JsonObject obj = JsonUtil.get(file);
+			if(obj.has("ExternalItems")){
+				obj.get("ExternalItems").getAsJsonArray().forEach(elm -> {
+					JsonObject jsn = elm.getAsJsonObject();
+					ResourceLocation rs = new ResourceLocation(jsn.get("id").getAsString());
+					long worth = jsn.get("worth").getAsLong();
+					int meta = jsn.has("meta") ? jsn.get("meta").getAsInt() : -1;
+					//
+					if(meta >= 0){
+						EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
+						if(!EXTERNAL_ITEMS.containsKey(rs)){
+							EXTERNAL_ITEMS.put(rs, 0l);
+						}
+					}
+					else{
+						EXTERNAL_ITEMS.put(rs, worth);
+					}
+					if(jsn.has("register") && jsn.get("register").getAsBoolean()){
+						event.getRegistry().register(new GenericMoney(jsn, false));
+					}
+				});
+			}
 	    }
 	    
 	}

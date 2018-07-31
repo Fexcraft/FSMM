@@ -53,16 +53,13 @@ public class ItemManager {
 		return i == 0 ? false : true;
 	}
 	
-	public static void addToInventory(EntityPlayer player, long amount){
-		setInInventory(player, (amount += countInInventory(player)) > Long.MAX_VALUE ? Long.MAX_VALUE : amount);
+	public static long addToInventory(EntityPlayer player, long amount){
+		return setInInventory(player, (amount += countInInventory(player)) > Long.MAX_VALUE ? Long.MAX_VALUE : amount);
 	}
 
-	public static void removeFromInventory(EntityPlayer player, long amount){
+	public static long removeFromInventory(EntityPlayer player, long amount){
 		long old = countInInventory(player);
-		old -= amount;
-		if(old < 0){
-			old = 0;
-		}
+		old -= amount; if(old < 0){ amount += old; old = 0; }
 		for(int i = 0; i < player.inventory.mainInventory.size(); i++){
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
@@ -73,9 +70,10 @@ public class ItemManager {
 			}
 		}
 		setInInventory(player, old);
+		return amount;
 	}
 	
-	public static void setInInventory(EntityPlayer player, long amount){
+	public static long setInInventory(EntityPlayer player, long amount){
 		for(int i = 0; i < player.inventory.mainInventory.size(); i++){
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
@@ -102,8 +100,9 @@ public class ItemManager {
 			continue;
 		}
 		if(amount > 0){
-			Print.chat(player, Config.getWorthAsString(amount, true, true) + " couldn't be added to inventory cause no matching items were found.");
+			Print.chat(player, Config.getWorthAsString(amount, true, true) + " couldn't be added to inventory because no matching items were found.");
 		}
+		return amount;
 	}
 
 }
