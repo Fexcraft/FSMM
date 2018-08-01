@@ -12,6 +12,7 @@ import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.item.ItemStack;
@@ -68,7 +69,7 @@ public class Config {
 	
 	public static void initialize(FMLPreInitializationEvent event){
 		CONFIG_PATH = event.getSuggestedConfigurationFile().getParentFile();
-		config = new Configuration(new File(event.getSuggestedConfigurationFile().getParentFile(), "/fsmm/config.cfg"), "2.0", true);
+		config = new Configuration(new File(event.getSuggestedConfigurationFile().getParentFile(), "/fsmm/config.cfg"), "2.1", true);
 		config.load();
 		config.setCategoryRequiresMcRestart("General", true);
 		config.setCategoryRequiresWorldRestart("General", true);
@@ -146,10 +147,9 @@ public class Config {
 		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' dispplay.");
 		SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
 		SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
-		UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
+		UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
 		//
-		COMMA = INVERT_COMMA ? "." : ",";
-		DOT = INVERT_COMMA ? "," : ".";
+		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
 	
 	private static class EventHandler {
