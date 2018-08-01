@@ -1,5 +1,6 @@
 package net.fexcraft.mod.fsmm.impl.cap;
 
+import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.util.Config;
@@ -18,28 +19,28 @@ public class MoneyCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 	private MoneyCapability instance;
 	
 	public MoneyCapabilityUtil(ItemStack stack){
-		instance = MoneyCapability.CAPABILITY.getDefaultInstance();
+		instance = FSMMCapabilities.MONEY_ITEMSTACK.getDefaultInstance();
 		instance.setStack(stack);
 	}
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing){
-		return capability == MoneyCapability.CAPABILITY;
+		return capability == FSMMCapabilities.MONEY_ITEMSTACK;
 	}
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing){
-		return capability == MoneyCapability.CAPABILITY ? MoneyCapability.CAPABILITY.<T>cast(this.instance) : null;
+		return capability == FSMMCapabilities.MONEY_ITEMSTACK ? FSMMCapabilities.MONEY_ITEMSTACK.<T>cast(this.instance) : null;
 	}
 
 	@Override
 	public NBTBase serializeNBT(){
-		return MoneyCapability.CAPABILITY.getStorage().writeNBT(MoneyCapability.CAPABILITY, instance, null);
+		return FSMMCapabilities.MONEY_ITEMSTACK.getStorage().writeNBT(FSMMCapabilities.MONEY_ITEMSTACK, instance, null);
 	}
 
 	@Override
 	public void deserializeNBT(NBTBase nbt){
-		MoneyCapability.CAPABILITY.getStorage().readNBT(MoneyCapability.CAPABILITY, instance, null, nbt);
+		FSMMCapabilities.MONEY_ITEMSTACK.getStorage().readNBT(FSMMCapabilities.MONEY_ITEMSTACK, instance, null, nbt);
 	}
 	
 	public static class Storage implements IStorage<MoneyCapability> {

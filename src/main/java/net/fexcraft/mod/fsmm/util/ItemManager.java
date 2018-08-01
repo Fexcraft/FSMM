@@ -3,6 +3,7 @@ package net.fexcraft.mod.fsmm.util;
 import java.util.List;
 
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.lib.util.common.Print;
@@ -23,8 +24,8 @@ public class ItemManager {
 		NonNullList<ItemStack> is = player.inventory.mainInventory;
 		ItemStack stack = null;
 		for(int in = 0; in < player.inventory.mainInventory.size(); in++){
-			if(!(stack = is.get(in)).isEmpty() && stack.hasCapability(MoneyCapability.CAPABILITY, null)){
-				MoneyCapability cap = stack.getCapability(MoneyCapability.CAPABILITY, null);
+			if(!(stack = is.get(in)).isEmpty() && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
+				MoneyCapability cap = stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null);
 				Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
 				value += cap.getWorth() * is.get(in).getCount();
 			}
@@ -41,8 +42,8 @@ public class ItemManager {
 			if(stack == null || stack.isEmpty()){
 				i++;
 			}
-			else if(stack.hasCapability(MoneyCapability.CAPABILITY, null)
-				&& stack.getCapability(MoneyCapability.CAPABILITY, null).getWorth() > 0
+			else if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0
 				&& countMoneyItemAsSpace){
 				i++;
 			}
@@ -64,8 +65,8 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapability.CAPABILITY, null)
-				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapability.CAPABILITY, null).getWorth() > 0){
+			if(player.inventory.mainInventory.get(i).hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+				&& player.inventory.mainInventory.get(i).getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}
@@ -78,8 +79,8 @@ public class ItemManager {
 			if(player.inventory.mainInventory.get(i) == null){
 				continue;
 			}
-			if(player.inventory.mainInventory.get(i).hasCapability(MoneyCapability.CAPABILITY, null)
-				&& player.inventory.mainInventory.get(i).getCapability(MoneyCapability.CAPABILITY, null).getWorth() > 0){
+			if(player.inventory.mainInventory.get(i).hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+				&& player.inventory.mainInventory.get(i).getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
 				player.inventory.removeStackFromSlot(i);
 			}
 		}

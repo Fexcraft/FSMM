@@ -20,6 +20,7 @@ import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
+import net.fexcraft.mod.fsmm.impl.NullBank;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.math.Time;
@@ -64,13 +65,15 @@ public class DataManager extends TimerTask {
 		saveAll();
 	}
 	
-	private static final void save(Account account){
+	public static final void save(Account account){
+		if(account == null){ return; }
 		File file = new File(ACCOUNT_DIR, account.getType() + "/" + account.getId() + ".json");
 		if(!file.exists()){ file.getParentFile().mkdirs(); }
 		JsonUtil.write(file, account.toJson(), true);
 	}
 	
-	private static final void save(Bank bank){
+	public static final void save(Bank bank){
+		if(bank == null){ return; }
 		File file = new File(BANK_DIR, bank.getId() + ".json");
 		if(!file.exists()){ file.getParentFile().mkdirs(); }
 		JsonUtil.write(file, bank.toJson(), true);
@@ -117,7 +120,8 @@ public class DataManager extends TimerTask {
 		String[] arr = accid.split(":");
 		if(arr.length < 2){ return null; }
 		if(ACCOUNTS.containsKey(arr[0]) && ACCOUNTS.get(arr[0]).containsKey(arr[1])){
-			return ACCOUNTS.get(arr[0]).get(arr[1]);
+			Account account = ACCOUNTS.get(arr[0]).get(arr[1]);
+			return !tempload && account.isTemporary() ? account.setTemporary(false) : account;
 		}
 		return tempload || create ? loadAccount(arr, tempload, create, impl) : null;
 	}
@@ -140,7 +144,7 @@ public class DataManager extends TimerTask {
 		}
 		else if(create){
 			try{
-				Account account = impl.getConstructor(String.class, String.class, long.class, String.class, JsonObject.class).newInstance(arr[1], arr[0], Config.STARTING_BALANCE, Config.DEFAULT_BANK, null);
+				Account account = impl.getConstructor(String.class, String.class, long.class, String.class, JsonObject.class).newInstance(arr[1], arr[0], arr[0].equals("player") ? Config.STARTING_BALANCE : 0, Config.DEFAULT_BANK, null);
 				addAccount(arr[0], account);
 				FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + "!");
 				return account.setTemporary(tempload);
@@ -179,7 +183,8 @@ public class DataManager extends TimerTask {
 	@Nullable
 	public static final Bank getBank(String id, boolean tempload, boolean create, Class<? extends Bank> impl){
 		if(BANKS.containsKey(id)){
-			return BANKS.get(id);
+			Bank bank = BANKS.get(id);
+			return !tempload && bank.isTemporary() ? bank.setTemporary(false) : bank;
 		}
 		if(tempload || create){
 			impl = impl == null ? GenericBank.class : impl; File file = new File(BANK_DIR, id + ".json");
@@ -193,7 +198,7 @@ public class DataManager extends TimerTask {
 				}
 				catch(ReflectiveOperationException | RuntimeException e){
 					e.printStackTrace();
-					return null;
+					return NullBank.INSTANCE;
 				}
 			}
 			else if(create){
@@ -204,12 +209,12 @@ public class DataManager extends TimerTask {
 				}
 				catch(ReflectiveOperationException | RuntimeException e){
 					e.printStackTrace();
-					return null;
+					return NullBank.INSTANCE;
 				}
 			}
-			else return null;
+			else return NullBank.INSTANCE;
 		}
-		return null;
+		return NullBank.INSTANCE;
 	}
 	
 	public static boolean addBank(Bank bank){

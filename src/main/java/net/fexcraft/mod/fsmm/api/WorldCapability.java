@@ -1,13 +1,9 @@
 package net.fexcraft.mod.fsmm.api;
 
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public interface WorldCapability {
 	
-	@CapabilityInject(WorldCapability.class)
-	public static final Capability<WorldCapability> CAPABILITY = null;
 	public static final ResourceLocation REGISTRY_NAME = new ResourceLocation("fsmm:world");
 
 	/**

@@ -2,6 +2,7 @@ package net.fexcraft.mod.fsmm.impl.cap;
 
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
+import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
@@ -20,27 +21,27 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 	private PlayerCapability instance;
 	
 	public PlayerCapabilityUtil(EntityPlayer player){
-		instance = PlayerCapability.CAPABILITY.getDefaultInstance().setEntityPlayer(player);
+		instance = FSMMCapabilities.PLAYER.getDefaultInstance().setEntityPlayer(player);
 	}
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing){
-		return capability == PlayerCapability.CAPABILITY;
+		return capability == FSMMCapabilities.PLAYER;
 	}
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing){
-		return capability == PlayerCapability.CAPABILITY ? PlayerCapability.CAPABILITY.<T>cast(this.instance) : null;
+		return capability == FSMMCapabilities.PLAYER ? FSMMCapabilities.PLAYER.<T>cast(this.instance) : null;
 	}
 
 	@Override
 	public NBTBase serializeNBT(){
-		return PlayerCapability.CAPABILITY.getStorage().writeNBT(PlayerCapability.CAPABILITY, instance, null);
+		return FSMMCapabilities.PLAYER.getStorage().writeNBT(FSMMCapabilities.PLAYER, instance, null);
 	}
 
 	@Override
 	public void deserializeNBT(NBTBase nbt){
-		PlayerCapability.CAPABILITY.getStorage().readNBT(PlayerCapability.CAPABILITY, instance, null, nbt);
+		FSMMCapabilities.PLAYER.getStorage().readNBT(FSMMCapabilities.PLAYER, instance, null, nbt);
 	}
 	
 	public static class Storage implements IStorage<PlayerCapability> {

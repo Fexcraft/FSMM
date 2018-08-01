@@ -133,5 +133,10 @@ public class GenericBank extends Bank {
 			}
 		}
 	}
+
+	@Override
+	public boolean isNull(){
+		return false;
+	}
 	
 }

@@ -1,6 +1,7 @@
 package net.fexcraft.mod.fsmm.util;
 
 import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
@@ -28,11 +29,12 @@ public class EventHandler {
     	}
     	if(event.player.world.isRemote){ return; }
 		Print.debug("Loading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
-    	Account account = event.player.world.getCapability(WorldCapability.CAPABILITY, null).getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
+    	Account account = event.player.world.getCapability(FSMMCapabilities.WORLD, null).getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
     	if(Config.NOTIFY_BALANCE_ON_JOIN){
     		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + Config.getWorthAsString(account.getBalance()));
     		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));
     	}
+    	if(account.lastAccessed() >= 0){ account.setTemporary(false); }
     }
     
     @SubscribeEvent
@@ -43,9 +45,9 @@ public class EventHandler {
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event){
-    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP || MoneyCapability.CAPABILITY == null){ return; }
-    	if(event.getItemStack().hasCapability(MoneyCapability.CAPABILITY, null)){
-    		long worth = event.getItemStack().getCapability(MoneyCapability.CAPABILITY, null).getWorth();
+    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP || FSMMCapabilities.MONEY_ITEMSTACK == null){ return; }
+    	if(event.getItemStack().hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
+    		long worth = event.getItemStack().getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth();
     		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
     		if(event.getItemStack().getCount() > 1){
     			str += " &8(&7" + Config.getWorthAsString(worth * event.getItemStack().getCount(), true, worth < 10) + "&8)";
@@ -56,21 +58,21 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<net.minecraft.item.ItemStack> event){
-    	if(MoneyCapability.CAPABILITY != null && (event.getObject().getItem() instanceof Money.Item || Config.containsAsExternalItemStack(event.getObject()))){
+    	if(FSMMCapabilities.MONEY_ITEMSTACK != null && (event.getObject().getItem() instanceof Money.Item || Config.containsAsExternalItemStack(event.getObject()))){
     		event.addCapability(MoneyCapability.REGISTRY_NAME, new MoneyCapabilityUtil(event.getObject()));
     	}
     }
     
     @SubscribeEvent
     public void onAttachWorldCapabilities(AttachCapabilitiesEvent<net.minecraft.world.World> event){
-    	if(WorldCapability.CAPABILITY != null && event.getObject() != null){
+    	if(FSMMCapabilities.WORLD != null && event.getObject() != null){
     		event.addCapability(WorldCapability.REGISTRY_NAME, new WorldCapabilityUtil(event.getObject()));
     	}
     }
     
     @SubscribeEvent
     public void onAttachEntityCapabilities(AttachCapabilitiesEvent<net.minecraft.entity.Entity> event){
-    	if(PlayerCapability.CAPABILITY != null && event.getObject() instanceof EntityPlayer){
+    	if(FSMMCapabilities.PLAYER != null && event.getObject() instanceof EntityPlayer){
     		event.addCapability(PlayerCapability.REGISTRY_NAME, new PlayerCapabilityUtil((EntityPlayer)event.getObject()));
     	}
     }

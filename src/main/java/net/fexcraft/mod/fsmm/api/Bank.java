@@ -139,4 +139,6 @@ public abstract class Bank extends Removable implements Manageable {
 		}
 	}
 	
+	public abstract boolean isNull();
+	
 }

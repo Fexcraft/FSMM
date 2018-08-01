@@ -2,6 +2,7 @@ package net.fexcraft.mod.fsmm.impl.cap;
 
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
+import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.WorldCapability;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.nbt.NBTBase;
@@ -17,27 +18,27 @@ public class WorldCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 	private WorldCapability instance;
 	
 	public WorldCapabilityUtil(World world){
-		instance = WorldCapability.CAPABILITY.getDefaultInstance();
+		instance = FSMMCapabilities.WORLD.getDefaultInstance();
 	}
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing){
-		return capability == WorldCapability.CAPABILITY;
+		return capability == FSMMCapabilities.WORLD;
 	}
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing){
-		return capability == WorldCapability.CAPABILITY ? WorldCapability.CAPABILITY.cast(this.instance) : null;
+		return capability == FSMMCapabilities.WORLD ? FSMMCapabilities.WORLD.cast(this.instance) : null;
 	}
 
 	@Override
 	public NBTBase serializeNBT(){
-		return WorldCapability.CAPABILITY.getStorage().writeNBT(WorldCapability.CAPABILITY, instance, null);
+		return FSMMCapabilities.WORLD.getStorage().writeNBT(FSMMCapabilities.WORLD, instance, null);
 	}
 
 	@Override
 	public void deserializeNBT(NBTBase nbt){
-		WorldCapability.CAPABILITY.getStorage().readNBT(WorldCapability.CAPABILITY, instance, null, nbt);
+		FSMMCapabilities.WORLD.getStorage().readNBT(FSMMCapabilities.WORLD, instance, null, nbt);
 	}
 	
 	public static class Storage implements IStorage<WorldCapability> {

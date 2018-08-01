@@ -32,6 +32,10 @@ public abstract class Removable {
 		return (T)this;
 	}
 	
+	public boolean isTemporary(){
+		return temporary;
+	}
+	
 	public abstract JsonObject toJson();
 	
 }

@@ -3,7 +3,7 @@ package net.fexcraft.mod.fsmm.util;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
+import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.common.Static;
@@ -56,7 +56,7 @@ public class Command extends CommandBase{
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
-    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(PlayerCapability.CAPABILITY, null).getAccount().getBalance()));
+    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
     		}
     		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
     			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);

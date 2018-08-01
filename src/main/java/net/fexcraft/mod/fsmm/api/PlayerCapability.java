@@ -2,13 +2,9 @@ package net.fexcraft.mod.fsmm.api;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public interface PlayerCapability {
 	
-	@CapabilityInject(PlayerCapability.class)
-	public static final Capability<PlayerCapability> CAPABILITY = null;
 	public static final ResourceLocation REGISTRY_NAME = new ResourceLocation("fsmm:player");
 
 	public <T> T setEntityPlayer(EntityPlayer player);
