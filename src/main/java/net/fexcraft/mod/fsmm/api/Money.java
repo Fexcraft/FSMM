@@ -15,6 +15,7 @@ public interface Money extends IForgeRegistryEntry<Money> {
 		
 		public Money getType();
 		
+		/** Singular worth, do not multiply by count! **/
 		public long getWorth(ItemStack stack);
 		
 	}

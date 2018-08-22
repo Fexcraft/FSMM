@@ -23,7 +23,7 @@ public class GenericMoneyItem extends Item implements Money.Item {
 
 	@Override
 	public long getWorth(ItemStack stack){
-		return type.getWorth() * stack.getCount();
+		return type.getWorth()/* * stack.getCount()*/;
 	}
 	
 }

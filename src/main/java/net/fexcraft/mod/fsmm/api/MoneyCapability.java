@@ -11,6 +11,7 @@ public interface MoneyCapability {
 
 	public void setStack(ItemStack stack);
 	
+	/** Singular worth, do not multiply by count! **/
 	public long getWorth();
 
 }
