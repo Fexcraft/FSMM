@@ -1,6 +1,7 @@
 package net.fexcraft.mod.fsmm.gui;
 
 import java.io.File;
+import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -11,6 +12,7 @@ import net.fexcraft.mod.lib.api.network.IPacketListener;
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.packet.PacketJsonObject;
 import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.mod.lib.util.common.Static;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class Processor implements IPacketListener<PacketJsonObject> {
@@ -86,7 +88,26 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 				}
 				case "transfer_result":{
 					long input = pkt.obj.get("input").getAsLong(); if(input <= 0){ return; }
-					Account receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
+					Account receiver = null;
+					if(!pkt.obj.get("receiver").getAsString().startsWith("player:")){
+						receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
+					}
+					else{
+						String str = pkt.obj.get("receiver").getAsString().replace("player:", "");
+						try{
+							UUID.fromString(str);
+							receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
+						}
+						catch(Exception e0){ if(Static.dev()) e0.printStackTrace();
+							try{
+								UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(str).getId();
+								receiver = DataManager.getAccount("player:" + uuid.toString(), true, false);
+							}
+							catch(Exception e1){
+								e1.printStackTrace();
+							}
+						}
+					}
 					if(receiver == null){
 						Print.chat(player, "Error loading Receiver account.\n(" + pkt.obj.get("receiver").getAsString() + ");");
 						return;

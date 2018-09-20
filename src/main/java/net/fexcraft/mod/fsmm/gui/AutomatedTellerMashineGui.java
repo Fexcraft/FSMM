@@ -20,6 +20,7 @@ import net.fexcraft.mod.lib.util.common.Print;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -45,6 +46,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	private SideButton[] sidebuttons = new SideButton[8];
 	private NumberButton[] numberbuttons = new NumberButton[13];
 	private SelectBoxField[] fieldbuttons = new SelectBoxField[7];
+	private GuiTextField receiver;
 	
 	public AutomatedTellerMashineGui(EntityPlayer player, World world, int x, int y, int z){
 		this.player = player;
@@ -80,6 +82,8 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		for(int i = 0; i < 7; i++){
 			buttonList.add(fieldbuttons[i] = new SelectBoxField(21 + i, xhalf + 25, yhalf + 13));
 		}
+		receiver = new GuiTextField(22, fontRenderer, xhalf + 22, yhalf + 37, 132, 11);
+		receiver.setVisible(false); receiver.setMaxStringLength(1024);
 	}
 	
 	@Override
@@ -124,6 +128,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         }
         //
         this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
+        receiver.setVisible(selectbox ? false : window.equals("transfer")); receiver.drawTextBox();
 	}
 	
 	@Override
@@ -153,7 +158,15 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         	}
             return;
         }
+        if(receiver.textboxKeyTyped(typedChar, keyCode)){
+        	//
+        }
         super.keyTyped(typedChar, keyCode);
+    }
+	
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    	super.mouseClicked(mouseX, mouseY, mouseButton); receiver.mouseClicked(mouseX, mouseY, mouseButton);
     }
 	
 	@Override
@@ -238,8 +251,13 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 						input = 0;
 						lines[3] = Config.getWorthAsString(input, true, true);
 					}
-					if(button.id == 18 && rec_cat.length() > 0 && rec_id.length() > 0){
-						this.openPerspective("request_transfer", null);
+					if(button.id == 18 && receiver.getText().length() >= 3 && receiver.getText().contains(":") /*rec_cat.length() > 0 && rec_id.length() > 0*/){
+						if(instance.input > 0){
+							this.openPerspective("request_transfer", null);
+						}
+						else{
+							Print.chat(mc.player, "Cannot transfer '0'!");
+						}
 					}
 				}
 				else{
@@ -266,6 +284,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 								selectbox = false;
 								catlist = null; idlist = null;
 								lines[1] = rec_cat + ":" + rec_id;
+								receiver.setText(lines[1]);
 							}
 						}
 					}
@@ -344,7 +363,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			case "transfer":{
 				input = 0;
 				lines[0] = Formatter.PARAGRAPH_SIGN + "2Receiver:";
-				lines[1] = rec_cat + ":" + rec_id;
+				lines[1] = rec_cat + ":" + rec_id; receiver.setText(lines[1]);
 				lines[2] = Formatter.PARAGRAPH_SIGN + "9Amount:";
 				lines[3] = Config.getWorthAsString(input, true, true);
 				break;
@@ -422,7 +441,8 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			obj.addProperty("input", instance.input);
 		}
 		if(srec){
-			obj.addProperty("receiver", instance.rec_cat + ":" + instance.rec_id);
+			//obj.addProperty("receiver", instance.rec_cat + ":" + instance.rec_id);
+			obj.addProperty("receiver", instance.receiver.getText());
 		}
 		PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
 	}
