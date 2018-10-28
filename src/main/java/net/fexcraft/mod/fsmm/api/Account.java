@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.lib.util.common.Print;
-import net.fexcraft.mod.lib.util.registry.UCResourceLocation;
+import net.fexcraft.lib.mc.registry.UCResourceLocation;
+import net.fexcraft.lib.mc.utils.Print;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ResourceLocation;
 

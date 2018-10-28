@@ -2,7 +2,7 @@ package net.fexcraft.mod.fsmm.api;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.lib.util.math.Time;
+import net.fexcraft.lib.common.math.Time;
 
 /**
  * Internal Usage Class, do not bother with.

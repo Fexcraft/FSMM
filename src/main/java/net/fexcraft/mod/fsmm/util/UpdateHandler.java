@@ -3,10 +3,10 @@ package net.fexcraft.mod.fsmm.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import net.fexcraft.lib.mc.FCL;
+import net.fexcraft.lib.mc.network.Network;
+import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.lib.FCL;
-import net.fexcraft.mod.lib.network.Network;
-import net.fexcraft.mod.lib.util.common.Formatter;
 
 public class UpdateHandler {
 

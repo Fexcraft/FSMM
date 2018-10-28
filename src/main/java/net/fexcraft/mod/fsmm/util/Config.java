@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.TreeMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
+import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.lib.mc.registry.FCLRegistry;
+import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
-import net.fexcraft.mod.lib.util.common.Print;
-import net.fexcraft.mod.lib.util.common.Static;
-import net.fexcraft.mod.lib.util.json.JsonUtil;
-import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -91,8 +92,8 @@ public class Config {
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				GenericMoney money = null;
 				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
-				RegistryUtil.get("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
-				money.stackload(RegistryUtil.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
+				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
+				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
 			});
 		}
 		//
@@ -249,7 +250,11 @@ public class Config {
 	}
 
 	public static boolean containsAsExternalItemStack(ItemStack stack){
-		return EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName()) || EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
+		try{
+			return EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName())
+				|| EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
+		}
+		catch(Exception e){ e.printStackTrace(); return false; }
 	}
 
 	public static String getComma(){

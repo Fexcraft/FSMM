@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 
+import net.fexcraft.lib.mc.network.PacketHandler;
+import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
+import net.fexcraft.lib.mc.registry.FCLRegistry;
+import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
@@ -20,10 +24,6 @@ import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.EventHandler;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
-import net.fexcraft.mod.lib.network.PacketHandler;
-import net.fexcraft.mod.lib.network.PacketHandler.PacketHandlerType;
-import net.fexcraft.mod.lib.util.common.Print;
-import net.fexcraft.mod.lib.util.registry.RegistryUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -62,14 +62,14 @@ public class FSMM {
     	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapabilityUtil.Storage(), new PlayerCapabilityUtil.Callable());
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
-		RegistryUtil.newAutoRegistry("fsmm"); Config.initialize(event);
+		FCLRegistry.newAutoRegistry("fsmm"); Config.initialize(event);
 		CACHE = new DataManager(event.getModConfigurationDirectory());
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
 	    @Override
 	    public ItemStack getTabIconItem() {
-	    	return new ItemStack(RegistryUtil.getBlock("fsmm:atm"));
+	    	return new ItemStack(FCLRegistry.getBlock("fsmm:atm"));
 	    }
 	};
 	

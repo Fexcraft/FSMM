@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.lib.util.common.Print;
+import net.fexcraft.lib.mc.utils.Print;
 import net.minecraft.command.ICommandSender;
 
 /**
