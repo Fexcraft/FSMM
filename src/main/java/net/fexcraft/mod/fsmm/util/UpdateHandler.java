@@ -3,9 +3,8 @@ package net.fexcraft.mod.fsmm.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.mc.FCL;
-import net.fexcraft.lib.mc.network.Network;
-import net.fexcraft.lib.mc.utils.Formatter;
+import net.fexcraft.mod.fcl.Formatter;
+import net.fexcraft.mod.fcl.Network;
 import net.fexcraft.mod.fsmm.FSMM;
 
 public class UpdateHandler {
@@ -29,7 +28,7 @@ public class UpdateHandler {
 				+ "\n" + PREFIX + "&7 Update type: (&3" + type + grayBracket;
 			}
 		}
-		if(LMCV != null && !LMCV.equals(FCL.mcv)){
+		if(LMCV != null && !LMCV.equals("1.7.10")){
 			if(Status == null){
 				Status = PREFIX + "&7 Now avaible for MC " + LMCV + "!";
 			}
@@ -52,14 +51,14 @@ public class UpdateHandler {
 		if(json == null){
 			data = new JsonObject();
 			data.addProperty("latest_version", FSMM.VERSION);
-			data.addProperty("latest_mc_version", FCL.mcv);
+			data.addProperty("latest_mc_version", "1.7.10");
 			data.addProperty("type", "error.could.not.connect.to.server;\nNo Internet?");
 		}
 		else{
 			try{
 				boolean found = false;
 				for(JsonElement elm : json.get("versions").getAsJsonArray()){
-					if(elm.getAsJsonObject().get("version").getAsString().equals(FCL.mcv)){
+					if(elm.getAsJsonObject().get("version").getAsString().equals("1.7.10")){
 						data = elm.getAsJsonObject();
 						found = true; break;
 					}
@@ -67,7 +66,7 @@ public class UpdateHandler {
 				if(!found){
 					data = new JsonObject();
 					data.addProperty("latest_version", FSMM.VERSION);
-					data.addProperty("latest_mc_version", FCL.mcv);
+					data.addProperty("latest_mc_version", "1.7.10");
 					data.addProperty("type", "mc.version.not.found;");
 				}
 			}
@@ -75,7 +74,7 @@ public class UpdateHandler {
 				e.printStackTrace();
 				data = new JsonObject();
 				data.addProperty("latest_version", FSMM.VERSION);
-				data.addProperty("latest_mc_version", FCL.mcv);
+				data.addProperty("latest_mc_version", "1.7.10");
 				data.addProperty("type", "error.check.console");
 			}
 		}

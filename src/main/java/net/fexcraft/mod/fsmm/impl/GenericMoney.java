@@ -100,19 +100,17 @@ public class GenericMoney implements Money {
 	 *
 	 * @return The referred object
 	 */
-	@Override
+
 	public Money get() {
 		return this;
 	}
 
 
-	@Override
 	public String name() {
 		return regname.getResourcePath();
 	}
 
 
-	@Override
 	public Class<Money> type() {
 		return Money.class;
 	}

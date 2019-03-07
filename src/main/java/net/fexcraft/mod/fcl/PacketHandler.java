@@ -3,18 +3,6 @@ package net.fexcraft.mod.fcl;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
-import net.fexcraft.lib.mc.api.packet.IPacketListener;
-import net.fexcraft.lib.mc.network.handlers.EntityUpdatePacketHandler;
-import net.fexcraft.lib.mc.network.handlers.ExamplePacketHandler;
-import net.fexcraft.lib.mc.network.handlers.KeyInputPacketHandler;
-import net.fexcraft.lib.mc.network.handlers.NBTTagCompoundPacketHandler;
-import net.fexcraft.lib.mc.network.handlers.TileEntityUpdatePacketHandler;
-import net.fexcraft.lib.mc.network.packet.Packet;
-import net.fexcraft.lib.mc.network.packet.PacketEntityUpdate;
-import net.fexcraft.lib.mc.network.packet.PacketJsonObject;
-import net.fexcraft.lib.mc.network.packet.PacketKeyInput;
-import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
-import net.fexcraft.lib.mc.network.packet.PacketTileEntityUpdate;
 import net.fexcraft.mod.fsmm.util.Print;
 
 public class PacketHandler {
@@ -24,18 +12,18 @@ public class PacketHandler {
 
     public static void init(){
         Print.log("Initialising Packet Handler.");
-        instance.registerMessage(ExamplePacketHandler.class,                  Packet.class,                  0, Side.SERVER);
-        instance.registerMessage(TileEntityUpdatePacketHandler.Client.class,  PacketTileEntityUpdate.class,  1, Side.CLIENT);
-        instance.registerMessage(TileEntityUpdatePacketHandler.Server.class,  PacketTileEntityUpdate.class,  2, Side.SERVER);
-        instance.registerMessage(KeyInputPacketHandler.class,                 PacketKeyInput.class,          3, Side.SERVER);
+        //instance.registerMessage(ExamplePacketHandler.class,                  Packet.class,                  0, Side.SERVER);
+        //instance.registerMessage(TileEntityUpdatePacketHandler.Client.class,  PacketTileEntityUpdate.class,  1, Side.CLIENT);
+        //instance.registerMessage(TileEntityUpdatePacketHandler.Server.class,  PacketTileEntityUpdate.class,  2, Side.SERVER);
+        //instance.registerMessage(KeyInputPacketHandler.class,                 PacketKeyInput.class,          3, Side.SERVER);
         //instance.registerMessage(ISUPacketHandler.Server.class,               PacketItemStackUpdate.class,   4, Side.SERVER);
         //instance.registerMessage(ISUPacketHandler.Client.class,               PacketItemStackUpdate.class,   5, Side.CLIENT);
         instance.registerMessage(JsonObjectPacketHandler.Server.class,        PacketJsonObject.class,        6, Side.SERVER);
         instance.registerMessage(JsonObjectPacketHandler.Client.class,        PacketJsonObject.class,        7, Side.CLIENT);
-        instance.registerMessage(NBTTagCompoundPacketHandler.Server.class,    PacketNBTTagCompound.class,    8, Side.SERVER);
-        instance.registerMessage(NBTTagCompoundPacketHandler.Client.class,    PacketNBTTagCompound.class,    9, Side.CLIENT);
-        instance.registerMessage(EntityUpdatePacketHandler.Server.class,      PacketEntityUpdate.class,     10, Side.SERVER);
-        instance.registerMessage(EntityUpdatePacketHandler.Client.class,      PacketEntityUpdate.class,     11, Side.CLIENT);
+        //instance.registerMessage(NBTTagCompoundPacketHandler.Server.class,    PacketNBTTagCompound.class,    8, Side.SERVER);
+        //instance.registerMessage(NBTTagCompoundPacketHandler.Client.class,    PacketNBTTagCompound.class,    9, Side.CLIENT);
+        //instance.registerMessage(EntityUpdatePacketHandler.Server.class,      PacketEntityUpdate.class,     10, Side.SERVER);
+        //instance.registerMessage(EntityUpdatePacketHandler.Client.class,      PacketEntityUpdate.class,     11, Side.CLIENT);
         Print.log("Done initialising Packet Handler.");
     }
 

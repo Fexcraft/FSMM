@@ -32,7 +32,7 @@ import net.minecraftforge.common.MinecraftForge;
 		 guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
 public class FSMM {
 
-	public static Map<Money, Class<Money>> CURRENCY = new TreeMap<>();
+	public static Map<ResourceLocation, Class<Money>> CURRENCY = new TreeMap<>();
 	public static final String MODID = "fsmm";
 	public static final String VERSION = "@VERSION@";
 
@@ -45,7 +45,7 @@ public class FSMM {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		CURRENCY.put(new GenericMoney(new ResourceLocation("fsmm:money")), Money.class);
+		CURRENCY.put(new ResourceLocation("fsmm:money"), Money.class);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
