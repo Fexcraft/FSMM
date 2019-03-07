@@ -11,7 +11,6 @@ import cpw.mods.fml.client.config.IConfigElement;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
@@ -87,8 +86,8 @@ public class Config {
 		JsonObject obj = JsonUtil.get(file);
 		if(obj.has("Items")){
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
-				GenericMoney money = null;
-				FSMM.CURRENCY.put(money = new GenericMoney(elm.getAsJsonObject(), true), Money.class);
+				GenericMoney money = new GenericMoney(elm.getAsJsonObject(), true);
+				FSMM.CURRENCY.put(money.getRegistryName(), money);
 				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
 				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
 			});

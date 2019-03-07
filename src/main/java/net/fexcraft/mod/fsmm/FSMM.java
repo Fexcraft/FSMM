@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.RegistryDelegate;
+import cpw.mods.fml.relauncher.Side;
+import net.fexcraft.mod.fcl.PacketHandler;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
@@ -32,7 +33,7 @@ import net.minecraftforge.common.MinecraftForge;
 		 guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
 public class FSMM {
 
-	public static Map<ResourceLocation, Class<Money>> CURRENCY = new TreeMap<>();
+	public static Map<ResourceLocation, Money> CURRENCY = new TreeMap<>();
 	public static final String MODID = "fsmm";
 	public static final String VERSION = "@VERSION@";
 
@@ -45,7 +46,7 @@ public class FSMM {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		CURRENCY.put(new ResourceLocation("fsmm:money"), Money.class);
+		CURRENCY.put(new ResourceLocation("fsmm:money"), new GenericMoney(new ResourceLocation("fsmm:money")));
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
@@ -55,7 +56,7 @@ public class FSMM {
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
 	    @Override
 	    public Item getTabIconItem() {
-	    	return new ItemStack(FCLRegistry.getBlock("fsmm:atm").getItem());
+	    	return new ItemStack(FCLRegistry.getBlock("fsmm:atm")).getItem();
 	    }
 	};
 	
@@ -79,9 +80,9 @@ public class FSMM {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
     	if(event.getSide().isClient()){
-        	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
+        	PacketHandler.registerListener(PacketHandler.PacketHandlerType.JSON, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
     	}
-    	PacketHandler.registerListener(PacketHandlerType.JSON, Side.SERVER, new Processor());
+    	PacketHandler.registerListener(PacketHandler.PacketHandlerType.JSON, Side.SERVER, new Processor());
     	CACHE.schedule();
     }
     
@@ -91,7 +92,7 @@ public class FSMM {
 	
 	@SuppressWarnings("deprecation")
 	public static List<Money> getSortedMoneyList(){
-		return CURRENCY.getValues().stream().sorted(new Comparator<Money>(){
+		return CURRENCY.values().stream().sorted(new Comparator<Money>(){
 			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
 		}).collect(Collectors.toList());
 	}

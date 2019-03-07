@@ -46,34 +46,6 @@ public class PacketHandler {
                 JsonObjectPacketHandler.addListener(side, (IPacketListener<PacketJsonObject>)listener);
                 break;
             }
-            case NBT:{
-                NBTTagCompoundPacketHandler.addListener(side, (IPacketListener<PacketNBTTagCompound>) listener);
-                break;
-            }
-            case KEYINPUT:{
-                if(side.isServer()){
-                    KeyInputPacketHandler.addListener((IPacketListener<PacketKeyInput>) listener);
-                }
-                break;
-            }
-            case TILEENTITY:{
-                if(side.isClient()){
-                    TileEntityUpdatePacketHandler.Client.addListener((IPacketListener<PacketTileEntityUpdate>) listener);
-                }
-                if(side.isServer()){
-                    TileEntityUpdatePacketHandler.Server.addListener((IPacketListener<PacketTileEntityUpdate>) listener);
-                }
-                break;
-            }
-            case ENTITY:{
-                if(side.isClient()){
-                    EntityUpdatePacketHandler.Client.addListener((IPacketListener<PacketEntityUpdate>) listener);
-                }
-                if(side.isServer()){
-                    EntityUpdatePacketHandler.Server.addListener((IPacketListener<PacketEntityUpdate>) listener);
-                }
-                break;
-            }
             default: break;
         }
         Print.log("[FCL] Registered new PacketListener with ID '" + listener.getId() + "' and type " + type.name() + " for Side:" + (side.isClient() ? "Client" : "Server") + ".");

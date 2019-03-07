@@ -2,16 +2,12 @@ package net.fexcraft.mod.fsmm.util;
 
 import java.util.List;
 
-import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 public class ItemManager {
 	
@@ -24,7 +20,7 @@ public class ItemManager {
 		ItemStack[] is = player.inventory.mainInventory;
 		ItemStack stack = null;
 		for(int in = 0; in < player.inventory.mainInventory.length; in++){
-			if(!(stack = is[in]!=null && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
+			if(!(stack = is[in]!=null && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null))){
 				MoneyCapability cap = stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null);
 				Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
 				value += cap.getWorth() * is[in].stackSize;
@@ -67,7 +63,7 @@ public class ItemManager {
 			}
 			if(player.inventory.mainInventory[i].hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
 				&& player.inventory.mainInventory[i].getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
-				player.inventory.removeStackFromSlot(i);
+				player.inventory.setInventorySlotContents(i, null);
 			}
 		}
 		setInInventory(player, old);
@@ -75,19 +71,19 @@ public class ItemManager {
 	}
 	
 	public static long setInInventory(EntityPlayer player, long amount){
-		for(int i = 0; i < player.inventory.mainInventory.size(); i++){
+		for(int i = 0; i < player.inventory.mainInventory.length; i++){
 			if(player.inventory.mainInventory[i] == null){
 				continue;
 			}
 			if(player.inventory.mainInventory[i].hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
 				&& player.inventory.mainInventory[i].getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
-				player.inventory.removeStackFromSlot(i);
+				player.inventory.setInventorySlotContents(i, null);
 			}
 		}
 		List<Money> list = FSMM.getSortedMoneyList();
 		Money money = null;
 		for(int i = 0; i < list.size(); i++){
-			Print.debug(list.get(i).getWorth(), list.get(i).getRegistryName());
+			Print.debug(list.get(i).getWorth()+"", list.get(i).getRegistryName().toString());
 			while(amount - (money = list.get(i)).getWorth() >= 0){
 				ItemStack stack = money.getItemStack().copy();
 				if(hasSpace(player, false)){

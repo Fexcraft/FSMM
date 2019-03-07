@@ -4,17 +4,13 @@ import net.fexcraft.lib.mc.api.registry.fBlock;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 @fBlock(modid = FSMM.MODID, name = "atm")
@@ -23,7 +19,7 @@ public class ATM extends Block {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	
     public ATM() {
-    	super(Material.GLASS);
+    	super(new Material(MapColor.airColor));
     	this.setCreativeTab(FSMM.tabFSMM);
     	this.setHarvestLevel("pickaxe", 1);
     	this.setHardness(1.0F);
@@ -32,9 +28,9 @@ public class ATM extends Block {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ){
 		if(!player.isSneaking() && side == world.getBlockState(pos).getValue(FACING) && hitY > 0.5f){
-			player.openGui(FSMM.getInstance(), GuiHandler.NEW_ATM, world, pos.getX(), pos.getY(), pos.getZ());
+			player.openGui(FSMM.getInstance(), GuiHandler.NEW_ATM, world, x, y, z);
 			return true;
 		}
 		else{
@@ -43,17 +39,12 @@ public class ATM extends Block {
 	}
 	
 	@Override
-	public boolean isFullBlock(IBlockState state) {
-		return true;
-	}
-	
-	@Override
-	public boolean isFullCube(IBlockState state){
-        return false;
+	public boolean isNormalCube(IBlockAccess world, int x, int y, int z){
+        return true;
     }
 	
 	@Override
-	public boolean isOpaqueCube(IBlockState state){
+	public boolean isOpaqueCube(){
         return false;
     }
 	
@@ -63,7 +54,7 @@ public class ATM extends Block {
     }
 
 	@Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack){
+    public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack stack){
         worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
     }
     
