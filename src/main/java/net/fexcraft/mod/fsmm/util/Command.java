@@ -9,12 +9,12 @@ import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.server.permission.PermissionAPI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +30,12 @@ public class Command extends CommandBase{
     public Command(){ return; }
     
     @Override 
-    public String getName(){ 
+    public String getCommandName(){
         return "fsmm";
     } 
 
     @Override         
-    public String getUsage(ICommandSender sender){ 
+    public String getCommandUsage(ICommandSender sender){
         return "/fsmm <args>";
     }
     
@@ -50,13 +50,13 @@ public class Command extends CommandBase{
     } 
 
     @Override 
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args){ 
+    public void processCommand(ICommandSender sender, String[] args){
     	boolean isp = sender instanceof EntityPlayer;
     	if(args.length <= 0){
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
-    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
+    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
     		}
     		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
     			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);
@@ -67,7 +67,7 @@ public class Command extends CommandBase{
     		}
     		return;
     	}
-    	boolean op = isp ? server.isSinglePlayer() ? true : PermissionAPI.hasPermission((EntityPlayer)sender, "fsmm.admin") : true;
+    	boolean op = Minecraft.getMinecraft().isSingleplayer() || sender.canCommandSenderUseCommand(2,"");
     	switch(args[0]){
 	    	case "help":{
 	        	Print.chat(sender, PREFIX + "= = = = = = = = = = =");

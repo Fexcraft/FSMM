@@ -7,10 +7,11 @@ import java.util.TreeMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.common.json.JsonUtil;
-import net.fexcraft.lib.mc.registry.FCLRegistry;
-import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.lib.mc.utils.Static;
+import cpw.mods.fml.client.config.IConfigElement;
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
@@ -21,11 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.client.config.IConfigElement;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class Config {
 	
@@ -92,8 +88,8 @@ public class Config {
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				GenericMoney money = null;
 				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
-				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
+				FCLRegistry.getAutoRegistry("fsmm").addItem(money.delegate.getResourcePath(), new GenericMoneyItem(money), 1, null);
+				money.stackload(FCLRegistry.getItem("fsmm:" + money.delegate.getResourcePath()), elm.getAsJsonObject(), true);
 			});
 		}
 		//
@@ -157,7 +153,7 @@ public class Config {
 		
 		@SubscribeEvent
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event){
-			if(event.getModID().equals("fsmm")){ refresh(); if(config.hasChanged()){ config.save(); }}
+			if(event.modID.equals("fsmm")){ refresh(); if(config.hasChanged()){ config.save(); }}
 		}
 		
 	    @SubscribeEvent
@@ -240,19 +236,19 @@ public class Config {
 		if(stack.getItem() instanceof Money.Item){
 			return ((Money.Item)stack.getItem()).getWorth(stack);
 		}
-		if(EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage())){
-			return EXTERNAL_ITEMS_METAWORTH.get(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
+		if(EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().delegate + ":" + stack.getItemDamage())){
+			return EXTERNAL_ITEMS_METAWORTH.get(stack.getItem().delegate + ":" + stack.getItemDamage());
 		}
-		if(EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName())){
-			return EXTERNAL_ITEMS.get(stack.getItem().getRegistryName());
+		if(EXTERNAL_ITEMS.containsKey(stack.getItem().delegate)){
+			return EXTERNAL_ITEMS.get(stack.getItem().delegate);
 		}
 		return 0;
 	}
 
 	public static boolean containsAsExternalItemStack(ItemStack stack){
 		try{
-			return EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName())
-				|| EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
+			return EXTERNAL_ITEMS.containsKey(stack.getItem().delegate)
+				|| EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().delegate + ":" + stack.getItemDamage());
 		}
 		catch(Exception e){ e.printStackTrace(); return false; }
 	}

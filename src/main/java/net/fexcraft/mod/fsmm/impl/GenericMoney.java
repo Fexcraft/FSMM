@@ -2,17 +2,20 @@ package net.fexcraft.mod.fsmm.impl;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.common.json.JsonUtil;
-import net.fexcraft.lib.common.math.Time;
-import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.lib.mc.utils.Static;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.RegistryDelegate;
+import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
+import net.fexcraft.mod.fsmm.util.Print;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+
+import java.time.LocalDate;
 
 public class GenericMoney implements Money {
 	
@@ -21,7 +24,7 @@ public class GenericMoney implements Money {
 	private long worth;
 	
 	public GenericMoney(JsonObject obj, boolean internal){
-		regname = new ResourceLocation((internal ? FSMM.MODID + ":" : "") + JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
+		regname = new ResourceLocation((internal ? FSMM.MODID + ":" : "") + JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + LocalDate.now().getDayOfMonth()));
 		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
 		int meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
 		if(meta >= 0 && !internal){ regname = new ResourceLocation(regname.toString() + "_" + meta); }
@@ -29,24 +32,33 @@ public class GenericMoney implements Money {
 			stackload(null, obj, internal);
 		}
 	}
+
+	public GenericMoney(ResourceLocation reg){
+		regname=reg;
+		worth=1;
+	}
 	
 	public void stackload(net.minecraft.item.Item item, JsonObject obj, boolean internal){
 		if(item == null || !internal){
-			String id = JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate());
-			item = net.minecraft.item.Item.getByNameOrId(internal ? FSMM.MODID + ":" + id : id);
+			String id = JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + LocalDate.now().getDayOfMonth());
+			if(internal){
+				item = cpw.mods.fml.common.registry.GameRegistry.findItem(FSMM.MODID,id);
+			} else {
+				item = cpw.mods.fml.common.registry.GameRegistry.findItem(id.split(":")[0],id.split(":")[1]);
+			}
 			if(item == null){
 				Print.log("[FSMM] ERROR - External Item with ID '" + regname.toString() + "' couldn't be found! This is bad!");
-				Static.halt();
+				FMLCommonHandler.instance().exitJava(1, true);
 			}
 		}
 		NBTTagCompound compound = null;
 		if(obj.has("nbt")){
 			try{
-				compound = JsonToNBT.getTagFromJson(obj.get("nbt").getAsString());
+				compound = (NBTTagCompound) (JsonToNBT.func_150315_a(obj.get("nbt").getAsString()));
 			}
 			catch(NBTException e){
 				Print.log("[FSMM] ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
-				Static.halt();
+				FMLCommonHandler.instance().exitJava(1, true);
 			}
 		}
 		//
@@ -65,10 +77,6 @@ public class GenericMoney implements Money {
 		return regname;
 	}
 
-	@Override
-	public Class<Money> getRegistryType(){
-		return Money.class;
-	}
 
 	@Override
 	public long getWorth(){
@@ -84,5 +92,28 @@ public class GenericMoney implements Money {
 	public ItemStack getItemStack(){
 		return stack;
 	}
-	
+
+	/**
+	 * Get the referent pointed at by this delegate. This will be the currently active item or block, and will change
+	 * as world saves come and go. Note that item.delegate.get() may NOT be the same object as item, due to item and
+	 * block substitution.
+	 *
+	 * @return The referred object
+	 */
+	@Override
+	public Money get() {
+		return this;
+	}
+
+
+	@Override
+	public String name() {
+		return regname.getResourcePath();
+	}
+
+
+	@Override
+	public Class<Money> type() {
+		return Money.class;
+	}
 }

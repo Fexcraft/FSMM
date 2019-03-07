@@ -4,14 +4,14 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.12.x"
+version = "1.7.10"
 def modversion = "2.2.3"
 group = "net.fexcraft.mod.fsmm" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "FSMM-" + modversion;
@@ -22,17 +22,14 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12.2-14.23.3.2655"
+    version = "1.7.10-10.13.4.1558-1.7.10"
     runDir = "run"
     
     replace "@VERSION@", modversion
     replaceIn "FSMM.java"
-	
-    mappings = "snapshot_20170624"
 }
 
 dependencies {
-	compile project(':FCL')
 }
 
 processResources {

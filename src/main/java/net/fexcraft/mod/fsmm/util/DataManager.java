@@ -16,9 +16,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.common.json.JsonUtil;
-import net.fexcraft.lib.common.math.Time;
-import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
@@ -45,7 +43,7 @@ public class DataManager extends TimerTask {
 	@Override
 	public void run(){
 		ImmutableSet<String> set = ImmutableSet.copyOf(ACCOUNTS.keySet());
-		LAST_TIMERTASK = Time.getDate();
+		LAST_TIMERTASK = LocalDate.now().getDayOfMonth();
 		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY - 5000);
 		Print.debug("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
 		for(String type : set){
@@ -146,7 +144,7 @@ public class DataManager extends TimerTask {
 			try{
 				Account account = impl.getConstructor(String.class, String.class, long.class, String.class, JsonObject.class).newInstance(arr[1], arr[0], arr[0].equals("player") ? Config.STARTING_BALANCE : 0, Config.DEFAULT_BANK, null);
 				addAccount(arr[0], account);
-				FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + "!");
+				//FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + "!");
 				return account.setTemporary(tempload);
 			}
 			catch(ReflectiveOperationException | RuntimeException e){
@@ -204,7 +202,7 @@ public class DataManager extends TimerTask {
 			else if(create){
 				try{
 					Bank bank = impl.getConstructor(String.class, String.class, long.class, JsonObject.class, TreeMap.class).newInstance(id, id.equals(Config.DEFAULT_BANK) ? "Default Server Bank" : "Generated Bank", Config.STARTING_BALANCE, null, null);
-					addBank(bank); FSMM.LOGGER.info("Created new bank with ID " + id + ".");
+					addBank(bank); //FSMM.LOGGER.info("Created new bank with ID " + id + ".");
 					return bank.setTemporary(tempload);
 				}
 				catch(ReflectiveOperationException | RuntimeException e){
@@ -228,7 +226,7 @@ public class DataManager extends TimerTask {
 
 	public void schedule(){
 		LocalDateTime midnight = LocalDateTime.of(LocalDate.now(ZoneOffset.systemDefault()), LocalTime.MIDNIGHT);
-		long mid = midnight.toInstant(ZoneOffset.UTC).toEpochMilli(); long date = Time.getDate();
+		long mid = midnight.toInstant(ZoneOffset.UTC).toEpochMilli(); long date = LocalDate.now().getDayOfMonth();
 		while((mid += Config.UNLOAD_FREQUENCY) < date);
         timer.schedule(this, new Date(mid), Config.UNLOAD_FREQUENCY);
 	}

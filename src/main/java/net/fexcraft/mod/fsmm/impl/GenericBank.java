@@ -3,12 +3,11 @@ package net.fexcraft.mod.fsmm.impl;
 import java.util.TreeMap;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.Manageable;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.fsmm.util.Print;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -43,12 +42,12 @@ public class GenericBank extends Bank {
 			case WITHDRAW:{
 				if(sender == null){
 					Print.chat(log, "Withdraw failed! Account is null.");
-					Print.debug(log.getName() + " -> player account is null.");
+					Print.debug(log.getCommandSenderName() + " -> player account is null.");
 					return false;
 				}
 				if(amount <= 0){
 					Print.chat(log, "Withdraw failed! Amount null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
-					Print.debug(log.getName() + " tried to withdraw a negative amout of money!");
+					Print.debug(log.getCommandSenderName() + " tried to withdraw a negative amout of money!");
 					return false;
 				}
 				player = (EntityPlayer)log;
@@ -59,8 +58,8 @@ public class GenericBank extends Bank {
 				if(sender.getBalance() - amount >= 0){
 					sender.modifyBalance(Manageable.Action.SUB, amount, player);
 					ItemManager.addToInventory(player, amount - fee);
-					String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getName() + ";";
-					Print.debug(str); FSMM.LOGGER.info(str);
+					String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getCommandSenderName() + ";";
+					//Print.debug(str); FSMM.LOGGER.info(str);
 					return true;
 				}
 				Print.chat(player, "Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
@@ -70,12 +69,12 @@ public class GenericBank extends Bank {
 			case DEPOSIT:{
 				if(receiver == null){
 					Print.chat(log, "Deposit failed! Account is null.");
-					Print.debug(log.getName() + " -> player account is null.");
+					Print.debug(log.getCommandSenderName() + " -> player account is null.");
 					return false;
 				}
 				if(amount <= 0){
 					Print.chat(log, "Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(log) + ");");
-					Print.debug(log.getName() + " tried to deposit a negative amout of money!");
+					Print.debug(log.getCommandSenderName() + " tried to deposit a negative amout of money!");
 					return false;
 				}
 				player = (EntityPlayer)log;
@@ -84,8 +83,8 @@ public class GenericBank extends Bank {
 						fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
 						ItemManager.removeFromInventory(player, amount);
 						receiver.modifyBalance(Manageable.Action.ADD, amount - fee, player);
-						String str = player.getName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
-						Print.debug(str); FSMM.LOGGER.info(str);
+						String str = player.getCommandSenderName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
+						Print.debug(str); //FSMM.LOGGER.info(str);
 						return true;
 					}
 					else{
@@ -101,17 +100,17 @@ public class GenericBank extends Bank {
 			case TRANSFER:{
 				if(sender == null){
 					Print.chat(log, "Transfer failed! Sender is null.");
-					Print.debug(log.getName() + " -> sender account is null.");
+					Print.debug(log.getCommandSenderName() + " -> sender account is null.");
 					return false;
 				}
 				if(receiver == null){
 					Print.chat(log, "Transfer failed! Receiver is null.");
-					Print.debug(log.getName() + " -> receiver account is null.");
+					Print.debug(log.getCommandSenderName() + " -> receiver account is null.");
 					return false;
 				}
 				if(amount <= 0){
 					Print.chat(log, "Transfer failed! Amount null or negative. (T:" + amount + ");");
-					Print.debug(log.getName() + " tried to transfer a negative amout of money to " + receiver.getAsResourceLocation().toString() + "!");
+					Print.debug(log.getCommandSenderName() + " tried to transfer a negative amout of money to " + receiver.getAsResourceLocation().toString() + "!");
 					return false;
 				}
 				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
@@ -119,7 +118,7 @@ public class GenericBank extends Bank {
 					sender.modifyBalance(Manageable.Action.SUB, amount, log);
 					receiver.modifyBalance(Manageable.Action.ADD, amount - fee, log);
 					String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
-					Print.debug(str); FSMM.LOGGER.info(str);
+					Print.debug(str); //FSMM.LOGGER.info(str);
 					return true;
 				}
 				Print.chat(log, "Transfer failed! Not enough money on your Account.");
@@ -127,7 +126,7 @@ public class GenericBank extends Bank {
 				return false;
 			}
 			default:{
-				Print.chat(log, "Invalid Bank Action. " + action.name() + " || " + log.getName() + " || "
+				Print.chat(log, "Invalid Bank Action. " + action.name() + " || " + log.getCommandSenderName() + " || "
 					+ (sender == null ? "null" : sender.getAsResourceLocation().toString()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getAsResourceLocation().toString()));
 				return false;
 			}

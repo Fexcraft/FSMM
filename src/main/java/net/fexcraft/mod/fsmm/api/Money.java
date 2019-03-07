@@ -1,13 +1,19 @@
 package net.fexcraft.mod.fsmm.api;
 
+import cpw.mods.fml.common.registry.RegistryDelegate;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.util.ResourceLocation;
 
-public interface Money extends IForgeRegistryEntry<Money> {
+public interface Money extends RegistryDelegate<Money>{
 
 	public long getWorth();
 	
 	public ItemStack getItemStack();
+
+	public ResourceLocation getRegistryName();
+
+	public Money setRegistryName(ResourceLocation name);
 	
 	//
 	

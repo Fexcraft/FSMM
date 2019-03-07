@@ -1,7 +1,10 @@
 package net.fexcraft.mod.fsmm.util;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.fexcraft.lib.mc.utils.Formatter;
-import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Money;
@@ -12,24 +15,20 @@ import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventHandler {
 	
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     	if(UpdateHandler.Status != null){
-        	event.player.sendMessage(new TextComponentString(Formatter.format(UpdateHandler.Status)));
+        	event.player.addChatComponentMessage(new ChatComponentText(Formatter.format(UpdateHandler.Status)));
     	}
-    	if(event.player.world.isRemote){ return; }
-		Print.debug("Loading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
-    	Account account = event.player.world.getCapability(FSMMCapabilities.WORLD, null).getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
+    	if(event.player.worldObj.isRemote){ return; }
+		Print.debug("Loading account of " + event.player.getDisplayName() + " || " + event.player.getGameProfile().getId().toString());
+    	Account account = event.player.worldObj.getCapability(FSMMCapabilities.WORLD, null).getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
     	if(Config.NOTIFY_BALANCE_ON_JOIN){
     		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + Config.getWorthAsString(account.getBalance()));
     		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));
@@ -39,20 +38,20 @@ public class EventHandler {
     
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
-		Print.debug("Unloading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
+		Print.debug("Unloading account of " + event.player.getDisplayName() + " || " + event.player.getGameProfile().getId().toString());
 		DataManager.unloadAccount("player", event.player.getGameProfile().getId().toString());
     }
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event){
     	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP || FSMMCapabilities.MONEY_ITEMSTACK == null){ return; }
-    	if(event.getItemStack().hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
-    		long worth = event.getItemStack().getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth();
+    	if(event.itemStack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
+    		long worth = event.itemStack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth();
     		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
-    		if(event.getItemStack().getCount() > 1){
-    			str += " &8(&7" + Config.getWorthAsString(worth * event.getItemStack().getCount(), true, worth < 10) + "&8)";
+    		if(event.itemStack.stackSize > 1){
+    			str += " &8(&7" + Config.getWorthAsString(worth * event.itemStack.stackSize, true, worth < 10) + "&8)";
     		}
-    		event.getToolTip().add(Formatter.format(str));
+    		event.toolTip.add(Formatter.format(str));
     	}
     }
     
