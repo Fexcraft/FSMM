@@ -6,14 +6,15 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.mc.api.packet.IPacketListener;
-import net.fexcraft.lib.mc.network.PacketHandler;
-import net.fexcraft.lib.mc.network.packet.PacketJsonObject;
-import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.lib.mc.utils.Static;
+import cpw.mods.fml.common.FMLCommonHandler;
+import net.fexcraft.mod.fcl.IPacketListener;
+import net.fexcraft.mod.fcl.JsonUtil;
+import net.fexcraft.mod.fcl.PacketHandler;
+import net.fexcraft.mod.fcl.PacketJsonObject;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.util.Print;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class Processor implements IPacketListener<PacketJsonObject> {
@@ -25,7 +26,7 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 
 	@Override
 	public void process(PacketJsonObject pkt, Object[] objs){
-		Print.debug(pkt.obj);
+		Print.debug(pkt.obj.getAsString());
 		if(pkt.obj.has("request")){
 			EntityPlayerMP player = (EntityPlayerMP)objs[0];
 			Account playeracc = DataManager.getAccount("player:" + player.getGameProfile().getId().toString(), false, false, null);
@@ -59,11 +60,11 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 					JsonArray types = new JsonArray();
 					for(File fl : DataManager.ACCOUNT_DIR.listFiles()){
 						if(fl.isDirectory() && !fl.isHidden()){
-							types.add(fl.getName());
+							types.add(JsonUtil.makeFromString(fl.getName()));
 						}
 					}
 					if(types.size() == 0){
-						types.add("nothing found");
+						types.add(JsonUtil.makeFromString("nothing found"));
 					}
 					reply.add("types", types);
 					break;
@@ -74,15 +75,15 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 					if(file.exists() && file.isDirectory()){
 						for(File fl : file.listFiles()){
 							if(!fl.isDirectory() && !fl.isHidden() && fl.getName().endsWith(".json")){
-								accounts.add(fl.getName().substring(0, fl.getName().length() - 5));
+								accounts.add(JsonUtil.makeFromString(fl.getName().substring(0, fl.getName().length() - 5)));
 							}
 						}
 					}
 					else{
-						accounts.add("type not found");
+						accounts.add(JsonUtil.makeFromString("type not found"));
 					}
 					if(accounts.size() == 0){
-						accounts.add("nothing found");
+						accounts.add(JsonUtil.makeFromString("nothing found"));
 					}
 					reply.add("accounts", accounts);
 					break;
@@ -99,9 +100,9 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 							UUID.fromString(str);
 							receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
 						}
-						catch(Exception e0){ if(Static.dev()) e0.printStackTrace();
+						catch(Exception e0){ if(Print.dev()) e0.printStackTrace();
 							try{
-								UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(str).getId();
+								UUID uuid = FMLCommonHandler.instance().getMinecraftServerInstance().func_152358_ax().func_152655_a(str).getId();
 								receiver = DataManager.getAccount("player:" + uuid.toString(), true, false);
 							}
 							catch(Exception e1){

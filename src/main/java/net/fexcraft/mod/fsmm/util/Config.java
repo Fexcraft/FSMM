@@ -11,6 +11,7 @@ import cpw.mods.fml.client.config.IConfigElement;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
@@ -87,9 +88,9 @@ public class Config {
 		if(obj.has("Items")){
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				GenericMoney money = null;
-				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
-				FCLRegistry.getAutoRegistry("fsmm").addItem(money.delegate.getResourcePath(), new GenericMoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.delegate.getResourcePath()), elm.getAsJsonObject(), true);
+				FSMM.CURRENCY.put(money = new GenericMoney(elm.getAsJsonObject(), true), Money.class);
+				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
+				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
 			});
 		}
 		//
@@ -144,7 +145,7 @@ public class Config {
 		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' display.");
 		SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
 		SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
-		UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
+		UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Print.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}

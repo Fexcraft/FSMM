@@ -1,14 +1,10 @@
 package net.fexcraft.mod.fsmm.util;
 
-import net.fexcraft.lib.common.math.Time;
-import net.fexcraft.lib.mc.registry.UCResourceLocation;
-import net.fexcraft.lib.mc.utils.Formatter;
-import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.lib.mc.utils.Static;
+import cpw.mods.fml.common.FMLCommonHandler;
+import net.fexcraft.mod.fcl.UCResourceLocation;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -16,14 +12,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Command extends CommandBase{
 
-	public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
+	public static final String PREFIX = net.fexcraft.mod.fcl.Formatter.format("&0[&3FSMM&0]&7 ");
 	private final static ArrayList<String> aliases = new ArrayList<String>();
 	static{ aliases.add("money"); aliases.add("balance"); aliases.add("currency"); }
   
@@ -40,12 +34,12 @@ public class Command extends CommandBase{
     }
     
     @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender){
+    public boolean canCommandSenderUseCommand(ICommandSender sender){
     	return true;
     }
 
     @Override 
-    public List<String> getAliases(){ 
+    public List<String> getCommandAliases(){
         return aliases;
     } 
 
@@ -56,7 +50,12 @@ public class Command extends CommandBase{
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
-    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
+    			Account acc= DataManager.getAccount("player:" +((EntityPlayer)sender).getGameProfile().getId().toString(), false, false, null);
+    			if(acc!=null){
+				Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(acc.getBalance()));
+				} else {
+					Print.chat(sender, "&9In Bank could not be loaded");
+				}
     		}
     		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
     			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);
@@ -115,7 +114,7 @@ public class Command extends CommandBase{
     			}
     			temp = DataManager.getBanks().values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
     			Print.chat(sender, "&9Banks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
-    			Print.chat(sender, "&5Last scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
+    			Print.chat(sender, "&5Last scheduled unload: &r&7" + (new SimpleDateFormat("dd|MM|yyyy HH:mm:ss").format(DataManager.LAST_TIMERTASK >= 0 ? new Date(DataManager.LAST_TIMERTASK) : new Date())));
     			return;
     		}
     		default:{
@@ -134,7 +133,7 @@ public class Command extends CommandBase{
 			}
 			catch(Exception e){
 				//not an UUID, let's convert
-				UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getResourcePath()).getId();
+				UUID uuid = FMLCommonHandler.instance().getMinecraftServerInstance().func_152358_ax().func_152655_a(rs.getResourcePath()).getId();
 				rs = new UCResourceLocation(rs.getResourceDomain(), uuid.toString());
 			}
 		}

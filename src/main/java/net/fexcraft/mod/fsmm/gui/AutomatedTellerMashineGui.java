@@ -1,18 +1,18 @@
 package net.fexcraft.mod.fsmm.gui;
 
-import java.io.IOException;
 
+import net.fexcraft.mod.fcl.Formatter;
+import net.fexcraft.mod.fcl.IPacketListener;
+import net.fexcraft.mod.fcl.PacketHandler;
+import net.fexcraft.mod.fcl.PacketJsonObject;
+import net.fexcraft.mod.fsmm.util.Print;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.mc.api.packet.IPacketListener;
-import net.fexcraft.lib.mc.network.PacketHandler;
-import net.fexcraft.lib.mc.network.packet.PacketJsonObject;
-import net.fexcraft.lib.mc.utils.Formatter;
-import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.gui.buttons.NumberButton;
 import net.fexcraft.mod.fsmm.gui.buttons.SelectBoxField;
 import net.fexcraft.mod.fsmm.gui.buttons.SideButton;
@@ -82,7 +82,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		for(int i = 0; i < 7; i++){
 			buttonList.add(fieldbuttons[i] = new SelectBoxField(21 + i, xhalf + 25, yhalf + 13));
 		}
-		receiver = new GuiTextField(22, fontRenderer, xhalf + 22, yhalf + 37, 132, 11);
+		receiver = new GuiTextField( Minecraft.getMinecraft().fontRenderer, xhalf + 22, yhalf + 37, 132, 11);
 		receiver.setVisible(false); receiver.setMaxStringLength(1024);
 	}
 	
@@ -116,18 +116,18 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         else{
             for(int i = 0; i < lines.length; i++){
             	int x = xhalf + 23, y = yhalf + 16 + (i * 23);
-            	if(fontRenderer.getStringWidth(lines[i]) > 130){
+            	if( Minecraft.getMinecraft().fontRenderer.getStringWidth(lines[i]) > 130){
             		GL11.glScaled(0.5, 0.5, 0.5);
-            		this.fontRenderer.drawSplitString(lines[i], x * 2, y * 2, 130, MapColor.CYAN.colorValue);
+					Minecraft.getMinecraft().fontRenderer.drawSplitString(lines[i], x * 2, y * 2, 130, MapColor.cyanColor.colorValue);
             		GL11.glScaled(2.0, 2.0, 2.0);
             	}
             	else{
-            		this.fontRenderer.drawString(lines[i], x, y, MapColor.BLACK.colorValue);
+					Minecraft.getMinecraft().fontRenderer.drawString(lines[i], x, y, MapColor.blackColor.colorValue);
             	}
             }
         }
         //
-        this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
+        this.buttonList.forEach(button -> ((GuiButton)button).drawButton(mc, mx, my));
         receiver.setVisible(selectbox ? false : window.equals("transfer")); receiver.drawTextBox();
 	}
 	
@@ -143,7 +143,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	}
 	
 	@Override
-    public void keyTyped(char typedChar, int keyCode) throws IOException{
+    public void keyTyped(char typedChar, int keyCode){
         if(keyCode == 1){
         	if(selectbox){
         		selectbox = false;
@@ -165,12 +165,12 @@ public class AutomatedTellerMashineGui extends GuiScreen {
     }
 	
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton){
     	super.mouseClicked(mouseX, mouseY, mouseButton); receiver.mouseClicked(mouseX, mouseY, mouseButton);
     }
 	
 	@Override
-	public void handleMouseInput() throws IOException{
+	public void handleMouseInput(){
 		super.handleMouseInput();
 		if(!window.equals("transfer") && !selectbox){ return; }
 		int e = Mouse.getEventDWheel();
@@ -181,7 +181,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	
 	@Override
     protected void actionPerformed(GuiButton button){
-		Print.debug(window, button.id);
+		Print.debug(window, button.id+"");
 		if(button.id == 20){
 			this.mc.displayGuiScreen((GuiScreen)null);
             if(this.mc.currentScreen == null){
@@ -256,7 +256,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 							this.openPerspective("request_transfer", null);
 						}
 						else{
-							Print.chat(mc.player, "Cannot transfer '0'!");
+							Print.chat(mc.thePlayer, "Cannot transfer '0'!");
 						}
 					}
 				}
@@ -456,7 +456,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		
 		@Override
 		public void process(PacketJsonObject pkt, Object[] objs){
-			Print.debug(pkt.obj);
+			Print.debug(pkt.obj.getAsString());
 			if(pkt.obj.has("payload")){
 				switch(pkt.obj.get("payload").getAsString()){
 					case "main_data":{

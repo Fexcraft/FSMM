@@ -26,11 +26,13 @@ public class Print {
     }
 
 
-    public static void debug(String s){
+    public static void debug(String ... s){
         if(dev()){
             System.out.println("------------------FSMM Debug------------------");
-            System.out.println(Thread.currentThread().getStackTrace()[2]);//print what function just called this
-            System.out.println(s);
+            System.out.println(Thread.currentThread().getStackTrace()[2]);//print what function just called
+            for(String str : s) {
+                System.out.println(str);
+            }
             System.out.println("------------------FSMM Debug------------------");
         }
     }

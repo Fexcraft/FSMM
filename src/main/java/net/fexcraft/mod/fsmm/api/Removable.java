@@ -2,7 +2,7 @@ package net.fexcraft.mod.fsmm.api;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.lib.common.math.Time;
+import java.time.LocalDate;
 
 /**
  * Internal Usage Class, do not bother with.
@@ -21,7 +21,7 @@ public abstract class Removable {
 	
 	/** Selfexplaining. */
 	public long updateLastAccess(){
-		return last_access = temporary ? Time.getDate() : -1;
+		return last_access = temporary ? LocalDate.now().getDayOfMonth() : -1;
 	}
 	
 	@SuppressWarnings("unchecked")

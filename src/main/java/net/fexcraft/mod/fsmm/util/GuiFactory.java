@@ -1,26 +1,36 @@
 package net.fexcraft.mod.fsmm.util;
 
+
+import cpw.mods.fml.client.IModGuiFactory;
+import cpw.mods.fml.client.config.GuiConfig;
+import cpw.mods.fml.client.config.IConfigElement;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.client.IModGuiFactory;
-import net.minecraftforge.fml.client.config.GuiConfig;
-import net.minecraftforge.fml.client.config.IConfigElement;
-
-public class GuiFactory implements IModGuiFactory {
-
+public class GuiFactory /*implements IModGuiFactory*/ {
+/*
 	@Override
 	public void initialize(Minecraft minecraftInstance){
 		//
+	}
+
+	public Class<? extends GuiScreen> mainConfigGuiClass() {
+		return null;
 	}
 
 	@Override
 	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories(){
 		return null;
 	}
-	
+
+	@Override
+	public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
+		return null;
+	}
+
 	public static class ConfigGui extends GuiConfig {
 
 		public ConfigGui(GuiScreen parent){
@@ -42,6 +52,6 @@ public class GuiFactory implements IModGuiFactory {
 	@Override
 	public GuiScreen createConfigGui(GuiScreen parentScreen){
 		return new ConfigGui(parentScreen);
-	}
+	}*/
 	
 }

@@ -3,7 +3,7 @@ package net.fexcraft.mod.fsmm.gui.buttons;
 import net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.opengl.GL11;
 
 public class NumberButton extends GuiButton {
 
@@ -15,12 +15,12 @@ public class NumberButton extends GuiButton {
 	}
 	
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float f){
+	public void drawButton(Minecraft mc, int mouseX, int mouseY){
 		if(!this.visible){ return; }
 		mc.getTextureManager().bindTexture(AutomatedTellerMashineGui.TEXTURE);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-		this.drawTexturedModalRect(this.x, this.y, getX(enabled, hovered), getY(enabled, hovered), this.width, this.height);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		this.field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+		this.drawTexturedModalRect(this.xPosition, this.yPosition, getX(enabled, field_146123_n), getY(enabled, field_146123_n), this.width, this.height);
 	}
 
 	private int getX(boolean enabled, boolean hovered){

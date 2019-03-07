@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public interface Money extends RegistryDelegate<Money>{
+public interface Money{
 
 	public long getWorth();
 	

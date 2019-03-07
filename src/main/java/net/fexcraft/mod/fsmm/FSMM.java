@@ -2,29 +2,22 @@ package net.fexcraft.mod.fsmm;
  
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.RegistryDelegate;
-import cpw.mods.fml.server.FMLServerHandler;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.Logger;
 
 import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.MoneyCapability;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
-import net.fexcraft.mod.fsmm.api.WorldCapability;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
-import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
-import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
-import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.EventHandler;
@@ -39,7 +32,7 @@ import net.minecraftforge.common.MinecraftForge;
 		 guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
 public class FSMM {
 
-	public static RegistryDelegate<Money> CURRENCY;
+	public static Map<Money, Class<Money>> CURRENCY = new TreeMap<>();
 	public static final String MODID = "fsmm";
 	public static final String VERSION = "@VERSION@";
 
@@ -52,7 +45,7 @@ public class FSMM {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		CURRENCY = new RegistryDelegate.Delegate<Money>(new GenericMoney(new ResourceLocation("fsmm:money")), Money.class);
+		CURRENCY.put(new GenericMoney(new ResourceLocation("fsmm:money")), Money.class);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);

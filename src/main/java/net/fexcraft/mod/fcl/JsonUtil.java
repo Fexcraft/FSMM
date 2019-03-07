@@ -79,6 +79,10 @@ public class JsonUtil{
         return getFromString(string, true);
     }
 
+    public static JsonElement makeFromString(String s){
+            return s == null ? JsonNull.INSTANCE : new JsonPrimitive(s);
+    }
+
     public static void addToArrayIfNotContains(JsonArray array, String string){
         boolean contains = false;
         for(JsonElement elm : array){
