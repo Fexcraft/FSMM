@@ -16,12 +16,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.NullBank;
+import net.fexcraft.mod.lib.fcl.JsonUtil;
 import net.minecraft.util.ResourceLocation;
 
 public class DataManager extends TimerTask {

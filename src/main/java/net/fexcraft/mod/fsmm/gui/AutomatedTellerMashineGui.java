@@ -1,11 +1,11 @@
 package net.fexcraft.mod.fsmm.gui;
 
 
-import net.fexcraft.mod.fcl.Formatter;
-import net.fexcraft.mod.fcl.IPacketListener;
-import net.fexcraft.mod.fcl.PacketHandler;
-import net.fexcraft.mod.fcl.PacketJsonObject;
 import net.fexcraft.mod.fsmm.util.Print;
+import net.fexcraft.mod.lib.fcl.Formatter;
+import net.fexcraft.mod.lib.fcl.IPacketListener;
+import net.fexcraft.mod.lib.fcl.PacketHandler;
+import net.fexcraft.mod.lib.fcl.PacketJsonObject;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -56,6 +56,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		instance = this;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui(){
 		xhalf = (this.width - 176) / 2;
@@ -86,6 +87,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		receiver.setVisible(false); receiver.setMaxStringLength(1024);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
     public void drawScreen(int mx, int my, float pt){		
 		this.drawDefaultBackground();

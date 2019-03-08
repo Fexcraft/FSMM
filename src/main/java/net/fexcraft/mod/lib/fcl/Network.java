@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fcl;
+package net.fexcraft.mod.lib.fcl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

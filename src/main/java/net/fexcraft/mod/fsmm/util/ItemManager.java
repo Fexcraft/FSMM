@@ -19,13 +19,13 @@ public class ItemManager {
 		long value = 0l;
 		ItemStack[] is = player.inventory.mainInventory;
 		ItemStack stack = null;
-		for(int in = 0; in < player.inventory.mainInventory.length; in++){
+		/*for(int in = 0; in < player.inventory.mainInventory.length; in++){
 			if(!(stack = is[in]!=null && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null))){
 				MoneyCapability cap = stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null);
 				Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
 				value += cap.getWorth() * is[in].stackSize;
 			}
-		}
+		}*///TODO
 		return value;
 	}
 	
@@ -38,11 +38,11 @@ public class ItemManager {
 			if(stack == null){
 				i++;
 			}
-			else if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+			/*else if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
 				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0
 				&& countMoneyItemAsSpace){
 				i++;
-			}
+			}*///TODO
 			else{
 				continue;
 			}
@@ -61,10 +61,10 @@ public class ItemManager {
 			if(player.inventory.mainInventory[i] == null){
 				continue;
 			}
-			if(player.inventory.mainInventory[i].hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+			/*if(player.inventory.mainInventory[i].hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
 				&& player.inventory.mainInventory[i].getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
 				player.inventory.setInventorySlotContents(i, null);
-			}
+			}*///TODO
 		}
 		setInInventory(player, old);
 		return amount;
@@ -75,10 +75,10 @@ public class ItemManager {
 			if(player.inventory.mainInventory[i] == null){
 				continue;
 			}
-			if(player.inventory.mainInventory[i].hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+			/*if(player.inventory.mainInventory[i].hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
 				&& player.inventory.mainInventory[i].getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
 				player.inventory.setInventorySlotContents(i, null);
-			}
+			}*///TODO
 		}
 		List<Money> list = FSMM.getSortedMoneyList();
 		Money money = null;

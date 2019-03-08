@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fcl.UCResourceLocation;
 import net.fexcraft.mod.fsmm.util.Print;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ResourceLocation;
@@ -67,7 +66,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	public String getType(){ return type; }
 	
 	public ResourceLocation getAsResourceLocation(){
-		return new UCResourceLocation(this.getType(), this.getId());
+		return new ResourceLocation(this.getType(), this.getId());
 	}
 	
 	@Nullable

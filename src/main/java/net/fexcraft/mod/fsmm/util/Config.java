@@ -11,12 +11,12 @@ import cpw.mods.fml.client.config.IConfigElement;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import net.fexcraft.mod.fcl.JsonUtil;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
+import net.fexcraft.mod.lib.fcl.JsonUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -61,7 +61,7 @@ public class Config {
 		DEFAULT.put("200kfoney", 200000000l);
 		DEFAULT.put("500kfoney", 500000000l);
 	}
-	private static TreeMap<ResourceLocation, Long> EXTERNAL_ITEMS = new TreeMap<ResourceLocation, Long>();
+	private static TreeMap<String, Long> EXTERNAL_ITEMS = new TreeMap<String, Long>();
 	private static TreeMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new TreeMap<String, Long>();
 	
 	public static void initialize(FMLPreInitializationEvent event){
@@ -87,9 +87,8 @@ public class Config {
 		if(obj.has("Items")){
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				GenericMoney money = new GenericMoney(elm.getAsJsonObject(), true);
-				FSMM.CURRENCY.put(money.getRegistryName(), money);
-				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
+				FSMM.CURRENCY.put(money.getRegistryName().toString(), money); new GenericMoneyItem(money);
+				//money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
 			});
 		}
 		//
@@ -149,15 +148,15 @@ public class Config {
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
 	
-	private static class EventHandler {
+	public static class EventHandler {
 		
 		@SubscribeEvent
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event){
 			if(event.modID.equals("fsmm")){ refresh(); if(config.hasChanged()){ config.save(); }}
 		}
 		
-	    @SubscribeEvent
-	    public void onRegistry(RegistryEvent.Register<Money> event){
+	    //@SubscribeEvent
+	    public static void onRegistry(){
 			File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
 			if(!file.exists()){
 				return;
@@ -172,15 +171,16 @@ public class Config {
 					//
 					if(meta >= 0){
 						EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
-						if(!EXTERNAL_ITEMS.containsKey(rs)){
-							EXTERNAL_ITEMS.put(rs, 0l);
+						if(!EXTERNAL_ITEMS.containsKey(rs.toString())){
+							EXTERNAL_ITEMS.put(rs.toString(), 0l);
 						}
 					}
 					else{
-						EXTERNAL_ITEMS.put(rs, worth);
+						EXTERNAL_ITEMS.put(rs.toString(), worth);
 					}
 					if(jsn.has("register") && jsn.get("register").getAsBoolean()){
-						event.getRegistry().register(new GenericMoney(jsn, false));
+						//event.getRegistry().register(new GenericMoney(jsn, false));
+						FSMM.CURRENCY.put(rs.toString(), new GenericMoney(jsn, false));
 					}
 				});
 			}
@@ -225,6 +225,7 @@ public class Config {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static List<IConfigElement> getList(){
 		List<IConfigElement> list = new ArrayList<IConfigElement>();
 		list.add(new ConfigElement(Config.getConfig().getCategory("General")));
@@ -232,6 +233,7 @@ public class Config {
 		return list;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public static final long getItemStackWorth(ItemStack stack){
 		if(stack.getItem() instanceof Money.Item){
 			return ((Money.Item)stack.getItem()).getWorth(stack);
@@ -245,6 +247,7 @@ public class Config {
 		return 0;
 	}
 
+	//TODO check this
 	public static boolean containsAsExternalItemStack(ItemStack stack){
 		try{
 			return EXTERNAL_ITEMS.containsKey(stack.getItem().delegate)

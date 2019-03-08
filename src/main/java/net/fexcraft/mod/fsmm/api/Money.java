@@ -1,7 +1,5 @@
 package net.fexcraft.mod.fsmm.api;
 
-import cpw.mods.fml.common.registry.RegistryDelegate;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 

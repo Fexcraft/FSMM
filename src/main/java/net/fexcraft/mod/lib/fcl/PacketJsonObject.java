@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fcl;
+package net.fexcraft.mod.lib.fcl;
 import java.nio.charset.StandardCharsets;
 
 import com.google.gson.JsonObject;
@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
 
-public class PacketJsonObject implements IPacket, IMessage {
+public class PacketJsonObject implements IMessage {
 
     public JsonObject obj;
 

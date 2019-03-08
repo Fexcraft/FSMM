@@ -1,7 +1,6 @@
 package net.fexcraft.mod.fsmm.util;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import net.fexcraft.mod.fcl.UCResourceLocation;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
@@ -9,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 
 import java.text.SimpleDateFormat;
@@ -17,7 +15,7 @@ import java.util.*;
 
 public class Command extends CommandBase{
 
-	public static final String PREFIX = net.fexcraft.mod.fcl.Formatter.format("&0[&3FSMM&0]&7 ");
+	public static final String PREFIX = net.fexcraft.mod.lib.fcl.Formatter.format("&0[&3FSMM&0]&7 ");
 	private final static ArrayList<String> aliases = new ArrayList<String>();
 	static{ aliases.add("money"); aliases.add("balance"); aliases.add("currency"); }
   
@@ -125,7 +123,7 @@ public class Command extends CommandBase{
     }
 
 	private void modify(ICommandSender sender, String[] args){
-		ResourceLocation rs = new UCResourceLocation(args[1].split(":"));
+		ResourceLocation rs = new ResourceLocation(args[1].split(":")[0], args[1].split(":")[1]);
 		if(rs.getResourceDomain().equals("player")){
 			try{
 				UUID.fromString(rs.getResourcePath());
@@ -134,7 +132,7 @@ public class Command extends CommandBase{
 			catch(Exception e){
 				//not an UUID, let's convert
 				UUID uuid = FMLCommonHandler.instance().getMinecraftServerInstance().func_152358_ax().func_152655_a(rs.getResourcePath()).getId();
-				rs = new UCResourceLocation(rs.getResourceDomain(), uuid.toString());
+				rs = new ResourceLocation(rs.getResourceDomain(), uuid.toString());
 			}
 		}
 		Account account = DataManager.getAccount(rs.toString(), false, false);

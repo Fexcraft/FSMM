@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fcl;
+package net.fexcraft.mod.lib.fcl;
 
 public class Formatter {
 

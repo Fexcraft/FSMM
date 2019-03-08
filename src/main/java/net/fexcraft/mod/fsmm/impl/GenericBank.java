@@ -58,7 +58,7 @@ public class GenericBank extends Bank {
 				if(sender.getBalance() - amount >= 0){
 					sender.modifyBalance(Manageable.Action.SUB, amount, player);
 					ItemManager.addToInventory(player, amount - fee);
-					String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getCommandSenderName() + ";";
+					//String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getCommandSenderName() + ";";
 					//Print.debug(str); FSMM.LOGGER.info(str);
 					return true;
 				}
