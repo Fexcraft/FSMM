@@ -1,0 +1,114 @@
+{
+  "Items": [
+    {
+      "id": "10000foney",
+      "worth": 10000000
+    },
+    {
+      "id": "1000foney",
+      "worth": 1000000
+    },
+    {
+      "id": "100foney",
+      "worth": 100000
+    },
+    {
+      "id": "100kfoney",
+      "worth": 100000000
+    },
+    {
+      "id": "10cent",
+      "worth": 100
+    },
+    {
+      "id": "10foney",
+      "worth": 10000
+    },
+    {
+      "id": "1cent",
+      "worth": 10
+    },
+    {
+      "id": "1foney",
+      "worth": 1000
+    },
+    {
+      "id": "20000foney",
+      "worth": 20000000
+    },
+    {
+      "id": "2000foney",
+      "worth": 2000000
+    },
+    {
+      "id": "200foney",
+      "worth": 200000
+    },
+    {
+      "id": "200kfoney",
+      "worth": 200000000
+    },
+    {
+      "id": "20cent",
+      "worth": 200
+    },
+    {
+      "id": "20foney",
+      "worth": 20000
+    },
+    {
+      "id": "2cent",
+      "worth": 20
+    },
+    {
+      "id": "2foney",
+      "worth": 2000
+    },
+    {
+      "id": "50000foney",
+      "worth": 50000000
+    },
+    {
+      "id": "5000foney",
+      "worth": 5000000
+    },
+    {
+      "id": "500foney",
+      "worth": 500000
+    },
+    {
+      "id": "500kfoney",
+      "worth": 500000000
+    },
+    {
+      "id": "50cent",
+      "worth": 500
+    },
+    {
+      "id": "50foney",
+      "worth": 50000
+    },
+    {
+      "id": "5cent",
+      "worth": 50
+    },
+    {
+      "id": "5foney",
+      "worth": 5000
+    }
+  ],
+  "Banks": [
+    {
+      "uuid": "00000000",
+      "name": "Default Server Bank",
+      "data": {}
+    }
+  ],
+  "ExternalItems": [
+    {
+      "id": "minecraft:nether_star",
+      "worth": 100000,
+      "register": false
+    }
+  ]
+}
