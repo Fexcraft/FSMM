@@ -21,3 +21,7 @@ build
 eclipse
 run
 .nb-gradle
+
+config
+crash-logs
+logs
