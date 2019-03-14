@@ -80,7 +80,8 @@ public class FSMM {
     public void postInit(FMLPostInitializationEvent event){
     	if(event.getSide().isClient()){
     		JsonObjectPacketHandler.addListener(Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
-    	} else JsonObjectPacketHandler.addListener(Side.CLIENT, new Processor());
+    	}
+	JsonObjectPacketHandler.addListener(Side.SERVER, new Processor());
     	CACHE.schedule(); PacketHandler.init();
     }
     
