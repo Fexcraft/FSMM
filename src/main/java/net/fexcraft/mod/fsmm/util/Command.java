@@ -12,8 +12,10 @@ import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.server.permission.PermissionAPI;
 
 import java.util.ArrayList;
@@ -116,6 +118,20 @@ public class Command extends CommandBase{
     			temp = DataManager.getBanks().values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
     			Print.chat(sender, "&9Banks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
     			Print.chat(sender, "&5Last scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
+    			return;
+    		}
+    		case "test-vote":{
+    			if(!FSMM.VOTIFIER_LOADED){
+    				Print.chat(sender, "&aVotifier not detected.");
+    			}
+    			else{
+    				if(!op) Print.chat(sender, "&cNo Permission for Vote testing.");
+    				else{
+    					Print.chat(sender, "&9&oTrying to send a test vote... please wait.");
+    					MinecraftForge.EVENT_BUS.post(new com.github.upcraftlp.votifier.api.VoteReceivedEvent(
+    						(EntityPlayerMP)sender, "FSMM Tester", "localhost", Long.toString(System.nanoTime() / 1_000_000L)));
+    				}
+    			}
     			return;
     		}
     		default:{

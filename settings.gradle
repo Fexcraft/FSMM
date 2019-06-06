@@ -1,2 +1,4 @@
 include ':FCL'
 project(':FCL').projectDir = new File(settingsDir, '../FCL')
+include ':Voting'
+project(':Voting').projectDir = new File(settingsDir, '../Voting')
