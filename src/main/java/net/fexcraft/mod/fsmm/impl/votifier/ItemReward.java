@@ -14,9 +14,11 @@ import net.minecraft.server.MinecraftServer;
 public class ItemReward extends Reward {
 	
 	private long worth;
+	private String message;
 
 	public ItemReward(JsonObject json){
 		this.worth = JsonUtil.getIfExists(json, "worth", 1000l).longValue();
+		this.message = JsonUtil.getIfExists(json, "message", "&7You received &9%s &7for voting!");
 		Print.debug("Created ITEM_REWARD with a worth of " + worth + "!");
 	}
 
@@ -27,7 +29,7 @@ public class ItemReward extends Reward {
 
 	@Override
 	public void activate(MinecraftServer server, EntityPlayer player, String timestamp, String service, String address) throws RewardException {
-		ItemManager.addToInventory(player, worth); Print.chat(player, "&7You received &9" + Config.getWorthAsString(worth) + " &7for voting!");
+		ItemManager.addToInventory(player, worth); Print.chat(player, String.format(message, Config.getWorthAsString(worth)));
 	}
 
 }

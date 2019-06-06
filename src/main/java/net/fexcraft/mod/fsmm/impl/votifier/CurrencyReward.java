@@ -15,9 +15,11 @@ import net.minecraft.server.MinecraftServer;
 public class CurrencyReward extends Reward {
 	
 	private long amount;
+	private String message;
 
 	public CurrencyReward(JsonObject json){
 		this.amount = JsonUtil.getIfExists(json, "amount", 1000l).longValue();
+		this.message = JsonUtil.getIfExists(json, "message", "&9%s &7was added to your account for voting.");
 		Print.debug("Created CURRENCY_REWARD with a worth of " + amount + "!");
 	}
 
@@ -29,7 +31,7 @@ public class CurrencyReward extends Reward {
 	@Override
 	public void activate(MinecraftServer server, EntityPlayer player, String timestamp, String service, String address) throws RewardException {
 		Account account = player.getCapability(FSMMCapabilities.PLAYER, null).getAccount(); account.setBalance(account.getBalance() + amount);
-		Print.chat(player, "&9" + Config.getWorthAsString(amount) + " &7was added into your account for voting.");
+		Print.chat(player, String.format(message, Config.getWorthAsString(amount)));
 	}
 
 }
