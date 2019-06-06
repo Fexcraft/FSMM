@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 
 version = "1.12.x"
-def modversion = "2.2.3"
+def modversion = "2.2.4-pre"
 group = "net.fexcraft.mod.fsmm" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "FSMM-" + modversion;
 
@@ -31,9 +31,13 @@ minecraft {
     mappings = "snapshot_20170624"
 }
 
+repositories {
+    maven { url = "https://jitpack.io" }
+}
+
 dependencies {
 	compile project(':FCL')
-	compile project(':Voting')
+	compile 'com.github.upcraftlp:votifier:master-SNAPSHOT'
 }
 
 processResources {
