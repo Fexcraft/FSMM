@@ -12,10 +12,8 @@ import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.server.permission.PermissionAPI;
 
 import java.util.ArrayList;
@@ -128,8 +126,7 @@ public class Command extends CommandBase{
     				if(!op) Print.chat(sender, "&cNo Permission for Vote testing.");
     				else{
     					Print.chat(sender, "&9&oTrying to send a test vote... please wait.");
-    					MinecraftForge.EVENT_BUS.post(new com.github.upcraftlp.votifier.api.VoteReceivedEvent(
-    						(EntityPlayerMP)sender, "FSMM Tester", "localhost", Long.toString(System.nanoTime() / 1_000_000L)));
+    					net.fexcraft.mod.fsmm.impl.votifier.VotifierEvents.postTestVoteEvent(sender);
     				}
     			}
     			return;
