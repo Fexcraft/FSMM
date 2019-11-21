@@ -8,6 +8,7 @@ import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.api.WorldCapability;
+import net.fexcraft.mod.fsmm.events.AccountEvent;
 import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
@@ -75,6 +76,11 @@ public class EventHandler {
     	if(FSMMCapabilities.PLAYER != null && event.getObject() instanceof EntityPlayer){
     		event.addCapability(PlayerCapability.REGISTRY_NAME, new PlayerCapabilityUtil((EntityPlayer)event.getObject()));
     	}
+    }
+    
+    @SubscribeEvent
+    public void testEvent(AccountEvent.BalanceUpdated event){
+    	Print.debug("UPDATE EVENT", event.getAccount().getId(), event.getOldBalance(), event.getNewBalance());
     }
     
 }

@@ -6,8 +6,10 @@ import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.mod.fsmm.events.AccountEvent;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Universal Account Object.
@@ -50,6 +52,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	 * @param rpl new balance for this account
 	 * @return new balance */
 	public long setBalance(long rpl){
+		MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, rpl));
 		this.updateLastAccess();
 		return balance = rpl;
 	}
@@ -98,9 +101,14 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	@Override
 	public void modifyBalance(Manageable.Action action, long amount, ICommandSender log){
 		switch(action){
-			case SET :{ balance = amount; return; }
+			case SET :{
+				MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, amount));
+				balance = amount; return;
+			}
 			case SUB :{
-				if(balance - amount >= 0){ balance -= amount; }
+				if(balance - amount >= 0){
+					MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance -= amount));
+				}
 				else{
 					Print.chat(log, "Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
 				}
@@ -110,7 +118,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 				if(balance + amount >= Long.MAX_VALUE){
 					Print.chat(log, "Max Value reached.");
 				}
-				else{ balance += amount; }
+				else{ MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance += amount)); }
 			}
 			default: return;
 		}
