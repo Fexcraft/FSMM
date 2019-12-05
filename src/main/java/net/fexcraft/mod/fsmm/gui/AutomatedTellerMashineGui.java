@@ -356,7 +356,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			case "manage_account":{
 				lines[0] = "Transfer";
 				lines[1] = "Deposit";
-				lines[2] = "Widthdraw";
+				lines[2] = "Withdraw";
 				lines[3] = " - - - ";
 				break;
 			}
