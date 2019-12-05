@@ -7,9 +7,10 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
+
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
@@ -88,6 +89,10 @@ public class DataManager extends TimerTask {
 		for(Bank bank : BANKS.values()){
 			try{ save(bank); } catch(Exception e){ e.printStackTrace(); return; }
 		}
+	}
+
+	public static void clearAll(){
+		ACCOUNTS.clear(); BANKS.clear(); timer.cancel();
 	}
 	
 	public static void unloadAccount(Account account){

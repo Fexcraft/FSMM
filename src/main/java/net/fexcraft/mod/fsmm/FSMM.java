@@ -10,6 +10,7 @@ import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.api.Money;
 import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
@@ -34,6 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -66,7 +68,6 @@ public class FSMM {
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
 		FCLRegistry.newAutoRegistry("fsmm"); Config.initialize(event);
-		CACHE = new DataManager(event.getModConfigurationDirectory());
 		VOTIFIER_LOADED = Loader.isModLoaded("votifier");
 		if(VOTIFIER_LOADED){ Print.log("Adding Votifier Hooks.");
 			MinecraftForge.EVENT_BUS.register(new net.fexcraft.mod.fsmm.impl.votifier.VotifierEvents());
@@ -86,8 +87,13 @@ public class FSMM {
 	}
 	
 	@Mod.EventHandler
+	public void serverStarted(FMLServerStartedEvent event){
+		CACHE = new DataManager(Static.getServer().getEntityWorld().getSaveHandler().getWorldDirectory()); CACHE.schedule();
+	}
+	
+	@Mod.EventHandler
 	public void serverStopping(FMLServerStoppingEvent event){
-		DataManager.saveAll();
+		DataManager.saveAll(); DataManager.clearAll();
 	}
 	
 	@Mod.EventHandler
@@ -104,7 +110,6 @@ public class FSMM {
         	PacketHandler.registerListener(PacketHandlerType.NBT, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.NBT, Side.SERVER, new Processor());
-    	CACHE.schedule();
     }
     
     public static FSMM getInstance(){
