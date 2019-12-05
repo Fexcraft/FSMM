@@ -1,6 +1,8 @@
 package net.fexcraft.mod.fsmm.gui;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -36,7 +38,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	public static AutomatedTellerMashineGui INSTANCE;
 	//
 	private String[] lines = new String[]{ "", "", "", "" };
-	private String window, rec_cat = "", rec_id = "";
+	private String window, rec_cat = "", rec_id = "", lastamount = "";
 	private long input = 0l;
 	private boolean selectbox;
 	private int scroll;
@@ -46,7 +48,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	private SideButton[] sidebuttons = new SideButton[8];
 	private NumberButton[] numberbuttons = new NumberButton[13];
 	private SelectBoxField[] fieldbuttons = new SelectBoxField[7];
-	private GuiTextField receiver;
+	private GuiTextField receiver, amount;
 	
 	public AutomatedTellerMashineGui(EntityPlayer player, World world, int x, int y, int z){
 		this.player = player;
@@ -82,8 +84,12 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		for(int i = 0; i < 7; i++){
 			buttonList.add(fieldbuttons[i] = new SelectBoxField(21 + i, xhalf + 25, yhalf + 13));
 		}
+		//
 		receiver = new GuiTextField(22, fontRenderer, xhalf + 22, yhalf + 37, 132, 11);
 		receiver.setVisible(false); receiver.setMaxStringLength(1024);
+		//
+		amount = new GuiTextField(22, fontRenderer, xhalf + 22, yhalf + 61, 132, 11);
+		amount.setVisible(false); amount.setMaxStringLength(1024);
 	}
 	
 	@Override
@@ -129,7 +135,8 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         }
         //
         this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
-        receiver.setVisible(selectbox ? false : window.equals("transfer")); receiver.drawTextBox();
+        receiver.setVisible(selectbox ? false : window.equals("transfer"));
+        receiver.drawTextBox(); amount.drawTextBox();
 	}
 
 	@Override
@@ -159,15 +166,16 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         	}
             return;
         }
-        if(receiver.textboxKeyTyped(typedChar, keyCode)){
-        	//
-        }
+        if(receiver.textboxKeyTyped(typedChar, keyCode)){}
+        if(amount.textboxKeyTyped(typedChar, keyCode)){}
         super.keyTyped(typedChar, keyCode);
     }
 	
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-    	super.mouseClicked(mouseX, mouseY, mouseButton); receiver.mouseClicked(mouseX, mouseY, mouseButton);
+    	super.mouseClicked(mouseX, mouseY, mouseButton);
+    	receiver.mouseClicked(mouseX, mouseY, mouseButton);
+    	amount.mouseClicked(mouseX, mouseY, mouseButton);
     }
 	
 	@Override
@@ -186,8 +194,8 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			case "main": for(int i = 4; i < 8; i++) sidebuttons[i].enabled = true; break;
 			case "show_balance": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
 			case "manage_account": for(int i = 0; i < 6; i++) sidebuttons[i].enabled = true; break;
-			case "transfer": for(int i = 2; i < 4; i++) sidebuttons[i].enabled = true; break;
-			case "deposit": case "withdraw": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
+			case "transfer": sidebuttons[2].enabled = sidebuttons[3].enabled = sidebuttons[6].enabled = sidebuttons[7].enabled = true; break;
+			case "deposit": case "withdraw": for(int i = 4; i < 8; i++) sidebuttons[i].enabled = true; break;
 			case "deposit_result": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
 			case "withdraw_result": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
 		}
@@ -256,13 +264,22 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 						PacketHandler.getInstance().sendToServer(new PacketNBTTagCompound(compound));
 						break;
 					}
+					if(button.id == 6 || button.id == 7){
+						amount.setVisible(!amount.getVisible());
+						amount.y = yhalf + 83; break;
+					}
 					if(button.id >= 8 && button.id <= 17){
 						int i = button.id - 8;
-						input = (input * 10) + i;
-						lines[3] = Config.getWorthAsString(input, true, true);
+						if(amount.getVisible()){
+							amount.setText(amount.getText() + i);
+						}
+						else{
+							input = (input * 10) + i;
+							lines[3] = Config.getWorthAsString(input, true, true);
+						}
 					}
 					if(button.id == 19){
-						input = 0;
+						input = 0; if(amount.getVisible()) amount.setText("");
 						lines[3] = Config.getWorthAsString(input, true, true);
 					}
 					if(button.id == 18 && receiver.getText().length() >= 3 && receiver.getText().contains(":") /*rec_cat.length() > 0 && rec_id.length() > 0*/){
@@ -306,16 +323,24 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				return;
 			}
 			case "deposit": case "withdraw":{
+				if(button.id == 4 || button.id == 4){
+					amount.setVisible(!amount.getVisible()); break;
+				}
 				if(button.id == 6 || button.id == 7){
 					this.openPerspective("loading", null);
 				}
 				if(button.id >= 8 && button.id <= 17){
 					int i = button.id - 8;
-					input = (input * 10) + i;
-					lines[2] = Config.getWorthAsString(input, true, true);
+					if(amount.getVisible()){
+						amount.setText(amount.getText() + i);
+					}
+					else{
+						input = (input * 10) + i;
+						lines[2] = Config.getWorthAsString(input, true, true);
+					}
 				}
 				if(button.id == 19){
-					input = 0;
+					input = 0; if(amount.getVisible()) amount.setText("");
 					lines[2] = Config.getWorthAsString(input, true, true);
 				}
 				if(button.id == 18){
@@ -335,8 +360,12 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	}
 	
 	public void openPerspective(String window, NBTTagCompound compound){
-		this.window = window;
-		selectbox = false;
+		this.window = window; selectbox = false;
+		if(amount != null){
+			amount.setVisible(false);
+			lastamount = amount.getText();
+			amount.setText("");
+		}
 		switch(window){
 			case "loading":{
 				lines[0] = "Loading....";
@@ -375,7 +404,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				break;
 			}
 			case "transfer":{
-				input = 0;
+				input = 0; amount.y = yhalf + 61;
 				lines[0] = Formatter.PARAGRAPH_SIGN + "2Receiver:";
 				lines[1] = rec_cat + ":" + rec_id; receiver.setText(lines[1]);
 				lines[2] = Formatter.PARAGRAPH_SIGN + "9Amount:";
@@ -396,8 +425,11 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				lines[0] = "Contacting Server...";
 				lines[1] = "Please wait.";
 				lines[2] = lines[3] = "";
-				if(input > 0){
+				if(input > 0 || lastamount.length() > 0){
 					sendRequest(window.equals("request_deposit") ? "deposit_result" : "withdraw_result", true, false);
+				}
+				else{
+					openPerspective(window.equals("request_deposit") ? "deposit" : "withdraw", null);
 				}
 				break;
 			}
@@ -408,7 +440,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				lines[0] = (dep ? "Deposit" : "Withdraw") + (success ? " Processed." : " Failed!");
 				if(success){
 					lines[1] = "Amount:";
-					lines[2] = Config.getWorthAsString(input, true, true);
+					lines[2] = Config.getWorthAsString(input, true);
 				}
 				else{
 					lines[1] = lines[2] = "";
@@ -421,8 +453,11 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				lines[0] = "Contacting Server...";
 				lines[1] = "Please wait.";
 				lines[2] = lines[3] = "";
-				if(input > 0){
+				if(input > 0 || lastamount.length() > 0){
 					sendRequest("transfer_result", true, true);
+				}
+				else{
+					openPerspective("transfer", null);
 				}
 				break;
 			}
@@ -431,7 +466,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				lines[0] = "Transfer " + (success ? " Processed." : "Failed!");
 				if(success){
 					lines[1] = "Amount:";
-					lines[2] = Config.getWorthAsString(input, true, true);
+					lines[2] = Config.getWorthAsString(input, true);
 					lines[3] = compound.getString("receiver");
 				}
 				else{
@@ -452,12 +487,26 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		compound.setString("target_listener", "fsmm:atm_gui");
 		compound.setString("request", str);
 		if(sinput){
-			compound.setLong("input", INSTANCE.input);
+			compound.setLong("input", INSTANCE.lastamount.length() > 0 ? format() : INSTANCE.input);
 		}
 		if(srec){
 			compound.setString("receiver", INSTANCE.receiver.getText());
 		}
 		PacketHandler.getInstance().sendToServer(new PacketNBTTagCompound(compound));
+	}
+	
+	private static final DecimalFormat df = new DecimalFormat("#.000");
+	static { df.setRoundingMode(RoundingMode.DOWN); }
+	
+	private static final long format(){
+		try{
+			String format = df.format(Double.parseDouble(INSTANCE.lastamount));
+			return INSTANCE.input = Long.parseLong(format.replace(",", "").replace(".", ""));
+		}
+		catch(Exception e){
+			Print.chat(INSTANCE.player, "INVALID INPUT: " + e.getMessage());
+			e.printStackTrace(); return 0;
+		}
 	}
 	
 }
