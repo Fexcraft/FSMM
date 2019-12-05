@@ -21,4 +21,4 @@ build
 eclipse
 run
 .nb-gradle
-src/main/java/austeretony/oxygen_core/common/currency/*
+other
