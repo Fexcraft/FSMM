@@ -92,8 +92,9 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         this.mc.getTextureManager().bindTexture(TEXTURE);
         this.drawTexturedModalRect(xhalf, yhalf, 0, 0, 176, 166);
         //
+        checkButtonState();
         for(SideButton button : sidebuttons){
-        	button.enabled = !selectbox;
+        	if(button.enabled && selectbox) button.enabled = false;
         }
         for(NumberButton button : numberbuttons){
         	button.enabled = !selectbox;
@@ -130,7 +131,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         this.buttonList.forEach(button -> button.drawButton(mc, mx, my, pt));
         receiver.setVisible(selectbox ? false : window.equals("transfer")); receiver.drawTextBox();
 	}
-	
+
 	@Override
 	public boolean doesGuiPauseGame(){
 		return false;
@@ -177,6 +178,19 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		if(e == 0){ return; }
 		scroll += e > 0 ? -7 : 7;;
 		scroll = scroll <= 0 ? 0 : scroll;
+	}
+	
+	private void checkButtonState(){
+		for(SideButton button : sidebuttons){ button.enabled = false; }
+		switch(window){
+			case "main": for(int i = 4; i < 8; i++) sidebuttons[i].enabled = true; break;
+			case "show_balance": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
+			case "manage_account": for(int i = 0; i < 6; i++) sidebuttons[i].enabled = true; break;
+			case "transfer": for(int i = 2; i < 4; i++) sidebuttons[i].enabled = true; break;
+			case "deposit": case "withdraw": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
+			case "deposit_result": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
+			case "withdraw_result": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
+		}
 	}
 	
 	@Override
