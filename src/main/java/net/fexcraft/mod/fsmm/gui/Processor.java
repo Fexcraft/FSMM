@@ -3,20 +3,20 @@ package net.fexcraft.mod.fsmm.gui;
 import java.io.File;
 import java.util.UUID;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import net.fexcraft.lib.mc.api.packet.IPacketListener;
 import net.fexcraft.lib.mc.network.PacketHandler;
-import net.fexcraft.lib.mc.network.packet.PacketJsonObject;
+import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 
-public class Processor implements IPacketListener<PacketJsonObject> {
+public class Processor implements IPacketListener<PacketNBTTagCompound> {
 
 	@Override
 	public String getId(){
@@ -24,80 +24,80 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 	}
 
 	@Override
-	public void process(PacketJsonObject pkt, Object[] objs){
-		Print.debug(pkt.obj);
-		if(pkt.obj.has("request")){
+	public void process(PacketNBTTagCompound pkt, Object[] objs){
+		Print.debug(pkt.nbt);
+		if(pkt.nbt.hasKey("request")){
 			EntityPlayerMP player = (EntityPlayerMP)objs[0];
 			Account playeracc = DataManager.getAccount("player:" + player.getGameProfile().getId().toString(), false, false, null);
-			JsonObject reply = new JsonObject();
-			switch(pkt.obj.get("request").getAsString()){
+			NBTTagCompound reply = new NBTTagCompound();
+			switch(pkt.nbt.getString("request")){
 				case "main_data":{
-					reply.addProperty("bank_id", playeracc.getBankId().toString());
+					reply.setString("bank_id", playeracc.getBankId().toString());
 					Bank bank = DataManager.getBank(playeracc.getBankId(), true, true);
-					reply.addProperty("bank_name", bank == null ? "Invalid Null Bank" : bank.getName());
+					reply.setString("bank_name", bank == null ? "Invalid Null Bank" : bank.getName());
 					break;
 				}
 				case "show_balance":{
-					reply.addProperty("balance", playeracc.getBalance());
+					reply.setLong("balance", playeracc.getBalance());
 					break;
 				}
 				case "deposit_result":{
-					long input = pkt.obj.get("input").getAsLong();
+					long input = pkt.nbt.getLong("input");
 					if(input <= 0){ return; }
 					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
-					reply.addProperty("success", bank.processAction(Bank.Action.DEPOSIT, player, null, input, playeracc));
+					reply.setBoolean("success", bank.processAction(Bank.Action.DEPOSIT, player, null, input, playeracc));
 					break;
 				}
 				case "withdraw_result":{
-					long input = pkt.obj.get("input").getAsLong();
+					long input = pkt.nbt.getLong("input");
 					if(input <= 0){ return; }
 					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
-					reply.addProperty("success", bank.processAction(Bank.Action.WITHDRAW, player, playeracc, input, null));
+					reply.setBoolean("success", bank.processAction(Bank.Action.WITHDRAW, player, playeracc, input, null));
 					break;
 				}
 				case "account_types":{
-					JsonArray types = new JsonArray();
+					NBTTagList types = new NBTTagList();
 					for(File fl : DataManager.ACCOUNT_DIR.listFiles()){
 						if(fl.isDirectory() && !fl.isHidden()){
-							types.add(fl.getName());
+							types.appendTag(new NBTTagString(fl.getName()));
 						}
 					}
-					if(types.size() == 0){
-						types.add("nothing found");
+					if(types.tagCount() == 0){
+						types.appendTag(new NBTTagString("nothing found"));
 					}
-					reply.add("types", types);
+					reply.setTag("types", types);
 					break;
 				}
 				case "accounts_of_type":{
-					File file = new File(DataManager.ACCOUNT_DIR, pkt.obj.get("type").getAsString() + "/");
-					JsonArray accounts = new JsonArray();
+					File file = new File(DataManager.ACCOUNT_DIR, pkt.nbt.getString("type") + "/");
+					NBTTagList accounts = new NBTTagList();
 					if(file.exists() && file.isDirectory()){
 						for(File fl : file.listFiles()){
 							if(!fl.isDirectory() && !fl.isHidden() && fl.getName().endsWith(".json")){
-								accounts.add(fl.getName().substring(0, fl.getName().length() - 5));
+								accounts.appendTag(new NBTTagString(fl.getName().substring(0, fl.getName().length() - 5)));
 							}
 						}
 					}
 					else{
-						accounts.add("type not found");
+						accounts.appendTag(new NBTTagString("type not found"));
 					}
-					if(accounts.size() == 0){
-						accounts.add("nothing found");
+					if(accounts.tagCount() == 0){
+						accounts.appendTag(new NBTTagString("nothing found"));
 					}
-					reply.add("accounts", accounts);
+					reply.setTag("accounts", accounts);
 					break;
 				}
 				case "transfer_result":{
-					long input = pkt.obj.get("input").getAsLong(); if(input <= 0){ return; }
+					long input = pkt.nbt.getLong("input"); if(input <= 0){ return; }
 					Account receiver = null;
-					if(!pkt.obj.get("receiver").getAsString().startsWith("player:")){
-						receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
+					if(!pkt.nbt.getString("receiver").startsWith("player:")){
+						receiver = DataManager.getAccount(pkt.nbt.getString("receiver"), true, false);
 					}
 					else{
-						String str = pkt.obj.get("receiver").getAsString().replace("player:", "");
+						String str = pkt.nbt.getString("receiver").replace("player:", "");
 						try{
 							UUID.fromString(str);
-							receiver = DataManager.getAccount(pkt.obj.get("receiver").getAsString(), true, false);
+							receiver = DataManager.getAccount(pkt.nbt.getString("receiver"), true, false);
 						}
 						catch(Exception e0){ if(Static.dev()) e0.printStackTrace();
 							try{
@@ -110,19 +110,19 @@ public class Processor implements IPacketListener<PacketJsonObject> {
 						}
 					}
 					if(receiver == null){
-						Print.chat(player, "Error loading Receiver account.\n(" + pkt.obj.get("receiver").getAsString() + ");");
+						Print.chat(player, "Error loading Receiver account.\n(" + pkt.nbt.getString("receiver") + ");");
 						return;
 					}
 					Bank bank = DataManager.getBank(playeracc.getBankId(), true, false);
 					if(bank == null){ Print.chat(player, "Error, bank not loaded."); return; }
-					reply.addProperty("success", bank.processAction(Bank.Action.TRANSFER, player, playeracc, input, receiver));
-					reply.addProperty("receiver", receiver.getAsResourceLocation().toString());
+					reply.setBoolean("success", bank.processAction(Bank.Action.TRANSFER, player, playeracc, input, receiver));
+					reply.setString("receiver", receiver.getAsResourceLocation().toString());
 					break;
 				}
 			}
-			reply.addProperty("payload", pkt.obj.get("request").getAsString());
-			reply.addProperty("target_listener", "fsmm:atm_gui");
-			PacketHandler.getInstance().sendTo(new PacketJsonObject(reply), player);
+			reply.setString("payload", pkt.nbt.getString("request"));
+			reply.setString("target_listener", "fsmm:atm_gui");
+			PacketHandler.getInstance().sendTo(new PacketNBTTagCompound(reply), player);
 		}
 	}
 	

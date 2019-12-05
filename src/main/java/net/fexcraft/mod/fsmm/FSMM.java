@@ -19,10 +19,10 @@ import net.fexcraft.mod.fsmm.gui.Processor;
 import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
+import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.EventHandler;
-import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -101,9 +101,9 @@ public class FSMM {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
     	if(event.getSide().isClient()){
-        	PacketHandler.registerListener(PacketHandlerType.JSON, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.AutomatedTellerMashineGui.Receiver());
+        	PacketHandler.registerListener(PacketHandlerType.NBT, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.Receiver());
     	}
-    	PacketHandler.registerListener(PacketHandlerType.JSON, Side.SERVER, new Processor());
+    	PacketHandler.registerListener(PacketHandlerType.NBT, Side.SERVER, new Processor());
     	CACHE.schedule();
     }
     

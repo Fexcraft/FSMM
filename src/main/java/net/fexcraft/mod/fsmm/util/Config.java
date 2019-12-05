@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -17,6 +18,7 @@ import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.impl.GenericMoney;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
@@ -30,13 +32,63 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class Config {
 	
 	public static File CONFIG_PATH;
-	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
-	public static String DEFAULT_BANK;
-	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
-	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
-	public static String CURRENCY_SIGN;
 	private static Configuration config;
 	private static String COMMA = ",", DOT = ".";
+	//
+	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
+	public static String DEFAULT_BANK, CURRENCY_SIGN;
+	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
+	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
+	//
+	public static SyncableConfig LOCAL = new SyncableConfig(), REMOTE;
+	/** Acts as a copy when disconnecting or connecting to a server. */
+	public static class SyncableConfig {
+		
+		public int starting_balance, unload_frequency;
+		public String default_bank, currency_sign;
+		public boolean notify_balance_on_join, invert_comma, show_centesimals, enable_bank_cards;
+		public boolean show_item_worth_in_tooltip = true;
+		
+		public NBTTagCompound toNBT(){
+			NBTTagCompound compound = new NBTTagCompound();
+			compound.setInteger("starting_balance", starting_balance);
+			compound.setInteger("unload_frequency", unload_frequency);
+			compound.setString("default_bank", default_bank);
+			compound.setString("currency_sign", currency_sign);
+			compound.setBoolean("notify_balance_on_join", notify_balance_on_join);
+			compound.setBoolean("invert_comma", invert_comma);
+			compound.setBoolean("show_centesimals", show_centesimals);
+			compound.setBoolean("enable_bank_cards", enable_bank_cards);
+			compound.setBoolean("show_item_worth_in_tooltip", show_item_worth_in_tooltip);
+			return compound;
+		}
+		
+		public static SyncableConfig fromNBT(NBTTagCompound compound){
+			SyncableConfig config = new SyncableConfig();
+			config.starting_balance = compound.getInteger("starting_balance");
+			config.unload_frequency = compound.getInteger("unload_frequency");
+			config.default_bank = compound.getString("default_bank");
+			config.currency_sign = compound.getString("currency_sign");
+			config.notify_balance_on_join = compound.getBoolean("notify_balance_on_join");
+			config.invert_comma = compound.getBoolean("invert_comma");
+			config.show_centesimals = compound.getBoolean("show_centesimals");
+			config.enable_bank_cards = compound.getBoolean("enable_bank_cards");
+			config.show_item_worth_in_tooltip = compound.getBoolean("show_item_worth_in_tooltip");
+			return config;
+		}
+		
+		public void apply(){
+			STARTING_BALANCE = starting_balance;
+			UNLOAD_FREQUENCY = unload_frequency;
+			DEFAULT_BANK = default_bank;
+			CURRENCY_SIGN = currency_sign;
+			NOTIFY_BALANCE_ON_JOIN = notify_balance_on_join;
+			INVERT_COMMA = invert_comma;
+			SHOW_CENTESIMALS = show_centesimals;
+			ENABLE_BANK_CARDS = enable_bank_cards;
+			SHOW_ITEM_WORTH_IN_TOOLTIP = show_item_worth_in_tooltip;
+		}
+	}
 	//
 	private static final TreeMap<String, Long> DEFAULT = new TreeMap<String, Long>();
 	static {
@@ -141,14 +193,14 @@ public class Config {
 	}
 	
 	public static void refresh(){
-		STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
-		DEFAULT_BANK = config.getString("default_bank", "General", "00000000", "Default Bank the player will have an account in.!");
-		NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
-		CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
-		INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' display.");
-		SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
-		SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
-		UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
+		LOCAL.starting_balance = STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
+		LOCAL.default_bank = DEFAULT_BANK = config.getString("default_bank", "General", "00000000", "Default Bank the player will have an account in.!");
+		LOCAL.notify_balance_on_join = NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
+		LOCAL.currency_sign = CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
+		LOCAL.invert_comma = INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' display.");
+		LOCAL.show_centesimals = SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
+		LOCAL.show_item_worth_in_tooltip = SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
+		LOCAL.unload_frequency = UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}

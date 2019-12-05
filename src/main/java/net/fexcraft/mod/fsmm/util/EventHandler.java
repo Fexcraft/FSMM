@@ -1,5 +1,7 @@
 package net.fexcraft.mod.fsmm.util;
 
+import net.fexcraft.lib.mc.network.PacketHandler;
+import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Account;
@@ -12,6 +14,8 @@ import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -35,6 +39,11 @@ public class EventHandler {
     		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));
     	}
     	if(account.lastAccessed() >= 0){ account.setTemporary(false); }
+    	//
+    	NBTTagCompound compound = Config.LOCAL.toNBT();
+    	compound.setString("payload", "config_sync");
+		compound.setString("target_listener", "fsmm:atm_gui");
+		PacketHandler.getInstance().sendTo(new PacketNBTTagCompound(compound), (EntityPlayerMP)event.player);
     }
     
     @SubscribeEvent

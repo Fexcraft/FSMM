@@ -5,12 +5,8 @@ import java.io.IOException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import net.fexcraft.lib.mc.api.packet.IPacketListener;
 import net.fexcraft.lib.mc.network.PacketHandler;
-import net.fexcraft.lib.mc.network.packet.PacketJsonObject;
+import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.gui.buttons.NumberButton;
@@ -22,6 +18,9 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -34,14 +33,15 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	private EntityPlayer player;
 	//private World world;
 	//private BlockPos tile;
-	public static AutomatedTellerMashineGui instance;
+	public static AutomatedTellerMashineGui INSTANCE;
 	//
 	private String[] lines = new String[]{ "", "", "", "" };
 	private String window, rec_cat = "", rec_id = "";
 	private long input = 0l;
 	private boolean selectbox;
 	private int scroll;
-	private JsonArray catlist, idlist;
+	protected NBTTagList catlist;
+	protected NBTTagList idlist;
 	//
 	private SideButton[] sidebuttons = new SideButton[8];
 	private NumberButton[] numberbuttons = new NumberButton[13];
@@ -53,7 +53,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		//this.world = world;
 		//this.tile = new BlockPos(x, y, z);
 		this.openPerspective("loading", null);
-		instance = this;
+		INSTANCE = this;
 	}
 	
 	@Override
@@ -101,11 +101,11 @@ public class AutomatedTellerMashineGui extends GuiScreen {
         for(int i = 0; i < fieldbuttons.length; i++){
         	fieldbuttons[i].visible = selectbox;
         	int j = i + scroll;
-        	if(rec_cat.equals("") && catlist != null && catlist.size() > 0 && idlist == null){
-        		fieldbuttons[i].displayString = j + "| " + (j >= catlist.size() ? "" : catlist.get(j).getAsString());
+        	if(rec_cat.equals("") && catlist != null && catlist.tagCount() > 0 && idlist == null){
+        		fieldbuttons[i].displayString = j + "| " + (j >= catlist.tagCount() ? "" : ((NBTTagString)catlist.get(j)).getString());
         	}
-        	if(rec_id.equals("") && idlist != null && idlist.size() > 0){
-        		fieldbuttons[i].displayString = j + "| " + (j >= idlist.size() ? "" : idlist.get(j).getAsString());
+        	if(rec_id.equals("") && idlist != null && idlist.tagCount() > 0){
+        		fieldbuttons[i].displayString = j + "| " + (j >= idlist.tagCount() ? "" : ((NBTTagString)idlist.get(j)).getString());
         	}
         }
         //
@@ -139,7 +139,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	@Override
 	public void onGuiClosed(){
 		super.onGuiClosed();
-		instance = null;
+		INSTANCE = null;
 	}
 	
 	@Override
@@ -236,10 +236,10 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 						for(SelectBoxField sbfbutton : fieldbuttons){
 							sbfbutton.displayString = "loading...";
 						}
-						JsonObject obj = new JsonObject();
-						obj.addProperty("target_listener", "fsmm:atm_gui");
-						obj.addProperty("request", "account_types");
-						PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
+						NBTTagCompound compound = new NBTTagCompound();
+						compound.setString("target_listener", "fsmm:atm_gui");
+						compound.setString("request", "account_types");
+						PacketHandler.getInstance().sendToServer(new PacketNBTTagCompound(compound));
 						break;
 					}
 					if(button.id >= 8 && button.id <= 17){
@@ -252,7 +252,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 						lines[3] = Config.getWorthAsString(input, true, true);
 					}
 					if(button.id == 18 && receiver.getText().length() >= 3 && receiver.getText().contains(":") /*rec_cat.length() > 0 && rec_id.length() > 0*/){
-						if(instance.input > 0){
+						if(INSTANCE.input > 0){
 							this.openPerspective("request_transfer", null);
 						}
 						else{
@@ -264,21 +264,21 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 					if(button.id >= 21){
 						int i = (button.id - 21) + scroll;
 						if(rec_cat.equals("")){
-							String sel = i >= catlist.size() ? "" : catlist.get(i).getAsString();
+							String sel = i >= catlist.tagCount() ? "" : ((NBTTagString)catlist.get(i)).getString();
 							if(sel != null && !sel.equals("")){
 								rec_cat = sel;
-								JsonObject obj = new JsonObject();
-								obj.addProperty("target_listener", "fsmm:atm_gui");
-								obj.addProperty("request", "accounts_of_type");
-								obj.addProperty("type", rec_cat);
-								PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
+								NBTTagCompound compound = new NBTTagCompound();
+								compound.setString("target_listener", "fsmm:atm_gui");
+								compound.setString("request", "accounts_of_type");
+								compound.setString("type", rec_cat);
+								PacketHandler.getInstance().sendToServer(new PacketNBTTagCompound(compound));
 								for(SelectBoxField sbfbutton : fieldbuttons){
 									sbfbutton.displayString = "loading...";
 								}
 							}
 						}
 						else if(rec_id.equals("")){
-							String sel = i >= idlist.size() ? "" : idlist.get(i).getAsString();
+							String sel = i >= idlist.tagCount() ? "" : ((NBTTagString)idlist.get(i)).getString();
 							if(sel != null && !sel.equals("")){
 								rec_id = sel;
 								selectbox = false;
@@ -320,7 +320,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		}
 	}
 	
-	public void openPerspective(String window, JsonObject obj){
+	public void openPerspective(String window, NBTTagCompound compound){
 		this.window = window;
 		selectbox = false;
 		switch(window){
@@ -333,7 +333,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				break;
 			}
 			case "main":{
-				lines[0] = Formatter.PARAGRAPH_SIGN + "8[" + obj.get("bank_name").getAsString() + "]";
+				lines[0] = Formatter.PARAGRAPH_SIGN + "8[" + compound.getString("bank_name") + "]";
 				lines[1] = Formatter.PARAGRAPH_SIGN + "2Welcome back " + player.getGameProfile().getName() + "!";
 				lines[2] = "Manage Account";
 				lines[3] = "View Balance";
@@ -348,7 +348,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			}
 			case "show_balance":{
 				lines[0] = "Your current balance:";
-				lines[1] = Config.getWorthAsString(obj.get("balance").getAsLong(), true, true);
+				lines[1] = Config.getWorthAsString(compound.getLong("balance"), true, true);
 				lines[2] = "";
 				lines[3] = " << Return";
 				break;
@@ -389,7 +389,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 			}
 			case "deposit_result":
 			case "withdraw_result":{
-				boolean success = obj.get("success").getAsBoolean();
+				boolean success = compound.getBoolean("success");
 				boolean dep = window.equals("deposit_result");
 				lines[0] = (dep ? "Deposit" : "Withdraw") + (success ? " Processed." : " Failed!");
 				if(success){
@@ -413,12 +413,12 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 				break;
 			}
 			case "transfer_result":{
-				boolean success = obj.get("success").getAsBoolean();
+				boolean success = compound.getBoolean("success");
 				lines[0] = "Transfer " + (success ? " Processed." : "Failed!");
 				if(success){
 					lines[1] = "Amount:";
 					lines[2] = Config.getWorthAsString(input, true, true);
-					lines[3] = obj.get("receiver").getAsString();
+					lines[3] = compound.getString("receiver");
 				}
 				else{
 					lines[1] = lines[2] = lines[3] = "";
@@ -434,60 +434,16 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	}
 	
 	private static void sendRequest(String str, boolean sinput, boolean srec){
-		JsonObject obj = new JsonObject();
-		obj.addProperty("target_listener", "fsmm:atm_gui");
-		obj.addProperty("request", str);
+		NBTTagCompound compound = new NBTTagCompound();
+		compound.setString("target_listener", "fsmm:atm_gui");
+		compound.setString("request", str);
 		if(sinput){
-			obj.addProperty("input", instance.input);
+			compound.setLong("input", INSTANCE.input);
 		}
 		if(srec){
-			//obj.addProperty("receiver", instance.rec_cat + ":" + instance.rec_id);
-			obj.addProperty("receiver", instance.receiver.getText());
+			compound.setString("receiver", INSTANCE.receiver.getText());
 		}
-		PacketHandler.getInstance().sendToServer(new PacketJsonObject(obj));
-	}
-	
-	public static class Receiver implements IPacketListener<PacketJsonObject> {
-
-		@Override
-		public String getId(){
-			return "fsmm:atm_gui";
-		}
-		
-		@Override
-		public void process(PacketJsonObject pkt, Object[] objs){
-			Print.debug(pkt.obj);
-			if(pkt.obj.has("payload")){
-				switch(pkt.obj.get("payload").getAsString()){
-					case "main_data":{
-						instance.openPerspective("main", pkt.obj);
-						break;
-					}
-					case "show_balance":{
-						instance.openPerspective("show_balance", pkt.obj);
-						break;
-					}
-					case "deposit_result":
-					case "withdraw_result":{
-						instance.openPerspective(pkt.obj.get("payload").getAsString(), pkt.obj);
-						break;
-					}
-					case "account_types":{
-						instance.catlist = pkt.obj.get("types").getAsJsonArray();
-						break;
-					}
-					case "accounts_of_type":{
-						instance.idlist = pkt.obj.get("accounts").getAsJsonArray();
-						break;
-					}
-					case "transfer_result":{
-						instance.openPerspective(pkt.obj.get("payload").getAsString(), pkt.obj);
-						break;
-					}
-				}
-			}
-		}
-		
+		PacketHandler.getInstance().sendToServer(new PacketNBTTagCompound(compound));
 	}
 	
 }
