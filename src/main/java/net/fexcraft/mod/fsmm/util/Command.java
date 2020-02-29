@@ -1,5 +1,10 @@
 package net.fexcraft.mod.fsmm.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.UUID;
+
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.lib.mc.utils.Formatter;
@@ -15,11 +20,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.server.permission.PermissionAPI;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.UUID;
 
 public class Command extends CommandBase{
 
@@ -116,19 +116,6 @@ public class Command extends CommandBase{
     			temp = DataManager.getBanks().values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
     			Print.chat(sender, "&9Banks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
     			Print.chat(sender, "&5Last scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
-    			return;
-    		}
-    		case "test-vote":{
-    			if(!FSMM.VOTIFIER_LOADED){
-    				Print.chat(sender, "&aVotifier not detected.");
-    			}
-    			else{
-    				if(!op) Print.chat(sender, "&cNo Permission for Vote testing.");
-    				else{
-    					Print.chat(sender, "&9&oTrying to send a test vote... please wait.");
-    					net.fexcraft.mod.fsmm.impl.votifier.VotifierEvents.postTestVoteEvent(sender);
-    				}
-    			}
     			return;
     		}
     		default:{
