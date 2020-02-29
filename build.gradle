@@ -34,7 +34,7 @@ minecraft {
     replace "@VERSION@", modversion
     replaceIn "FSMM.java"
 	
-    mappings = "snapshot_20170624"
+    mappings = "stable_39"
 }
 
 dependencies {
