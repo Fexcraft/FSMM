@@ -69,7 +69,7 @@ public class FSMM {
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
 	    @Override
-	    public ItemStack getTabIconItem() {
+	    public ItemStack createIcon() {
 	    	return new ItemStack(FCLRegistry.getBlock("fsmm:atm"));
 	    }
 	};

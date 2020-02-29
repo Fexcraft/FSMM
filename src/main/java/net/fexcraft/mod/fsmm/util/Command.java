@@ -127,15 +127,15 @@ public class Command extends CommandBase{
 
 	private void modify(ICommandSender sender, String[] args){
 		ResourceLocation rs = new UCResourceLocation(args[1].split(":"));
-		if(rs.getResourceDomain().equals("player")){
+		if(rs.getNamespace().equals("player")){
 			try{
-				UUID.fromString(rs.getResourcePath());
+				UUID.fromString(rs.getPath());
 				//all OK
 			}
 			catch(Exception e){
 				//not an UUID, let's convert
-				UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getResourcePath()).getId();
-				rs = new UCResourceLocation(rs.getResourceDomain(), uuid.toString());
+				UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getPath()).getId();
+				rs = new UCResourceLocation(rs.getNamespace(), uuid.toString());
 			}
 		}
 		Account account = DataManager.getAccount(rs.toString(), false, false);

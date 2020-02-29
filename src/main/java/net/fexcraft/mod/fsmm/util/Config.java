@@ -144,8 +144,8 @@ public class Config {
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				GenericMoney money = null;
 				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
-				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getResourcePath(), new GenericMoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getResourcePath()), elm.getAsJsonObject(), true);
+				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new GenericMoneyItem(money), 1, null);
+				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.getAsJsonObject(), true);
 			});
 		}
 		//

@@ -100,7 +100,7 @@ public class DataManager extends TimerTask {
 	}
 	
 	public static void unloadAccount(ResourceLocation loc){
-		unloadAccount(loc.getResourceDomain(), loc.getResourcePath());
+		unloadAccount(loc.getNamespace(), loc.getPath());
 	}
 
 	public static void unloadAccount(String type, String id){
