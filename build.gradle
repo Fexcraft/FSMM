@@ -37,10 +37,6 @@ minecraft {
     mappings = "snapshot_20170624"
 }
 
-repositories {
-    maven { url = "https://jitpack.io" }
-}
-
 dependencies {
 	def localrepos = new File(project.projectDir, '/localrepos');
 	if(localrepos.exists()){
@@ -50,7 +46,6 @@ dependencies {
 	else{
 		compile 'com.github.Fexcraft:FCL:1.12.2-SNAPSHOT'
 	}
-	compile 'com.github.upcraftlp:votifier:master-SNAPSHOT'
 }
 
 processResources {

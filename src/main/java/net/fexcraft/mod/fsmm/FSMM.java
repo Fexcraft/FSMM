@@ -30,7 +30,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -57,8 +56,6 @@ public class FSMM {
     private static FSMM INSTANCE;
     public static DataManager CACHE;
     public static final Logger LOGGER = Print.getCustomLogger("fsmm", "transfers", "FSMM", null);
-    //
-    public static boolean VOTIFIER_LOADED;
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
@@ -68,10 +65,6 @@ public class FSMM {
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
 		FCLRegistry.newAutoRegistry("fsmm"); Config.initialize(event);
-		VOTIFIER_LOADED = Loader.isModLoaded("votifier");
-		if(VOTIFIER_LOADED){ Print.log("Adding Votifier Hooks.");
-			MinecraftForge.EVENT_BUS.register(new net.fexcraft.mod.fsmm.impl.votifier.VotifierEvents());
-		}
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -116,9 +109,8 @@ public class FSMM {
     	return INSTANCE;
     }
 	
-	@SuppressWarnings("deprecation")
 	public static List<Money> getSortedMoneyList(){
-		return CURRENCY.getValues().stream().sorted(new Comparator<Money>(){
+		return CURRENCY.getValuesCollection().stream().sorted(new Comparator<Money>(){
 			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
 		}).collect(Collectors.toList());
 	}
