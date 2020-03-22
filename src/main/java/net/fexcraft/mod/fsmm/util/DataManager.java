@@ -104,11 +104,25 @@ public class DataManager extends TimerTask {
 	}
 
 	public static void unloadAccount(String type, String id){
-		try{ save(ACCOUNTS.get(type).remove(id)); } catch(Exception e){ e.printStackTrace(); return; }
+		if(ACCOUNTS.containsKey(type) && ACCOUNTS.get(type).containsKey(id)){
+			try{
+				save(ACCOUNTS.get(type).remove(id));
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				return;
+			}
+		}
 	}
 	
 	public static void unloadBank(String id){
-		try{ save(BANKS.remove(id)); } catch(Exception e){ e.printStackTrace(); return; }
+		try{
+			save(BANKS.remove(id));
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	public static final DataManager getInstance(){
