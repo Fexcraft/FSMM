@@ -283,7 +283,7 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 						lines[3] = Config.getWorthAsString(input, true, true);
 					}
 					if(button.id == 18 && receiver.getText().length() >= 3 && receiver.getText().contains(":") /*rec_cat.length() > 0 && rec_id.length() > 0*/){
-						if(INSTANCE.input > 0){
+						if(INSTANCE.input > 0 || INSTANCE.lastamount.length() > 0){
 							this.openPerspective("request_transfer", null);
 						}
 						else{
