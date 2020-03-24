@@ -80,7 +80,7 @@ public class DataManager extends TimerTask {
 		JsonUtil.write(file, bank.toJson(), true);
 	}
 
-	public static final void saveAll(){
+	public final void saveAll(){
 		for(TreeMap<String, Account> map : ACCOUNTS.values()){
 			for(Account account : map.values()){
 				try{ save(account); } catch(Exception e){ e.printStackTrace(); return; }
@@ -91,7 +91,7 @@ public class DataManager extends TimerTask {
 		}
 	}
 
-	public static void clearAll(){
+	public void clearAll(){
 		ACCOUNTS.clear(); BANKS.clear(); timer.cancel();
 	}
 	
@@ -146,7 +146,8 @@ public class DataManager extends TimerTask {
 	}
 	
 	private static final Account loadAccount(String[] arr, boolean tempload, boolean create, Class<? extends Account> impl){
-		impl = impl == null ? Account.class : impl; File file = new File(ACCOUNT_DIR, arr[0] + "/" + arr[1] + ".json");
+		impl = impl == null ? Account.class : impl;
+		File file = new File(ACCOUNT_DIR, arr[0] + "/" + arr[1] + ".json");
 		if(file.exists()){
 			try{
 				Account account = impl.getConstructor(JsonObject.class).newInstance(JsonUtil.get(file));

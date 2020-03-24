@@ -99,7 +99,8 @@ public class Processor implements IPacketListener<PacketNBTTagCompound> {
 							UUID.fromString(str);
 							receiver = DataManager.getAccount(pkt.nbt.getString("receiver"), true, false);
 						}
-						catch(Exception e0){ if(Static.dev()) e0.printStackTrace();
+						catch(Exception e0){
+							if(Static.dev()) e0.printStackTrace();
 							try{
 								UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(str).getId();
 								receiver = DataManager.getAccount("player:" + uuid.toString(), true, false);

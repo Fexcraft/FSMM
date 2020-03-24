@@ -34,9 +34,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -80,16 +78,6 @@ public class FSMM {
 	}
 	
 	@Mod.EventHandler
-	public void serverStarted(FMLServerStartedEvent event){
-		CACHE = new DataManager(Static.getServer().getEntityWorld().getSaveHandler().getWorldDirectory()); CACHE.schedule();
-	}
-	
-	@Mod.EventHandler
-	public void serverStopping(FMLServerStoppingEvent event){
-		DataManager.saveAll(); DataManager.clearAll();
-	}
-	
-	@Mod.EventHandler
     public void init(FMLInitializationEvent event){
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 		UpdateHandler.initialize();
@@ -113,6 +101,32 @@ public class FSMM {
 		return CURRENCY.getValuesCollection().stream().sorted(new Comparator<Money>(){
 			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
 		}).collect(Collectors.toList());
+	}
+
+	public static void loadDataManager(){
+		if(isDataManagerLoaded()){
+			Print.debug("SKIPPING LOADING FSMM DATAMANAGER");
+			return;
+		}
+		Print.debug("LOADING FSMM DATAMANAGER");
+		if(FSMM.CACHE != null){
+			FSMM.CACHE.saveAll(); FSMM.CACHE.clearAll();
+		}
+		FSMM.CACHE = new DataManager(Static.getServer().getEntityWorld().getSaveHandler().getWorldDirectory());
+		FSMM.CACHE.schedule();
+	}
+
+	public static void unloadDataManager(){
+		Print.debug("UN-LOADING FSMM DATAMANAGER");
+		if(FSMM.CACHE != null){
+			FSMM.CACHE.saveAll();
+			FSMM.CACHE.clearAll();
+			FSMM.CACHE = null;
+		}
+	}
+	
+	public static boolean isDataManagerLoaded(){
+		return CACHE != null;
 	}
 	
 }
