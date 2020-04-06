@@ -11,13 +11,13 @@ public class WorldEvents {
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onWorldLoad(WorldEvent.Load event){
-		if(event.getWorld().provider.getDimension() != 0) return;
+		if(event.getWorld().isRemote || event.getWorld().provider.getDimension() != 0) return;
 		FSMM.loadDataManager();
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onWorldUnload(WorldEvent.Unload event){
-		if(event.getWorld().provider.getDimension() != 0) return;
+		if(event.getWorld().isRemote || event.getWorld().provider.getDimension() != 0) return;
 		FSMM.unloadDataManager();
 	}
 	
