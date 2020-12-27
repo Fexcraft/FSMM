@@ -6,10 +6,12 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
@@ -29,8 +31,8 @@ import net.minecraft.util.ResourceLocation;
 
 public class DataManager extends TimerTask {
 	
-	private static final TreeMap<String, TreeMap<String, Account>> ACCOUNTS = new TreeMap<>();
-	private static final TreeMap<String, Bank> BANKS = new TreeMap<>();
+	private static final Map<String, Map<String, Account>> ACCOUNTS = new ConcurrentHashMap<>();
+	private static final Map<String, Bank> BANKS = new ConcurrentHashMap<>();
 	public static File ACCOUNT_DIR, BANK_DIR;
 	public static long LAST_TIMERTASK;
 	protected static Timer timer;
@@ -81,7 +83,7 @@ public class DataManager extends TimerTask {
 	}
 
 	public final void saveAll(){
-		for(TreeMap<String, Account> map : ACCOUNTS.values()){
+		for(Map<String, Account> map : ACCOUNTS.values()){
 			for(Account account : map.values()){
 				try{ save(account); } catch(Exception e){ e.printStackTrace(); return; }
 			}
@@ -181,7 +183,7 @@ public class DataManager extends TimerTask {
 	
 	public static boolean addAccount(String type, Account account){
 		if(getAccountsOfType(type) == null){
-			ACCOUNTS.put(type, new TreeMap<>());
+			ACCOUNTS.put(type, new ConcurrentHashMap<>());
 		}
 		return getAccountsOfType(type).put(account.getId(), account) == null;
 	}
@@ -191,7 +193,7 @@ public class DataManager extends TimerTask {
 	}
 	
 	@Nullable
-	public static final TreeMap<String, Account> getAccountsOfType(String type){
+	public static final Map<String, Account> getAccountsOfType(String type){
 		return ACCOUNTS.get(type);
 	}
 	
@@ -242,7 +244,7 @@ public class DataManager extends TimerTask {
 	}
 	
 	@Nullable
-	public static final TreeMap<String, Bank> getBanks(){
+	public static final Map<String, Bank> getBanks(){
 		return BANKS;
 	}
 
