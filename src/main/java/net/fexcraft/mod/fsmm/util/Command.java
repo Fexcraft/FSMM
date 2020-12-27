@@ -2,7 +2,7 @@ package net.fexcraft.mod.fsmm.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.UUID;
 
 import net.fexcraft.lib.common.math.Time;
@@ -109,7 +109,7 @@ public class Command extends CommandBase{
     			Print.chat(sender, "&9Accounts loaded (by type): &7");
     			long temp = 0;
     			for(String str : DataManager.getAccountTypes(false)){
-    				TreeMap<String, Account> map = DataManager.getAccountsOfType(str);
+    				Map<String, Account> map = DataManager.getAccountsOfType(str);
     				temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
     				Print.chat(sender, "&2> &3" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
     			}
