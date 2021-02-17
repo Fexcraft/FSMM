@@ -10,14 +10,14 @@ public class GuiHandler implements IGuiHandler {
 	
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		return null;
+		return new ATMContainer(player);
 	}
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		switch(ID){
 			case ATM_MAIN:
-				return null;
+				return new ATMMain(player);
 			default:
 				return null;
 		}
