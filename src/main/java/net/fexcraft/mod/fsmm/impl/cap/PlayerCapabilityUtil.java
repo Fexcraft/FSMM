@@ -72,14 +72,14 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		private EntityPlayer player;
 		private Account account;
 
-		@SuppressWarnings("unchecked") @Override
+		@Override
 		public <T> T setEntityPlayer(EntityPlayer player){
 			this.player = player; return (T)this;
 		}
 
 		@Override
 		public Account getAccount(){
-			return account == null ? account = DataManager.getAccount("player:" + player.getGameProfile().getId().toString(), false, true) : account;
+			return account == null ? account = DataManager.getAccount("player:" + player.getGameProfile().getId().toString(), false, true).setName(player.getName()) : account;
 		}
 
 		@Override
