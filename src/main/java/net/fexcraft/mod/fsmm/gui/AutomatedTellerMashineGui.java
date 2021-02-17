@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+@Deprecated
 public class AutomatedTellerMashineGui extends GuiScreen {
 	
 	public static final ResourceLocation TEXTURE = new ResourceLocation("fsmm:textures/gui/atm_main.png");
