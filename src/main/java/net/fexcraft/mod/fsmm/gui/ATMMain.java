@@ -1,9 +1,12 @@
 package net.fexcraft.mod.fsmm.gui;
 
+import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
+
 import java.util.ArrayList;
 
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -21,12 +24,12 @@ public class ATMMain extends GenericGui<ATMContainer> {
 
 	@Override
 	protected void init(){
-		this.texts.put("b0", new BasicText(guiLeft + 6, guiTop +  6, 244, null, "BANK NAME HERE"));
-		this.texts.put("b1", new BasicText(guiLeft + 6, guiTop + 18, 244, null, "BANK INFO HERE"));
-		this.texts.put("b2", new BasicText(guiLeft + 6, guiTop + 30, 244, null, "BANK INFO HERE"));
-		this.texts.put("b3", new BasicText(guiLeft + 6, guiTop + 42, 235, null, "BANK INFO HERE"));
-		this.texts.put("ac", new BasicText(guiLeft + 6, guiTop + 58, 235, null, "SEL. ACCOUNT HERE"));
-		this.texts.put("ba", new BasicText(guiLeft + 6, guiTop + 70, 211, null, "BALANCE"));
+		this.texts.put("b0", new BasicText(guiLeft + 6, guiTop +  6, 244, null, "Synchronizing...."));
+		this.texts.put("b1", new BasicText(guiLeft + 6, guiTop + 18, 244, null, "Please wait."));
+		this.texts.put("b2", new BasicText(guiLeft + 6, guiTop + 30, 244, null, "- - -"));
+		this.texts.put("b3", new BasicText(guiLeft + 6, guiTop + 42, 235, null, "- - -"));
+		this.texts.put("ac", new BasicText(guiLeft + 6, guiTop + 58, 235, null, "- - -"));
+		this.texts.put("ba", new BasicText(guiLeft + 6, guiTop + 70, 211, null, "-0" + Config.CURRENCY_SIGN));
 		this.buttons.put("bi", bi = new BasicButton("bi", guiLeft + 242, guiTop + 42, 242, 42, 8, 8, true));
 		this.buttons.put("ca", ca = new BasicButton("ca", guiLeft + 242, guiTop + 58, 242, 58, 8, 8, true));
 		this.buttons.put("wd", wd = new BasicButton("wd", guiLeft + 219, guiTop + 69, 219, 69, 10, 10, true));
@@ -59,23 +62,23 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
 		switch(button.name){
 			case "bi":{
-				
+				openGui(GuiHandler.BANK_INFO, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 			case "ca":{
-				
+				openGui(GuiHandler.ACCOUNT_SELECT, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 			case "wd":{
-				
+				openGui(GuiHandler.ACCOUNT_WITHDRAW, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 			case "dp":{
-				
+				openGui(GuiHandler.ACCOUNT_DEPOSIT, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 			case "tr":{
-				
+				openGui(GuiHandler.ACCOUNT_TRANSFER, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 		}
