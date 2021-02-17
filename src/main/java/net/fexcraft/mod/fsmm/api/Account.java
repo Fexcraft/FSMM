@@ -18,7 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public class Account extends Removable implements Manageable /*, net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>*/ {
 	
-	private String id, type, bank;
+	private String id, type, bank, name;
 	private long balance;
 	private JsonObject additionaldata;
 	
@@ -29,6 +29,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		bank = obj.get("bank").getAsString();
 		balance = obj.get("balance").getAsLong();
 		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
+		name = obj.has("name") ? obj.get("name").getAsString() : null;
 		this.updateLastAccess();
 	}
 	
@@ -83,6 +84,16 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		additionaldata = obj;
 	}
 	
+	@Nullable
+	public String getName(){
+		return name == null ? id : name;
+	}
+	
+	public Account setName(String name){
+		this.name = name;
+		return this;
+	}
+	
 	@Override
 	/** Mainly used for saving. */
 	public JsonObject toJson(){
@@ -95,6 +106,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		if(additionaldata != null){
 			obj.add("data", additionaldata);
 		}
+		if(name != null) obj.addProperty("name", name);
 		return obj;
 	}
 
