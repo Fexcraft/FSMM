@@ -29,6 +29,12 @@ public interface PlayerCapability {
 	public String getSelectedAccountInATM();
 	
 	/** Sets the currently/last selected Account in the ATM. */
-	public Account setSelectedAccountInATM(String accountid);
+	public void setSelectedAccountInATM(String accountid);
+
+	/** Gets the currently looked at Bank in the ATM. */
+	public String getSelectedBankInATM();
+
+	/** Sets the currently looked at Bank in the ATM. */
+	public void setSelectedBankInATM(String id);
 
 }

@@ -71,7 +71,7 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		
 		private EntityPlayer player;
 		private Account account;
-		private String atmacc;
+		private String atmacc, atmbank;
 
 		@Override
 		public <T> T setEntityPlayer(EntityPlayer player){
@@ -114,9 +114,18 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		}
 
 		@Override
-		public Account setSelectedAccountInATM(String accountid){
+		public void setSelectedAccountInATM(String accountid){
 			atmacc = accountid;
-			return account;
+		}
+
+		@Override
+		public String getSelectedBankInATM(){
+			return atmbank;
+		}
+
+		@Override
+		public void setSelectedBankInATM(String bankid){
+			atmbank = bankid;
 		}
 		
 	}
