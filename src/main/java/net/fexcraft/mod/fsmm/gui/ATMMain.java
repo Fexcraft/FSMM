@@ -21,7 +21,6 @@ public class ATMMain extends GenericGui<ATMContainer> {
 		super(texture, new ATMContainer(player), player);
 		this.xSize = 256;
 		this.ySize = 88;
-		this.container.sync("account", "bank");
 	}
 
 	@Override
@@ -31,12 +30,13 @@ public class ATMMain extends GenericGui<ATMContainer> {
 		this.texts.put("b2", b2 = new BasicText(guiLeft + 6, guiTop + 30, 244, null, "- - -"));
 		this.texts.put("b3", b3 = new BasicText(guiLeft + 6, guiTop + 42, 235, null, "- - -"));
 		this.texts.put("ac", ac = new BasicText(guiLeft + 6, guiTop + 58, 235, null, "- - -"));
-		this.texts.put("ba", ba = new BasicText(guiLeft + 6, guiTop + 70, 211, null, "-0" + Config.CURRENCY_SIGN));
+		this.texts.put("ba", ba = new BasicText(guiLeft + 6, guiTop + 70, 211, null, "0" + Config.CURRENCY_SIGN));
 		this.buttons.put("bi", bi = new BasicButton("bi", guiLeft + 242, guiTop + 42, 242, 42, 8, 8, true));
 		this.buttons.put("ca", ca = new BasicButton("ca", guiLeft + 242, guiTop + 58, 242, 58, 8, 8, true));
 		this.buttons.put("wd", wd = new BasicButton("wd", guiLeft + 219, guiTop + 69, 219, 69, 10, 10, true));
 		this.buttons.put("dp", dp = new BasicButton("dp", guiLeft + 230, guiTop + 69, 230, 69, 10, 10, true));
 		this.buttons.put("tr", tr = new BasicButton("tr", guiLeft + 241, guiTop + 69, 241, 69, 10, 10, true));
+		this.container.sync("account", "bank");
 	}
 
 	@Override
