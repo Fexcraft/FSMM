@@ -1,31 +1,32 @@
 package net.fexcraft.mod.fsmm.gui;
 
-import java.io.File;
-import java.util.UUID;
-
 import net.fexcraft.lib.mc.api.packet.IPacketListener;
-import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
-import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.lib.mc.utils.Static;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.FSMM;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 
 public class Processor implements IPacketListener<PacketNBTTagCompound> {
+	
+	public static final String LISTENERID = "fsmm:atm_gui";
 
 	@Override
 	public String getId(){
-		return "fsmm:atm_gui";
+		return LISTENERID;
 	}
 
 	@Override
-	public void process(PacketNBTTagCompound pkt, Object[] objs){
-		Print.debug(pkt.nbt);
+	public void process(PacketNBTTagCompound packet, Object[] objs){
+		if(!packet.nbt.hasKey("task")) return;
+		EntityPlayerMP player = (EntityPlayerMP)objs[0];
+		switch(packet.nbt.getString("task")){
+			case "open_gui":{
+				int gui = packet.nbt.getInteger("gui");
+				int[] args = packet.nbt.hasKey("args") ? packet.nbt.getIntArray("args") : new int[3];
+				player.openGui(FSMM.getInstance(), gui, player.world, args[0], args[1], args[2]);
+				return;
+			}
+		}
+		/*Print.debug(pkt.nbt);
 		if(pkt.nbt.hasKey("request")){
 			EntityPlayerMP player = (EntityPlayerMP)objs[0];
 			Account playeracc = DataManager.getAccount("player:" + player.getGameProfile().getId().toString(), false, false, null);
@@ -124,7 +125,7 @@ public class Processor implements IPacketListener<PacketNBTTagCompound> {
 			reply.setString("payload", pkt.nbt.getString("request"));
 			reply.setString("target_listener", "fsmm:atm_gui");
 			PacketHandler.getInstance().sendTo(new PacketNBTTagCompound(reply), player);
-		}
+		}*/
 	}
 	
 }
