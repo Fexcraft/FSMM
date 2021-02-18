@@ -71,6 +71,7 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		
 		private EntityPlayer player;
 		private Account account;
+		private String atmacc;
 
 		@Override
 		public <T> T setEntityPlayer(EntityPlayer player){
@@ -105,6 +106,17 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		@Override
 		public long setMoneyInInventory(long expected_amount){
 			return ItemManager.setInInventory(player, expected_amount);
+		}
+
+		@Override
+		public String getSelectedAccountInATM(){
+			return atmacc;
+		}
+
+		@Override
+		public Account setSelectedAccountInATM(String accountid){
+			atmacc = accountid;
+			return account;
 		}
 		
 	}

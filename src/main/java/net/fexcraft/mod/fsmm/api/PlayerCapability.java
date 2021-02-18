@@ -24,5 +24,11 @@ public interface PlayerCapability {
 	
 	/** Tries to add the defined amount to Inventory, <s>returns amount which couldn't be processed.</s> **/
 	public long setMoneyInInventory(long expected_amount);
+	
+	/** Gets the currently/last selected Account in the ATM. */
+	public String getSelectedAccountInATM();
+	
+	/** Sets the currently/last selected Account in the ATM. */
+	public Account setSelectedAccountInATM(String accountid);
 
 }
