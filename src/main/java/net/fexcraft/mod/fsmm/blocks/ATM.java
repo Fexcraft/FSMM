@@ -33,13 +33,12 @@ public class ATM extends Block {
 	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
-		if(!player.isSneaking() && side == world.getBlockState(pos).getValue(FACING) && hitY > 0.5f){
+		if(world.isRemote || hand != EnumHand.MAIN_HAND || player.isSneaking()) return false;
+		if(side == world.getBlockState(pos).getValue(FACING) && hitY > 0.5f){
 			player.openGui(FSMM.getInstance(), GuiHandler.ATM_MAIN, world, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
-		else{
-			return false;
-		}
+		return false;
 	}
 	
 	@Override
