@@ -43,9 +43,9 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	protected void predraw(float pticks, int mouseX, int mouseY){
 		if(container.bank != null){
 			b0.string = container.bank.getName();
-			b1.string = "";
-			b2.string = "";
-			b3.string = "";
+			b1.string = container.bank.getStatus().size() > 0 ? Formatter.format(container.bank.getStatus().get(0)) : "";
+			b2.string = container.bank.getStatus().size() > 1 ? Formatter.format(container.bank.getStatus().get(1)) : "";
+			b3.string = container.bank.getStatus().size() > 2 ? Formatter.format(container.bank.getStatus().get(2)) : "";
 		}
 		if(container.account != null){
 			ac.string = container.account.getName();

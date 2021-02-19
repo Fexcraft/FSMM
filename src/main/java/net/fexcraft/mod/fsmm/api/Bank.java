@@ -1,9 +1,12 @@
 package net.fexcraft.mod.fsmm.api;
 
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+
 import javax.annotation.Nullable;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.mc.utils.Print;
@@ -23,6 +26,7 @@ public abstract class Bank extends Removable implements Manageable {
 	protected long balance;
 	private JsonObject additionaldata;
 	protected TreeMap<String, String> fees;
+	protected ArrayList<String> status = new ArrayList<>();
 	
 	/** From JSON Constructor */
 	public Bank(JsonObject obj){
@@ -40,6 +44,9 @@ public abstract class Bank extends Removable implements Manageable {
 					e.printStackTrace();
 				}
 			});
+		}
+		if(obj.has("status")){
+			obj.get("status").getAsJsonArray().forEach(elm -> status.add(elm.getAsString()));
 		}
 		this.updateLastAccess();
 	}
@@ -115,6 +122,11 @@ public abstract class Bank extends Removable implements Manageable {
 		if(additionaldata != null){
 			obj.add("data", additionaldata);
 		}
+		if(!status.isEmpty()){
+			JsonArray array = new JsonArray();
+			for(String str : status) array.add(str);
+			obj.add("status", array);
+		}
 		return obj;
 	}
 
@@ -140,5 +152,9 @@ public abstract class Bank extends Removable implements Manageable {
 	}
 	
 	public abstract boolean isNull();
+	
+	public ArrayList<String> getStatus(){
+		return status;
+	}
 	
 }

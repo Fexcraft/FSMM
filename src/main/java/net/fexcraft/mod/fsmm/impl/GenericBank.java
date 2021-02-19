@@ -1,6 +1,7 @@
 package net.fexcraft.mod.fsmm.impl;
 
 import java.util.TreeMap;
+
 import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.mc.utils.Print;
@@ -14,10 +15,13 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public class GenericBank extends Bank {
 
-	public GenericBank(JsonObject obj){ super(obj); }
+	public GenericBank(JsonObject obj){
+		super(obj);
+	}
 	
 	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
 		super(id, name, balance, data, map);
+		
 	}
 	
 	private long parseFee(String fee, long amount){

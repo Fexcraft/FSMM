@@ -6,6 +6,7 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,15 +15,15 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class ATMContainer extends GenericContainer {
 	
+	protected PlayerCapability cap;
 	protected Account account;
 	protected Bank bank;
 
 	public ATMContainer(EntityPlayer player){
 		super(player);
-		String id = player.getCapability(FSMMCapabilities.PLAYER, null).getSelectedAccountInATM();
-		account = id == null ? player.getCapability(FSMMCapabilities.PLAYER, null).getAccount() : DataManager.getAccount(id, true, true);
-		id = player.getCapability(FSMMCapabilities.PLAYER, null).getSelectedBankInATM();
-		bank = DataManager.getBank(id == null ? account.getBankId() : player.getCapability(FSMMCapabilities.PLAYER, null).getSelectedAccountInATM(), true, true);
+		cap = player.getCapability(FSMMCapabilities.PLAYER, null);
+		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : DataManager.getAccount(cap.getSelectedAccountInATM(), true, true);
+		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBankId() : cap.getSelectedAccountInATM(), true, true);
 	}
 
 	@Override
