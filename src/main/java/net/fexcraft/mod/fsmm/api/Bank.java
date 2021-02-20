@@ -36,7 +36,7 @@ public abstract class Bank extends Removable implements Manageable {
 		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
 		if(obj.has("fees")){
 			fees = new TreeMap<>();
-			obj.entrySet().forEach(entry -> {
+			obj.get("fees").getAsJsonObject().entrySet().forEach(entry -> {
 				try{
 					fees.put(entry.getKey(), entry.getValue().getAsString());
 				}

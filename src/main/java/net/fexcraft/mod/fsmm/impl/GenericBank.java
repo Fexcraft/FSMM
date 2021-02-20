@@ -21,10 +21,9 @@ public class GenericBank extends Bank {
 	
 	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
 		super(id, name, balance, data, map);
-		
 	}
 	
-	private long parseFee(String fee, long amount){
+	public static long parseFee(String fee, long amount){
 		if(fee == null){
 			return 0;
 		}

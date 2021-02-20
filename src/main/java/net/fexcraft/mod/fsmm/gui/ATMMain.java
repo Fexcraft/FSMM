@@ -73,7 +73,7 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
 		switch(button.name){
 			case "bi":{
-				openGui(GuiHandler.BANK_INFO, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.BANK_SELECT, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 			case "ca":{
