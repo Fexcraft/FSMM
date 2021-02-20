@@ -10,7 +10,6 @@ import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
-import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Money;
@@ -39,6 +38,7 @@ public class Config {
 	public static String DEFAULT_BANK, CURRENCY_SIGN;
 	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
+	private static JsonArray DEF_BANKS;
 	//
 	public static SyncableConfig LOCAL = new SyncableConfig(), REMOTE;
 	/** Acts as a copy when disconnecting or connecting to a server. */
@@ -149,17 +149,20 @@ public class Config {
 			});
 		}
 		//
-		if(obj.has("Banks") && ((file = new File(CONFIG_PATH, "/fsmm/banks/")).exists() ? file.listFiles().length <= 0 : true)){
-			obj.get("Banks").getAsJsonArray().forEach((elm) -> {
-				String uuid = elm.getAsJsonObject().get("uuid").getAsString();
-				if(DataManager.getBanks().containsKey(uuid)){
-					DataManager.addBank(new GenericBank(elm.getAsJsonObject()));
-				}
-				else{
-					Print.log("Tried to load bank with ID '" + uuid + "' from config, but there is already a bank with that ID loaded!");
-				}
-			});
+		if(obj.has("Banks")){
+			DEF_BANKS = obj.get(("Banks")).getAsJsonArray();
 		}
+	}
+	
+	public static void loadDefaultBanks(){
+		if(DEF_BANKS == null) return;
+		DEF_BANKS.forEach((elm) -> {
+			String uuid = elm.getAsJsonObject().get("uuid").getAsString();
+			File file = new File(DataManager.BANK_DIR, uuid + ".json");
+			if(!file.exists() && !DataManager.getBanks().containsKey(uuid)){
+				DataManager.addBank(new GenericBank(elm.getAsJsonObject()));
+			}
+		});
 	}
 	
 	private static JsonObject getDefaultContent(){

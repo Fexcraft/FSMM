@@ -33,16 +33,26 @@ public class DataManager extends TimerTask {
 	
 	private static final Map<String, Map<String, Account>> ACCOUNTS = new ConcurrentHashMap<>();
 	private static final Map<String, Bank> BANKS = new ConcurrentHashMap<>();
+	private static final Map<String, String> BANK_NAME_CACHE = new ConcurrentHashMap<>();
 	public static File ACCOUNT_DIR, BANK_DIR;
 	public static long LAST_TIMERTASK;
 	protected static Timer timer;
 
 	public DataManager(File file){
 		timer = new Timer();
+		BANK_NAME_CACHE.clear();
 		ACCOUNT_DIR = new File(file, "/fsmm/accounts/");
 		if(!ACCOUNT_DIR.exists()){ ACCOUNT_DIR.mkdirs(); }
 		BANK_DIR = new File(file, "/fsmm/banks/");
 		if(!BANK_DIR.exists()){ BANK_DIR.mkdirs(); }
+		Config.loadDefaultBanks();
+		for(File bfl : BANK_DIR.listFiles()){
+			if(bfl.isDirectory()) continue;
+			try{
+				new GenericBank(JsonUtil.get(bfl));
+			}
+			catch(Throwable thr){}
+		}
 	}
 
 	@Override
@@ -261,6 +271,10 @@ public class DataManager extends TimerTask {
 			return ACCOUNT_DIR.list();
 		}
 		return ACCOUNTS.keySet().toArray(new String[0]);
+	}
+
+	public static Map<String, String> getBankNameCache(){
+		return BANK_NAME_CACHE;
 	}
 	
 }

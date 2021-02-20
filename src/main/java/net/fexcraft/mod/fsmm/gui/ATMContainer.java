@@ -1,5 +1,9 @@
 package net.fexcraft.mod.fsmm.gui;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
 import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.lib.mc.gui.GenericContainer;
 import net.fexcraft.lib.mc.utils.Print;
@@ -10,11 +14,15 @@ import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ATMContainer extends GenericContainer {
 	
+	protected ArrayList<Entry<String, String>> banks;
 	protected PlayerCapability cap;
 	protected Account account;
 	protected Bank bank;
@@ -38,6 +46,17 @@ public class ATMContainer extends GenericContainer {
 					if(packet.hasKey("bank")){
 						bank = new GenericBank(JsonUtil.getObjectFromString(packet.getString("bank")));
 					}
+					if(packet.hasKey("bank_list")){
+						TreeMap<String, String> banks = new TreeMap<>();
+						NBTTagList list = (NBTTagList)packet.getTag("bank_list");
+						for(int i = 0; i < list.tagCount(); i++){
+							String[] str = list.getStringTagAt(i).split(":");
+							if(bank != null && str[0].equals(bank.getId())) continue;
+							banks.put(str[0], str[1]);
+						}
+						this.banks = new ArrayList<>();
+						this.banks.addAll(banks.entrySet());
+					}
 					break;
 				}
 			}
@@ -52,12 +71,23 @@ public class ATMContainer extends GenericContainer {
 					if(packet.getBoolean("bank")){
 						compound.setString("bank", bank.toJson().toString());
 					}
+					if(packet.getBoolean("bank_list")){
+						compound.setTag("bank_list", getBankList());
+					}
 					compound.setString("cargo", "sync");
 					this.send(Side.CLIENT, compound);
 					break;
 				}
 			}
 		}
+	}
+
+	private NBTBase getBankList(){
+		NBTTagList list = new NBTTagList();
+		DataManager.getBankNameCache().forEach((key, val) -> {
+			list.appendTag(new NBTTagString(key + ":" + val));
+		});
+		return list;
 	}
 
 	public void sync(String... types){

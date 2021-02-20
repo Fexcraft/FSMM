@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.command.ICommandSender;
 
 /**
@@ -32,7 +33,7 @@ public abstract class Bank extends Removable implements Manageable {
 	public Bank(JsonObject obj){
 		id = obj.get("uuid").getAsString();
 		name = obj.get("name").getAsString();
-		balance = obj.get("balance").getAsLong();
+		balance = obj.has("balance") ? obj.get("balance").getAsLong() : 0;
 		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
 		if(obj.has("fees")){
 			fees = new TreeMap<>();
@@ -48,6 +49,7 @@ public abstract class Bank extends Removable implements Manageable {
 		if(obj.has("status")){
 			obj.get("status").getAsJsonArray().forEach(elm -> status.add(elm.getAsString()));
 		}
+		DataManager.getBankNameCache().put(id, name);
 		this.updateLastAccess();
 	}
 	
