@@ -30,6 +30,12 @@ public interface PlayerCapability {
 	
 	/** Sets the currently/last selected Account in the ATM. */
 	public void setSelectedAccountInATM(AccountPermission perm);
+	
+	/** Gets the currently selected receiver Account in the ATM. */
+	public Account getSelectedReiverInATM();
+	
+	/** Sets the currently selected receiver Account in the ATM. */
+	public void setSelectedReceiverInATM(Account account);
 
 	/** Gets the currently looked at Bank in the ATM. */
 	public String getSelectedBankInATM();
