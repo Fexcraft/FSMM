@@ -73,6 +73,7 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		private EntityPlayer player;
 		private Account account;
 		private AccountPermission atmacc;
+		private Account selected;
 		private String atmbank;
 
 		@Override
@@ -133,6 +134,16 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		@Override
 		public EntityPlayer getEntityPlayer(){
 			return player;
+		}
+
+		@Override
+		public Account getSelectedReiverInATM(){
+			return selected;
+		}
+
+		@Override
+		public void setSelectedReceiverInATM(Account account){
+			selected = account;
 		}
 		
 	}
