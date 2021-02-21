@@ -1,6 +1,7 @@
 package net.fexcraft.mod.fsmm.impl.cap;
 
 import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.AccountPermission;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
@@ -71,7 +72,8 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		
 		private EntityPlayer player;
 		private Account account;
-		private String atmacc, atmbank;
+		private AccountPermission atmacc;
+		private String atmbank;
 
 		@Override
 		public <T> T setEntityPlayer(EntityPlayer player){
@@ -109,13 +111,13 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		}
 
 		@Override
-		public String getSelectedAccountInATM(){
+		public AccountPermission getSelectedAccountInATM(){
 			return atmacc;
 		}
 
 		@Override
-		public void setSelectedAccountInATM(String accountid){
-			atmacc = accountid;
+		public void setSelectedAccountInATM(AccountPermission perm){
+			atmacc = perm;
 		}
 
 		@Override

@@ -12,6 +12,7 @@ import net.fexcraft.lib.mc.gui.GenericContainer;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.api.AccountPermission;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Manageable.Action;
@@ -29,13 +30,15 @@ public class ATMContainer extends GenericContainer {
 	
 	protected ArrayList<Entry<String, String>> banks;
 	protected PlayerCapability cap;
+	protected AccountPermission perm;
 	protected Account account;
 	protected Bank bank;
 
 	public ATMContainer(EntityPlayer player){
 		super(player);
 		cap = player.getCapability(FSMMCapabilities.PLAYER, null);
-		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : DataManager.getAccount(cap.getSelectedAccountInATM(), true, true);
+		perm = cap.getSelectedAccountInATM() == null ? AccountPermission.FULL : cap.getSelectedAccountInATM();
+		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : perm.getAccount();
 		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBankId() : cap.getSelectedBankInATM(), true, true);
 		cap.setSelectedBankInATM(null);
 	}
@@ -90,11 +93,15 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 				case "bank_select":{
+					if(!perm.manage){
+						Print.chat(player, "&cYou do not have permission to manage this account.");
+						player.closeScreen();
+					}
 					Bank bank = DataManager.getBank(packet.getString("bank"), true, true);
 					String feeid = account.getType() + ":setup_account";
 					long fee = bank.hasFee(feeid) ? Long.parseLong(bank.getFees().get(feeid).replace("%", "")) : 0;
 					if(account.getBalance() < fee){
-						Print.chat(player, "Not enough money on account to pay the move/setup fee.");
+						Print.chat(player, "&eNot enough money on account to pay the move/setup fee.");
 						player.closeScreen();
 					}
 					else{

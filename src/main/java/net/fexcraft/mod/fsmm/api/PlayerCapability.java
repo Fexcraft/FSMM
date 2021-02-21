@@ -26,10 +26,10 @@ public interface PlayerCapability {
 	public long setMoneyInInventory(long expected_amount);
 	
 	/** Gets the currently/last selected Account in the ATM. */
-	public String getSelectedAccountInATM();
+	public AccountPermission getSelectedAccountInATM();
 	
 	/** Sets the currently/last selected Account in the ATM. */
-	public void setSelectedAccountInATM(String accountid);
+	public void setSelectedAccountInATM(AccountPermission perm);
 
 	/** Gets the currently looked at Bank in the ATM. */
 	public String getSelectedBankInATM();

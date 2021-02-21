@@ -24,7 +24,7 @@ public class WorldEvents {
 	
 	@SubscribeEvent()
 	public static void onGatherAccounts(ATMEvent.GatherAccounts event){
-		event.getAccountsList().add(new AccountPermission(event.getAccount(), true, true, true));
+		event.getAccountsList().add(new AccountPermission(event.getAccount(), true, true, true, true));
 	}
 	
 }
