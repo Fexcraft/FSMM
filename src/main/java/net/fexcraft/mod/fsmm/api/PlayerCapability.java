@@ -37,4 +37,6 @@ public interface PlayerCapability {
 	/** Sets the currently looked at Bank in the ATM. */
 	public void setSelectedBankInATM(String id);
 
+	public EntityPlayer getEntityPlayer();
+
 }

@@ -2,12 +2,15 @@ package net.fexcraft.mod.fsmm.gui;
 
 import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ATMBankSelect extends GenericGui<ATMContainer> {
 	
@@ -71,14 +74,17 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 			tooltip.add(Formatter.format("&7View info of &9your &7Bank."));
 			tooltip.add(Formatter.format("&9Bank ID: &7" + container.bank.getId()));
 		}
-		for(int i = 0; i < 8; i++){
-			if(bi[i].hovered){
-				tooltip.add(Formatter.format("&7View info of &6this &7Bank."));
-				tooltip.add(Formatter.format("&9Bank ID: &7" + container.banks.get(i + scroll).getKey()));
-			}
-			if(bs[i].hovered){
-				tooltip.add(Formatter.format("&cMove &baccount &cto this Bank."));
-				tooltip.add(Formatter.format("&7(Check fees first before moving bank!)"));
+		if(container.banks != null){
+			for(int i = 0; i < 8; i++){
+				if(i + scroll >= container.banks.size()) break;
+				if(bi[i].hovered){
+					tooltip.add(Formatter.format("&7View info of &6this &7Bank."));
+					tooltip.add(Formatter.format("&9Bank ID: &7" + container.banks.get(i + scroll).getKey()));
+				}
+				if(bs[i].hovered){
+					tooltip.add(Formatter.format("&cMove &baccount &cto this Bank."));
+					tooltip.add(Formatter.format("&7(Check fees first before moving bank!)"));
+				}
 			}
 		}
 		if(up.hovered) tooltip.add(Formatter.format("&7Scroll Up"));
@@ -89,11 +95,21 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 	@Override
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
 		if(button.name.startsWith("bi")){
-			//
+			int i = Integer.parseInt(button.name.substring(2));
+			if(i < 0 || i >= 8) return false;
+			NBTTagCompound compound = new NBTTagCompound();
+			compound.setString("cargo", "bank_info");
+			compound.setString("bank", container.banks.get(i + scroll).getKey());
+			container.send(Side.SERVER, compound);
 			return true;
 		}
 		else if(button.name.startsWith("bs")){
-			//
+			int i = Integer.parseInt(button.name.substring(2));
+			if(i < 0 || i >= 8) return false;
+			NBTTagCompound compound = new NBTTagCompound();
+			compound.setString("cargo", "bank_select");
+			compound.setString("bank", container.banks.get(i + scroll).getKey());
+			container.send(Side.SERVER, compound);
 			return true;
 		}
 		switch(button.name){
@@ -119,5 +135,14 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 		scroll += am > 0 ? 1 : -1;
 		if(scroll < 0) scroll = 0;
 	}
+
+	@Override
+    public void keyTyped(char typedChar, int keyCode) throws IOException{
+        if(keyCode == 1){
+			openGui(GuiHandler.ATM_MAIN, new int[]{ 0, 0, 0 }, LISTENERID);
+            return;
+        }
+        else super.keyTyped(typedChar, keyCode);
+    }
 
 }

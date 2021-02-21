@@ -127,6 +127,11 @@ public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 		public void setSelectedBankInATM(String bankid){
 			atmbank = bankid;
 		}
+
+		@Override
+		public EntityPlayer getEntityPlayer(){
+			return player;
+		}
 		
 	}
 

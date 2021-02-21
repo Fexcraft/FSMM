@@ -158,5 +158,9 @@ public abstract class Bank extends Removable implements Manageable {
 	public ArrayList<String> getStatus(){
 		return status;
 	}
+
+	public boolean hasFee(String fee_id){
+		return fees != null && fees.containsKey(fee_id);
+	}
 	
 }

@@ -1,5 +1,8 @@
 package net.fexcraft.mod.fsmm.gui;
 
+import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 import net.fexcraft.lib.mc.gui.GenericGui;
@@ -101,5 +104,14 @@ public class ATMBankInfo extends GenericGui<ATMContainer> {
 		scroll += am > 0 ? 1 : -1;
 		if(scroll < 0) scroll = 0;
 	}
+
+	@Override
+    public void keyTyped(char typedChar, int keyCode) throws IOException{
+        if(keyCode == 1){
+			openGui(GuiHandler.BANK_SELECT, new int[]{ 0, 0, 0 }, LISTENERID);
+            return;
+        }
+        else super.keyTyped(typedChar, keyCode);
+    }
 
 }
