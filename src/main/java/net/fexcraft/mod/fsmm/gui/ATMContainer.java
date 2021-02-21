@@ -29,6 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class ATMContainer extends GenericContainer {
 	
 	protected ArrayList<Entry<String, String>> banks;
+	protected ArrayList<AccountPermission> accounts;
 	protected PlayerCapability cap;
 	protected AccountPermission perm;
 	protected Account account;

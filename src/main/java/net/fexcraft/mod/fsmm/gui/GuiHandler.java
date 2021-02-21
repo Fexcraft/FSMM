@@ -28,6 +28,8 @@ public class GuiHandler implements IGuiHandler {
 				return new ATMBankInfo(player);
 			case BANK_SELECT:
 				return new ATMBankSelect(player);
+			case ACCOUNT_SELECT:
+				return new ATMAccountSelect(player);
 			default:
 				return null;
 		}
