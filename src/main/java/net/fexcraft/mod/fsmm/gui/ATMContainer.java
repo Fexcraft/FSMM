@@ -17,6 +17,7 @@ import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Manageable.Action;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
+import net.fexcraft.mod.fsmm.events.ATMEvent.GatherAccounts;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ATMContainer extends GenericContainer {
@@ -67,6 +69,13 @@ public class ATMContainer extends GenericContainer {
 						this.banks = new ArrayList<>();
 						this.banks.addAll(banks.entrySet());
 					}
+					if(packet.hasKey("account_list")){
+						accounts = new ArrayList<>();
+						NBTTagList list = (NBTTagList)packet.getTag("account_list");
+						for(int i = 0; i < list.tagCount(); i++){
+							accounts.add(new AccountPermission(list.getCompoundTagAt(i)));
+						}
+					}
 					break;
 				}
 			}
@@ -84,6 +93,16 @@ public class ATMContainer extends GenericContainer {
 					if(packet.getBoolean("bank_list")){
 						compound.setTag("bank_list", getBankList());
 					}
+					if(packet.getBoolean("account_list")){
+						GatherAccounts event = new GatherAccounts(player);
+						MinecraftForge.EVENT_BUS.post(event);
+						accounts = event.getAccountsList();
+						NBTTagList list = new NBTTagList();
+						accounts.forEach(account -> {
+							list.appendTag(account.toNBT());
+						});
+						compound.setTag("account_list", list);
+					}
 					compound.setString("cargo", "sync");
 					this.send(Side.CLIENT, compound);
 					break;
@@ -97,6 +116,7 @@ public class ATMContainer extends GenericContainer {
 					if(!perm.manage){
 						Print.chat(player, "&cYou do not have permission to manage this account.");
 						player.closeScreen();
+						break;
 					}
 					Bank bank = DataManager.getBank(packet.getString("bank"), true, true);
 					String feeid = account.getType() + ":setup_account";
@@ -110,6 +130,37 @@ public class ATMContainer extends GenericContainer {
 						account.setBankId(bank.getId());
 						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, 0, 0, 0);
 					}
+					break;
+				}
+				case "account_select":{
+					AccountPermission acc = null;
+					String type = packet.getString("type"), id = packet.getString("id");
+					int mode = packet.getInteger("mode");
+					for(AccountPermission perm : accounts){
+						if(perm.getAccount().getType().equals(type) && perm.getAccount().getId().equals(id)){
+							acc = perm;
+							break;
+						}
+					}
+					if(acc != null){
+						if(mode == 0){
+							cap.setSelectedAccountInATM(acc);
+							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, 0, 0, 0);
+						}
+						if(mode == 1){
+							cap.setSelectedReceiverInATM(acc.getAccount());
+							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, 0, 0, 0);
+						}
+					}
+					else{
+						Print.chat(player, "&cERROR: Account not found server side.");
+						player.closeScreen();
+					}
+					break;
+				}
+				case "account_search":{
+					String type = packet.getString("type"), id = packet.getString("id");
+					
 					break;
 				}
 			}
