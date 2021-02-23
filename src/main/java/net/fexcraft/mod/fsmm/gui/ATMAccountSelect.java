@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
+import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.AccountPermission;
 import net.minecraft.entity.player.EntityPlayer;
@@ -105,6 +106,7 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		if(type.hovered){
 			tooltip.add(Formatter.format("&7Type of &9Account &7to be &6searched&7."));
 			tooltip.add(Formatter.format("&7(enter the full type name)."));
+			if(mode == 1) tooltip.add(Formatter.format("&c*&orequired"));
 		}
 		if(uid.hovered){
 			tooltip.add(Formatter.format("&7ID/Name of &9Account &7to be &6searched&7."));
@@ -152,6 +154,10 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		accounts.clear();
 		String type = fields.get("type").getText(), id = fields.get("id").getText();
 		boolean notype = type.trim().length() == 0, noid = id.trim().length() == 0;
+		if(mode == 1 && notype){
+			Print.chat(player, "&cYou need to enter the searched account type.");
+			return;
+		}
 		if(notype && noid){
 			if(mode == 0) accounts.addAll(container.accounts);
 			return;
