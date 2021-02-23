@@ -48,5 +48,31 @@ public class ATMEvent extends Event {
 		}
 		
 	}
+	
+	/** Event so other mods can add search results. */
+	public static class SearchAccounts extends ATMEvent {
+		
+		private ArrayList<AccountPermission> accounts = new ArrayList<>();
+		private String type, id;
+		
+		public SearchAccounts(EntityPlayer player, String type, String id){
+			super(player);
+			this.type = type;
+			this.id = id;
+		}
+		
+		public ArrayList<AccountPermission> getAccountsList(){
+			return accounts;
+		}
+		
+		public String getSearchedType(){
+			return type;
+		}
+		
+		public String getSearchedId(){
+			return id;
+		}
+		
+	}
 
 }
