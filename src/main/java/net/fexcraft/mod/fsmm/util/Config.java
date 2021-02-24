@@ -37,7 +37,7 @@ public class Config {
 	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
 	public static String DEFAULT_BANK, CURRENCY_SIGN;
 	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
-	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
+	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true, PARTIAL_ACCOUNT_NAME_SEARCH = true;
 	private static JsonArray DEF_BANKS;
 	//
 	public static SyncableConfig LOCAL = new SyncableConfig(), REMOTE;
@@ -47,7 +47,7 @@ public class Config {
 		public int starting_balance, unload_frequency;
 		public String default_bank, currency_sign;
 		public boolean notify_balance_on_join, invert_comma, show_centesimals, enable_bank_cards;
-		public boolean show_item_worth_in_tooltip = true;
+		public boolean show_item_worth_in_tooltip = true, partial_account_name_search = true;
 		
 		public NBTTagCompound toNBT(){
 			NBTTagCompound compound = new NBTTagCompound();
@@ -60,6 +60,7 @@ public class Config {
 			compound.setBoolean("show_centesimals", show_centesimals);
 			compound.setBoolean("enable_bank_cards", enable_bank_cards);
 			compound.setBoolean("show_item_worth_in_tooltip", show_item_worth_in_tooltip);
+			compound.setBoolean("partial_account_name_search", partial_account_name_search);
 			return compound;
 		}
 		
@@ -74,6 +75,7 @@ public class Config {
 			config.show_centesimals = compound.getBoolean("show_centesimals");
 			config.enable_bank_cards = compound.getBoolean("enable_bank_cards");
 			config.show_item_worth_in_tooltip = compound.getBoolean("show_item_worth_in_tooltip");
+			config.partial_account_name_search = compound.getBoolean("partial_account_name_search");
 			return config;
 		}
 		
@@ -87,6 +89,7 @@ public class Config {
 			SHOW_CENTESIMALS = show_centesimals;
 			ENABLE_BANK_CARDS = enable_bank_cards;
 			SHOW_ITEM_WORTH_IN_TOOLTIP = show_item_worth_in_tooltip;
+			PARTIAL_ACCOUNT_NAME_SEARCH = partial_account_name_search;
 		}
 	}
 	//
@@ -204,6 +207,7 @@ public class Config {
 		LOCAL.show_centesimals = SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
 		LOCAL.show_item_worth_in_tooltip = SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
 		LOCAL.unload_frequency = UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
+		LOCAL.partial_account_name_search = PARTIAL_ACCOUNT_NAME_SEARCH = config.getBoolean("partial_account_name_search", "General", true, "If true, accounts can be searched by inputing only part of the name, otherwhise on false, the full ID/Name is required.");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}

@@ -9,6 +9,7 @@ import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.AccountPermission;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,11 +38,9 @@ public class WorldEvents {
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onSearchAccounts(ATMEvent.SearchAccounts event){
-		String id = null;
 		if(!event.getSearchedType().equals("player")){
 			if(!contains(event.getAccountsMap(), event.getSearchedType()) && DataManager.exists(event.getSearchedType(), event.getSearchedId())){
-				id = event.getSearchedType() + ":" + event.getSearchedId();
-				event.getAccountsMap().put(id, new AccountPermission(id));
+				put(event.getAccountsMap(), event.getSearchedType() + ":" + event.getSearchedId());
 			}
 			return;
 		}
@@ -50,24 +49,42 @@ public class WorldEvents {
 				event.getAccountsMap().put(account.getTypeAndId(), new AccountPermission(account));
 			}
 		}
-		for(String str : Static.getServer().getPlayerProfileCache().getUsernames()){
-			if(str.contains(event.getSearchedId()) && !event.getAccountsMap().containsKey("player:" + str)){
-				GameProfile gp = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(str);
-				id = "player:" + gp.getId().toString();
-				event.getAccountsMap().put(id, new AccountPermission(id));
+		if(Config.PARTIAL_ACCOUNT_NAME_SEARCH){
+			for(String str : Static.getServer().getPlayerProfileCache().getUsernames()){
+				if(str.contains(event.getSearchedId()) && !event.getAccountsMap().containsKey("player:" + str)){
+					GameProfile gp = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(str);
+					if(gp == null) continue;
+					putIn(event.getAccountsMap(), "player:" + gp.getId().toString());
+				}
 			}
-		}
-		File folder = new File(DataManager.ACCOUNT_DIR, "player/");
-		if(!folder.exists()) return;
-		String str = null;
-		for(File file : folder.listFiles()){
-			if(file.isDirectory() || file.isHidden()) continue;
-			if(file.getName().endsWith(".json") && (str = file.getName().substring(0, file.getName().length() - 5)).toLowerCase().contains(event.getSearchedId())){
-				if(!event.getAccountsMap().containsKey("player:" + str)){
-					event.getAccountsMap().put(id = "player:" + str, new AccountPermission(id));
+			File folder = new File(DataManager.ACCOUNT_DIR, "player/");
+			if(!folder.exists()) return;
+			String str = null;
+			for(File file : folder.listFiles()){
+				if(file.isDirectory() || file.isHidden()) continue;
+				if(file.getName().endsWith(".json") && (str = file.getName().substring(0, file.getName().length() - 5)).toLowerCase().contains(event.getSearchedId())){
+					put(event.getAccountsMap(), "player:" + str);
 				}
 			}
 		}
+		else{
+			GameProfile gp = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(event.getSearchedId());
+			if(gp != null && new File(DataManager.ACCOUNT_DIR, "player/" + gp.getId().toString() + ".json").exists()){
+				put(event.getAccountsMap(), "player:" + gp.getId().toString());
+			}
+			else if(new File(DataManager.ACCOUNT_DIR, "player/" + event.getSearchedId() + ".json").exists()){
+				put(event.getAccountsMap(), "player:" + event.getSearchedId());
+			}
+		}
+	}
+
+	private static void put(HashMap<String, AccountPermission> map, String id){
+		if(map.containsKey(id)) return;
+		map.put(id, new AccountPermission(id));
+	}
+
+	private static void putIn(HashMap<String, AccountPermission> map, String id){
+		map.put(id, new AccountPermission(id));
 	}
 
 	/** Checking if another mod returned already anything for this type. */

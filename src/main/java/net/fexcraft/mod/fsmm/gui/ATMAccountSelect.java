@@ -12,6 +12,7 @@ import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.AccountPermission;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -53,6 +54,10 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		fields.put("type", new TextField(0, fontRenderer, guiLeft + 6, guiTop + 32, 235, 8).setEnableBackground(false));
 		fields.put("id", new TextField(1, fontRenderer, guiLeft + 6, guiTop + 42, 226, 8).setEnableBackground(false));
 		this.container.sync("account", mode == 0 ? "account_list" : "");
+		if(mode == 1){
+			accs[2].string = "Please enter a type and";
+			accs[3].string = "name/id then press search!";
+		}
 	}
 
 	@Override
@@ -110,7 +115,7 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		}
 		if(uid.hovered){
 			tooltip.add(Formatter.format("&7ID/Name of &9Account &7to be &6searched&7."));
-			tooltip.add(Formatter.format("&7(you can just write bits of the name/id)"));
+			tooltip.add(Formatter.format(Config.PARTIAL_ACCOUNT_NAME_SEARCH ? "&7(you can just write bits of the name/id)" : "&7(enter the full account name/id)"));
 			if(mode == 1) tooltip.add(Formatter.format("&c&o*required"));
 		}
 		if(search.hovered) tooltip.add(Formatter.format("&7Search/Filter"));
