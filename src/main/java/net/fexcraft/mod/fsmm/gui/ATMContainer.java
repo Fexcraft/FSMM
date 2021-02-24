@@ -18,6 +18,7 @@ import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Manageable.Action;
 import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.events.ATMEvent.GatherAccounts;
+import net.fexcraft.mod.fsmm.events.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -159,8 +160,21 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 				case "account_search":{
-					String type = packet.getString("type"), id = packet.getString("id");
-					
+					String type = packet.getString("type").toLowerCase();
+					String id = packet.getString("id").toLowerCase();
+					if(type.trim().length() == 0 || id.trim().length() == 0 || id.length() < 3) break;
+					NBTTagCompound compound = new NBTTagCompound();
+					SearchAccounts event = new SearchAccounts(player, type, id);
+					MinecraftForge.EVENT_BUS.post(event);
+					accounts = new ArrayList<>();
+					accounts.addAll(event.getAccountsMap().values());
+					NBTTagList list = new NBTTagList();
+					accounts.forEach(account -> {
+						list.appendTag(account.toNBT());
+					});
+					compound.setTag("account_list", list);
+					compound.setString("cargo", "sync");
+					this.send(Side.CLIENT, compound);
 					break;
 				}
 			}

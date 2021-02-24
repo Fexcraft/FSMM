@@ -19,12 +19,12 @@ public abstract class Removable {
 		return temporary ? last_access : -1;
 	}
 	
-	/** Selfexplaining. */
+	/** Self explaining. */
 	public long updateLastAccess(){
 		return last_access = temporary ? Time.getDate() : -1;
 	}
 	
-	@SuppressWarnings("unchecked")
+	
 	/** Set this instance as "temporary loaded", as such, to be removed next check for inactive accounts/banks.*/
 	public <T extends Removable> T setTemporary(boolean value){
 		this.temporary = value;

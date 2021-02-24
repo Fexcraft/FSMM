@@ -1,6 +1,7 @@
 package net.fexcraft.mod.fsmm.events;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.AccountPermission;
@@ -52,7 +53,7 @@ public class ATMEvent extends Event {
 	/** Event so other mods can add search results. */
 	public static class SearchAccounts extends ATMEvent {
 		
-		private ArrayList<AccountPermission> accounts = new ArrayList<>();
+		private HashMap<String, AccountPermission> accounts = new HashMap<>();
 		private String type, id;
 		
 		public SearchAccounts(EntityPlayer player, String type, String id){
@@ -61,7 +62,7 @@ public class ATMEvent extends Event {
 			this.id = id;
 		}
 		
-		public ArrayList<AccountPermission> getAccountsList(){
+		public HashMap<String, AccountPermission> getAccountsMap(){
 			return accounts;
 		}
 		

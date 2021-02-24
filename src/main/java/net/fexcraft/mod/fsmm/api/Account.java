@@ -74,6 +74,10 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		return new UCResourceLocation(this.getType(), this.getId());
 	}
 	
+	public String getTypeAndId(){
+		return this.getType() + ":" + this.getId();
+	}
+	
 	@Nullable
 	public JsonObject getData(){
 		return additionaldata;

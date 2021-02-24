@@ -24,6 +24,15 @@ public class AccountPermission {
 		this(account.getId(), wd, dp, tr, mg);
 		this.account = account;
 	}
+
+	public AccountPermission(String accid){
+		this(accid, false, false, false, false);
+	}
+
+	public AccountPermission(Account account){
+		this(account.getId());
+		this.account = account;
+	}
 	
 	public AccountPermission(NBTTagCompound compound){
 		account = new Account(JsonUtil.getObjectFromString(compound.getString("a")));
@@ -49,6 +58,14 @@ public class AccountPermission {
 		com.setBoolean("t", transfer);
 		com.setBoolean("m", manage);
 		return com;
+	}
+
+	public String getType(){
+		return account == null ? account_id.split(":")[0] : account.getType();
+	}
+
+	public String getId(){
+		return account == null ? account_id.split(":")[1] : account.getId();
 	}
 
 }

@@ -41,8 +41,8 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		this.texts.put("acc1", acc1 = new BasicText(guiLeft + 6, guiTop + 16, 244, null, "Please wait.").autoscale());
 		for(int i = 0; i < 4; i++){
 			int j = i * 2;
-			this.texts.put("accs" + j, accs[j] = new BasicText(guiLeft + 6, guiTop + 58 + (i * 22), 244, null, "- - -").autoscale());
-			this.texts.put("accs" + (j + 1), accs[j + 1] = new BasicText(guiLeft + 6, guiTop + 68 + (i * 22), 244, null, "- - -").autoscale());
+			this.texts.put("accs" + j, accs[j] = new BasicText(guiLeft + 6, guiTop + 58 + (i * 22), 244, null, "").autoscale());
+			this.texts.put("accs" + (j + 1), accs[j + 1] = new BasicText(guiLeft + 6, guiTop + 68 + (i * 22), 244, null, "").autoscale());
 			this.buttons.put("acc" + j, acc[i] = new BasicButton("acc" + i, guiLeft + 5, guiTop + 57 + (i * 22), 5, 57, 246, 20, true));
 		}
 		this.buttons.put("type", type = new BasicButton("type", guiLeft + 242, guiTop + 32, 242, 32, 8, 8, false));
@@ -52,7 +52,7 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		this.buttons.put("dw", dw = new BasicButton("dw", guiLeft + 237, guiTop + 144, 237, 144, 7, 7, true));
 		fields.put("type", new TextField(0, fontRenderer, guiLeft + 6, guiTop + 32, 235, 8).setEnableBackground(false));
 		fields.put("id", new TextField(1, fontRenderer, guiLeft + 6, guiTop + 42, 226, 8).setEnableBackground(false));
-		this.container.sync("account", "account_list");
+		this.container.sync("account", mode == 0 ? "account_list" : "");
 	}
 
 	@Override
@@ -106,11 +106,12 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		if(type.hovered){
 			tooltip.add(Formatter.format("&7Type of &9Account &7to be &6searched&7."));
 			tooltip.add(Formatter.format("&7(enter the full type name)."));
-			if(mode == 1) tooltip.add(Formatter.format("&c*&orequired"));
+			if(mode == 1) tooltip.add(Formatter.format("&c&o*required"));
 		}
 		if(uid.hovered){
 			tooltip.add(Formatter.format("&7ID/Name of &9Account &7to be &6searched&7."));
 			tooltip.add(Formatter.format("&7(you can just write bits of the name/id)"));
+			if(mode == 1) tooltip.add(Formatter.format("&c&o*required"));
 		}
 		if(search.hovered) tooltip.add(Formatter.format("&7Search/Filter"));
 		if(up.hovered) tooltip.add(Formatter.format("&7Scroll Up"));
@@ -151,11 +152,15 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 	}
 
 	private void search(){
-		accounts.clear();
+		if(accounts != null) accounts.clear();
 		String type = fields.get("type").getText(), id = fields.get("id").getText();
 		boolean notype = type.trim().length() == 0, noid = id.trim().length() == 0;
 		if(mode == 1 && notype){
 			Print.chat(player, "&cYou need to enter the searched account type.");
+			return;
+		}
+		if(mode == 1 && (noid || id.length() < 3)){
+			Print.chat(player, "&cYou need to enter at least 3 letters of the searched id.");
 			return;
 		}
 		if(notype && noid){

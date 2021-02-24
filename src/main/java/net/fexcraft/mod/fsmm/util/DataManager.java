@@ -276,5 +276,16 @@ public class DataManager extends TimerTask {
 	public static Map<String, String> getBankNameCache(){
 		return BANK_NAME_CACHE;
 	}
+
+	public static boolean exists(String type, String id){
+		if(ACCOUNTS.containsKey(type) && ACCOUNTS.get(type).containsKey(id)) return true;
+		File folder = new File(DataManager.ACCOUNT_DIR, type + "/");
+		if(!folder.exists()) return false;
+		for(File file : folder.listFiles()){
+			if(file.isDirectory() || file.isHidden()) continue;
+			if(file.getName().endsWith(".json") && file.getName().substring(0, file.getName().length() - 5).equals(id)) return true;
+		}
+		return false;
+	}
 	
 }
