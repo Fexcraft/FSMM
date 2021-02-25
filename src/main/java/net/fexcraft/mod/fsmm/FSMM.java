@@ -23,12 +23,10 @@ import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.EventHandler;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -62,7 +60,8 @@ public class FSMM {
     	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapabilityUtil.Storage(), new PlayerCapabilityUtil.Callable());
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
-		FCLRegistry.newAutoRegistry("fsmm"); Config.initialize(event);
+		FCLRegistry.newAutoRegistry("fsmm");
+		Config.initialize(event);
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -81,7 +80,6 @@ public class FSMM {
     public void init(FMLInitializationEvent event){
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
 		UpdateHandler.initialize();
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
 		PermissionAPI.registerNode("fsmm.admin", DefaultPermissionLevel.OP, "FSMM Admin Permission");
     }
 

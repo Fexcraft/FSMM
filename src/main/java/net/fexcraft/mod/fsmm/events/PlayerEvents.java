@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.util;
+package net.fexcraft.mod.fsmm.events;
 
 import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
@@ -13,21 +13,27 @@ import net.fexcraft.mod.fsmm.api.WorldCapability;
 import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
+import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EventHandler {
+@Mod.EventBusSubscriber
+public class PlayerEvents {
 	
     @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     	if(UpdateHandler.Status != null){
         	event.player.sendMessage(new TextComponentString(Formatter.format(UpdateHandler.Status)));
     	}
@@ -47,13 +53,13 @@ public class EventHandler {
     }
     
     @SubscribeEvent
-    public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
 		Print.debug("Unloading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
 		DataManager.unloadAccount("player", event.player.getGameProfile().getId().toString());
     }
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
-    public void onItemTooltip(ItemTooltipEvent event){
+    public static void onItemTooltip(ItemTooltipEvent event){
     	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP || FSMMCapabilities.MONEY_ITEMSTACK == null){ return; }
     	if(event.getItemStack().hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
     		long worth = event.getItemStack().getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth();
@@ -66,29 +72,24 @@ public class EventHandler {
     }
     
     @SubscribeEvent
-    public void onAttachItemStackCapabilities(AttachCapabilitiesEvent<net.minecraft.item.ItemStack> event){
+    public static void onAttachItemStackCapabilities(AttachCapabilitiesEvent<net.minecraft.item.ItemStack> event){
     	if(FSMMCapabilities.MONEY_ITEMSTACK != null && (event.getObject().getItem() instanceof Money.Item || Config.containsAsExternalItemStack(event.getObject()))){
     		event.addCapability(MoneyCapability.REGISTRY_NAME, new MoneyCapabilityUtil(event.getObject()));
     	}
     }
     
     @SubscribeEvent
-    public void onAttachWorldCapabilities(AttachCapabilitiesEvent<net.minecraft.world.World> event){
+    public static void onAttachWorldCapabilities(AttachCapabilitiesEvent<net.minecraft.world.World> event){
     	if(FSMMCapabilities.WORLD != null && event.getObject() != null){
     		event.addCapability(WorldCapability.REGISTRY_NAME, new WorldCapabilityUtil(event.getObject()));
     	}
     }
     
     @SubscribeEvent
-    public void onAttachEntityCapabilities(AttachCapabilitiesEvent<net.minecraft.entity.Entity> event){
+    public static void onAttachEntityCapabilities(AttachCapabilitiesEvent<net.minecraft.entity.Entity> event){
     	if(FSMMCapabilities.PLAYER != null && event.getObject() instanceof EntityPlayer){
     		event.addCapability(PlayerCapability.REGISTRY_NAME, new PlayerCapabilityUtil((EntityPlayer)event.getObject()));
     	}
     }
-    
-    /*@SubscribeEvent
-    public void testEvent(AccountEvent.BalanceUpdated event){
-    	Print.debug("UPDATE EVENT", event.getAccount().getId(), event.getOldBalance(), event.getNewBalance());
-    }*/
     
 }
