@@ -21,7 +21,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	
 	private static final ResourceLocation texture = new ResourceLocation("fsmm:textures/gui/account_self.png");
 	private ArrayList<String> tooltip = new ArrayList<>();
-	private BasicButton action, cancel, exit, expand;
+	private BasicButton action, /*cancel, exit,*/ expand;
 	private BasicButton[] numbers = new BasicButton[12];
 	private BasicText acc0, acc1, bal, fee, tot, amount;
 	private boolean expanded, mode;
@@ -148,7 +148,9 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	
 	private final long format(){
 		try{
-			String format = df.format(Double.parseDouble(amount_field.getText().replace("\\" + Config.getDot(), "")));
+			String str = amount_field.getText().replace("\\" + Config.getDot(), "").replace(",", ".");
+			if(str.length() == 0) return 0;
+			String format = df.format(Double.parseDouble(str));
 			return Long.parseLong(format.replace(",", "").replace(".", ""));
 		}
 		catch(Exception e){
