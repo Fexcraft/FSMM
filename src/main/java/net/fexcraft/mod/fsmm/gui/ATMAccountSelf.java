@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -20,6 +21,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	private BasicText acc0, acc1, bal, fee, tot, amount;
 	private boolean expanded, mode;
 	private TextField amount_field;
+	private long bf, am;
 
 	public ATMAccountSelf(EntityPlayer player, boolean bool){
 		super(texture, new ATMContainer(player), player);
@@ -34,15 +36,15 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		this.texts.put("acc0", acc0 = new BasicText(guiLeft + 6, guiTop + 6, 244, null, "Synchronizing....").autoscale());
 		this.texts.put("acc1", acc1 = new BasicText(guiLeft + 6, guiTop + 16, 244, null, "Please wait.").autoscale());
 		this.texts.put("balance", bal = new BasicText(guiLeft + 6, guiTop + 32, 244, null, "").autoscale());
-		this.texts.put("amount", amount = new BasicText(guiLeft + 6, guiTop + 44, 244, null, "").autoscale());
-		this.fields.put("amount", amount_field = new TextField(0, fontRenderer, guiLeft + 5, guiTop + 43, 246, 10).setEnableBackground(false));
+		this.texts.put("amount", amount = new BasicText(guiLeft + 6, guiTop + 44, 244, MapColor.SNOW.colorValue, "").autoscale());
+		this.fields.put("amount", amount_field = new TextField(0, fontRenderer, guiLeft + 6, guiTop + 44, 244, 8).setColor(MapColor.SNOW.colorValue).setEnableBackground(false));
 		this.texts.put("fee", fee = new BasicText(guiLeft + 6, guiTop + 56, 244, null, "").autoscale());
 		this.texts.put("total", tot = new BasicText(guiLeft + 6, guiTop + 68, 233, null, "").autoscale());
 		this.buttons.put("confirm", action = new BasicButton("action", guiLeft + 241, guiTop + 67, mode ? 0 : 10, 246, 10, 10, true));
 		this.buttons.put("expand", expand = new BasicButton("expand", guiLeft + 191, guiTop + 79, 191, 148, 51, 8, true));
 		for(int i = 0; i < numbers.length; i++){
 			int x = 192 + ((i % 3) * 17), y = 79 + ((i / 3) * 16);
-			String id = i < 9 ? "n" + i : i == 9 ? "cancel" : i == 10 ? "n0" : "exit";
+			String id = i < 9 ? "n" + (i + 1) : i == 9 ? "cancel" : i == 10 ? "n0" : "exit";
 			this.buttons.put(id, numbers[i] = new BasicButton(id, guiLeft + x, guiTop + y, x, y, 15, 15, true));
 		}
 		this.container.sync("account", "bank");
@@ -53,7 +55,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		amount_field.setVisible(expand.visible = !(amount.visible = expanded));
 		for(BasicButton button : numbers) button.visible = expanded;
 		if(container.bank != null){
-			//show fee
+			fee.string = am == 0 || bf == 0 ? "-" : Config.getWorthAsString(bf); 
 		}
 		if(container.account != null){
 			acc0.string = container.account.getName();
