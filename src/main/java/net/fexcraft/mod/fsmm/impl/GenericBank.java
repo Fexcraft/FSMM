@@ -17,6 +17,8 @@ public class GenericBank extends Bank {
 
 	public GenericBank(JsonObject obj){
 		super(obj);
+		fees = new TreeMap<>();
+		fees.put("self:player", "1%");
 	}
 	
 	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
@@ -30,11 +32,13 @@ public class GenericBank extends Bank {
 		long result = 0;
 		if(fee.endsWith("%")){
 			float pc = Float.parseFloat(fee.replace("%", ""));
-			result = (long)(pc < 0 ? 0 : pc > 100 ? 100 : (amount / 100) * pc);
+			if(pc < 0) return 0;
+			if(pc > 100) pc = 100;
+			result = (long)((amount / 100) * pc);
 		}
 		else{
 			result = Long.parseLong(fee);
-			result = result < 0 ? 0 : result > amount ? amount : result;
+			result = result < 0 ? 0 : /*result > amount ? amount :*/ result;
 		}
 		return result;
 	}
