@@ -3,10 +3,15 @@ package net.fexcraft.mod.fsmm.gui;
 import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
+import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +26,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	private BasicText acc0, acc1, bal, fee, tot, amount;
 	private boolean expanded, mode;
 	private TextField amount_field;
+	private String oldtext = "";
 	private long bf, am;
 
 	public ATMAccountSelf(EntityPlayer player, boolean bool){
@@ -54,14 +60,22 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	protected void predraw(float pticks, int mouseX, int mouseY){
 		amount_field.setVisible(expand.visible = !(amount.visible = expanded));
 		for(BasicButton button : numbers) button.visible = expanded;
-		if(container.bank != null){
-			fee.string = am == 0 || bf == 0 ? "-" : Config.getWorthAsString(bf); 
+		if(!oldtext.equals(amount_field.getText())){
+			oldtext = amount_field.getText();
+			updateValues(true);
 		}
+		if(container.bank != null){
+			fee.string = am == 0 || bf == 0 ? "-" : Config.getWorthAsString(bf) + "  (fee)"; 
+		}
+		String pref = "";
 		if(container.account != null){
 			acc0.string = container.account.getName();
 			acc1.string = container.account.getType() + ":" + container.account.getId();
-			bal.string = Config.getWorthAsString(container.account.getBalance());
+			bal.string = Config.getWorthAsString(container.account.getBalance()) + "  (balance)";
+			if(am + bf > container.account.getBalance()) pref = "&c";
 		}
+		amount.string = Config.getWorthAsString(am, false);
+		tot.string = Formatter.format(pref + Config.getWorthAsString(am + bf)) + "  (total)";
 	}
 
 	@Override
@@ -87,15 +101,61 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 
 	@Override
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
+		if(button.name.startsWith("n")){
+			int i = Integer.parseInt(button.name.substring(1));
+			am *= 10;
+			am += i;
+			updateValues(false);
+			return true;
+		}
 		switch(button.name){
 			case "action":{
 				
 				return true;
 			}
-			case "expand": return expanded = true;
-			case "exit": return !(expanded = false);
+			case "cancel":{
+				am = bf = 0;
+				return true;
+			}
+			case "expand": return expand(true);
+			case "exit": return expand(false);
 		}
 		return false;
+	}
+
+	private boolean expand(boolean bool){
+		if(expanded){
+			amount_field.setText(Config.getWorthAsString(am, false));
+		}
+		else{
+			am = format();
+		}
+		expanded = bool;
+		return true;
+	}
+
+	private void updateValues(boolean fromfield){
+		if(fromfield){
+			am = format();
+		}
+		TreeMap<String, String> fees = container.bank == null ? null : container.bank.getFees();
+		String type = container.account == null ? "player" : container.account.getType();
+		bf = GenericBank.parseFee(fees == null ? null : fees.get(mode ? type + ":self" : "self:" + type), am);
+	}
+	
+	private static final DecimalFormat df = new DecimalFormat("#.000");
+	static { df.setRoundingMode(RoundingMode.DOWN); }
+	
+	private final long format(){
+		try{
+			String format = df.format(Double.parseDouble(amount_field.getText().replace("\\" + Config.getDot(), "")));
+			return Long.parseLong(format.replace(",", "").replace(".", ""));
+		}
+		catch(Exception e){
+			Print.chat(player, "INVALID INPUT: " + e.getMessage());
+			e.printStackTrace();
+			return 0;
+		}
 	}
 
 	@Override
