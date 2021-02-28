@@ -11,9 +11,6 @@ import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.mod.fsmm.gui.buttons.NumberButton;
-import net.fexcraft.mod.fsmm.gui.buttons.SelectBoxField;
-import net.fexcraft.mod.fsmm.gui.buttons.SideButton;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.gui.GuiButton;
@@ -46,9 +43,6 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	protected NBTTagList catlist;
 	protected NBTTagList idlist;
 	//
-	private SideButton[] sidebuttons = new SideButton[8];
-	private NumberButton[] numberbuttons = new NumberButton[13];
-	private SelectBoxField[] fieldbuttons = new SelectBoxField[7];
 	private GuiTextField receiver, amount;
 	
 	public AutomatedTellerMashineGui(EntityPlayer player, World world, int x, int y, int z){
@@ -63,28 +57,6 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 	public void initGui(){
 		xhalf = (this.width - 176) / 2;
 		yhalf = (this.height - 166) / 2;
-		//TODO
-		this.buttonList.clear();
-		for(int i = 0; i < sidebuttons.length; i++){
-			boolean left = i % 2 == 0; int j = left ? i / 2 : (i - 1) / 2;
-			buttonList.add(sidebuttons[i] = new SideButton(i, xhalf + (left ? 5 : 161), yhalf + (12 + (j * 23)), left));
-		}
-		buttonList.add(numberbuttons[ 0] = new NumberButton( 8, xhalf + 57, yhalf + 145,  0));
-		buttonList.add(numberbuttons[ 1] = new NumberButton( 9, xhalf +  6, yhalf + 111,  1));
-		buttonList.add(numberbuttons[ 2] = new NumberButton(10, xhalf + 23, yhalf + 111,  2));
-		buttonList.add(numberbuttons[ 3] = new NumberButton(11, xhalf + 40, yhalf + 111,  3));
-		buttonList.add(numberbuttons[ 4] = new NumberButton(12, xhalf +  6, yhalf + 128,  4));
-		buttonList.add(numberbuttons[ 5] = new NumberButton(13, xhalf + 23, yhalf + 128,  5));
-		buttonList.add(numberbuttons[ 6] = new NumberButton(14, xhalf + 40, yhalf + 128,  6));
-		buttonList.add(numberbuttons[ 7] = new NumberButton(15, xhalf +  6, yhalf + 145,  7));
-		buttonList.add(numberbuttons[ 8] = new NumberButton(16, xhalf + 23, yhalf + 145,  8));
-		buttonList.add(numberbuttons[ 9] = new NumberButton(17, xhalf + 40, yhalf + 145,  9));
-		buttonList.add(numberbuttons[10] = new NumberButton(18, xhalf + 57, yhalf + 111, 10));
-		buttonList.add(numberbuttons[11] = new NumberButton(19, xhalf + 57, yhalf + 128, 11));
-		buttonList.add(numberbuttons[12] = new NumberButton(20, xhalf + 74, yhalf + 145, 12));
-		for(int i = 0; i < 7; i++){
-			buttonList.add(fieldbuttons[i] = new SelectBoxField(21 + i, xhalf + 25, yhalf + 13));
-		}
 		//
 		receiver = new GuiTextField(22, fontRenderer, xhalf + 22, yhalf + 37, 132, 11);
 		receiver.setVisible(false); receiver.setMaxStringLength(1024);
@@ -98,24 +70,6 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		this.drawDefaultBackground();
         this.mc.getTextureManager().bindTexture(TEXTURE);
         this.drawTexturedModalRect(xhalf, yhalf, 0, 0, 176, 166);
-        //
-        checkButtonState();
-        for(SideButton button : sidebuttons){
-        	if(button.enabled && selectbox) button.enabled = false;
-        }
-        for(NumberButton button : numberbuttons){
-        	button.enabled = !selectbox;
-        }
-        for(int i = 0; i < fieldbuttons.length; i++){
-        	fieldbuttons[i].visible = selectbox;
-        	int j = i + scroll;
-        	if(rec_cat.equals("") && catlist != null && catlist.tagCount() > 0 && idlist == null){
-        		fieldbuttons[i].displayString = j + "| " + (j >= catlist.tagCount() ? "" : ((NBTTagString)catlist.get(j)).getString());
-        	}
-        	if(rec_id.equals("") && idlist != null && idlist.tagCount() > 0){
-        		fieldbuttons[i].displayString = j + "| " + (j >= idlist.tagCount() ? "" : ((NBTTagString)idlist.get(j)).getString());
-        	}
-        }
         //
         if(selectbox){
         	this.mc.getTextureManager().bindTexture(SELECT_TEX);
@@ -189,19 +143,6 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 		scroll = scroll <= 0 ? 0 : scroll;
 	}
 	
-	private void checkButtonState(){
-		for(SideButton button : sidebuttons){ button.enabled = false; }
-		switch(window){
-			case "main": for(int i = 4; i < 8; i++) sidebuttons[i].enabled = true; break;
-			case "show_balance": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
-			case "manage_account": for(int i = 0; i < 6; i++) sidebuttons[i].enabled = true; break;
-			case "transfer": sidebuttons[2].enabled = sidebuttons[3].enabled = sidebuttons[6].enabled = sidebuttons[7].enabled = true; break;
-			case "deposit": case "withdraw": for(int i = 4; i < 8; i++) sidebuttons[i].enabled = true; break;
-			case "deposit_result": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
-			case "withdraw_result": for(int i = 6; i < 8; i++) sidebuttons[i].enabled = true; break;
-		}
-	}
-	
 	@Override
     protected void actionPerformed(GuiButton button){
 		Print.debug(window, button.id);
@@ -256,9 +197,6 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 					if(button.id == 2 || button.id == 3){
 						selectbox = true;
 						rec_cat = rec_id = "";
-						for(SelectBoxField sbfbutton : fieldbuttons){
-							sbfbutton.displayString = "loading...";
-						}
 						NBTTagCompound compound = new NBTTagCompound();
 						compound.setString("target_listener", "fsmm:atm_gui");
 						compound.setString("request", "account_types");
@@ -304,9 +242,6 @@ public class AutomatedTellerMashineGui extends GuiScreen {
 								compound.setString("request", "accounts_of_type");
 								compound.setString("type", rec_cat);
 								PacketHandler.getInstance().sendToServer(new PacketNBTTagCompound(compound));
-								for(SelectBoxField sbfbutton : fieldbuttons){
-									sbfbutton.displayString = "loading...";
-								}
 							}
 						}
 						else if(rec_id.equals("")){
