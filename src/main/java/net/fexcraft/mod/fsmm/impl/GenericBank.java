@@ -29,8 +29,8 @@ public class GenericBank extends Bank {
 		}
 		long result = 0;
 		if(fee.endsWith("%")){
-			byte pc = Byte.parseByte(fee.replace("%", ""));
-			result = pc < 0 ? 0 : pc > 100 ? 100 : (amount / 100) * pc;
+			float pc = Float.parseFloat(fee.replace("%", ""));
+			result = (long)(pc < 0 ? 0 : pc > 100 ? 100 : (amount / 100) * pc);
 		}
 		else{
 			result = Long.parseLong(fee);
