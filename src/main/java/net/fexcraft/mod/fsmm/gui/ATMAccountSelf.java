@@ -15,7 +15,9 @@ import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	
@@ -32,6 +34,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	public ATMAccountSelf(EntityPlayer player, boolean bool){
 		super(texture, new ATMContainer(player), player);
 		this.deftexrect = false;
+		//this.defbackground = false;
 		this.mode = bool;
 		this.xSize = 256;
 		this.ySize = 147;
@@ -110,7 +113,10 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		}
 		switch(button.name){
 			case "action":{
-				
+				NBTTagCompound compound = new NBTTagCompound();
+				compound.setString("cargo", "action_" + (mode ? "deposit" : "withdraw"));
+				compound.setLong("amount", am);
+				container.send(Side.SERVER, compound);
 				return true;
 			}
 			case "cancel":{
