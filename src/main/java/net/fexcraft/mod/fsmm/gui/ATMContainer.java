@@ -177,6 +177,18 @@ public class ATMContainer extends GenericContainer {
 					this.send(Side.CLIENT, compound);
 					break;
 				}
+				case "action_deposit":{
+					
+					break;
+				}
+				case "action_withdraw":{
+					
+					break;
+				}
+				case "action_transfer":{
+					
+					break;
+				}
 			}
 		}
 	}
