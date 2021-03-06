@@ -193,7 +193,20 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 				case "action_transfer":{
-					
+					long amount = packet.getLong("amount"); 
+					if(amount <= 0) return;
+					if(receiver == null){
+						Print.chat(player, "&cPlease select a receiver!");
+						return;
+					}
+					Bank bank = DataManager.getBank(account.getBankId(), true, false);
+					if(bank.processAction(Bank.Action.TRANSFER, player, account, amount, receiver, false)){
+						Print.chat(player, "&bTransfer &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
+						player.closeScreen();
+					}
+					else{
+						Print.chat(player, "&bTransfer &cfailed&7.");
+					}
 					break;
 				}
 			}
@@ -202,10 +215,10 @@ public class ATMContainer extends GenericContainer {
 
 	private boolean processSelfAction(long amount, boolean deposit){
 		if(amount <= 0) return false;
-		String dep = deposit ? "&7Deposit" : "&7Withdraw";
+		String dep = deposit ? "&eDeposit" : "&aWithdraw";
 		Bank bank = DataManager.getBank(account.getBankId(), true, false);
 		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
-			Print.chat(player, dep + " of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
+			Print.chat(player, dep + " &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 			return true;
 		}
 		else{

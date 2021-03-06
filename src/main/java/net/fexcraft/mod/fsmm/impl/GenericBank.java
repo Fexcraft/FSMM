@@ -18,8 +18,7 @@ public class GenericBank extends Bank {
 	public GenericBank(JsonObject obj){
 		super(obj);
 		fees = new TreeMap<>();
-		fees.put("self:player", "1%");
-		fees.put("player:self", "100");
+		fees.put("player:state", "0.22%");
 	}
 	
 	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
