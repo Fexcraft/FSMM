@@ -33,6 +33,8 @@ public class GuiHandler implements IGuiHandler {
 			case ACCOUNT_WITHDRAW:
 			case ACCOUNT_DEPOSIT:
 				return new ATMAccountSelf(player, ID == ACCOUNT_DEPOSIT);
+			case ACCOUNT_TRANSFER:
+				return new ATMAccountTransfer(player);
 			default:
 				return null;
 		}
