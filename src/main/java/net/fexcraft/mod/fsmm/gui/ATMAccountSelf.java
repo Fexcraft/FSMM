@@ -5,7 +5,9 @@ import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import net.fexcraft.lib.mc.gui.GenericGui;
@@ -149,7 +151,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		bf = GenericBank.parseFee(fees == null ? null : fees.get(mode ? type + ":self" : "self:" + type), am);
 	}
 	
-	private static final DecimalFormat df = new DecimalFormat("#.000");
+	private static final DecimalFormat df = new DecimalFormat("#.000", new DecimalFormatSymbols(Locale.US));
 	static { df.setRoundingMode(RoundingMode.DOWN); }
 	
 	private final long format(){
@@ -177,7 +179,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 			openGui(GuiHandler.ATM_MAIN, new int[]{ 0, 0, 0 }, LISTENERID);
             return;
         }
-        else super.keyTyped(typedChar, keyCode);
+        super.keyTyped(typedChar, keyCode);
     }
 
 }
