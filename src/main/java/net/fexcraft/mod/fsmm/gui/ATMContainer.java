@@ -20,6 +20,7 @@ import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.events.ATMEvent.GatherAccounts;
 import net.fexcraft.mod.fsmm.events.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
@@ -177,12 +178,9 @@ public class ATMContainer extends GenericContainer {
 					this.send(Side.CLIENT, compound);
 					break;
 				}
-				case "action_deposit":{
-					
-					break;
-				}
+				case "action_deposit":
 				case "action_withdraw":{
-					
+					processSelfAction(packet.getLong("amount"), packet.getString("cargo").endsWith("deposit"));
 					break;
 				}
 				case "action_transfer":{
@@ -190,6 +188,18 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 			}
+		}
+	}
+
+	private void processSelfAction(long amount, boolean deposit){
+		if(amount <= 0) return;
+		String dep = deposit ? "&7Deposit" : "&7Withdraw";
+		Bank bank = DataManager.getBank(account.getBankId(), true, false);
+		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, null, amount, account)){
+			Print.chat(player, dep + " of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
+		}
+		else{
+			Print.chat(player, dep + " &cfailed&7.");
 		}
 	}
 
