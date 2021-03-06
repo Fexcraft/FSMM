@@ -22,6 +22,7 @@ import net.fexcraft.mod.fsmm.events.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,6 +38,7 @@ public class ATMContainer extends GenericContainer {
 	protected PlayerCapability cap;
 	protected AccountPermission perm;
 	protected Account account, receiver;
+	protected long inventory;
 	protected Bank bank;
 
 	public ATMContainer(EntityPlayer player){
@@ -82,6 +84,9 @@ public class ATMContainer extends GenericContainer {
 							accounts.add(new AccountPermission(list.getCompoundTagAt(i)));
 						}
 					}
+					if(packet.hasKey("inventory")){
+						inventory = packet.getLong("inventory");
+					}
 					break;
 				}
 			}
@@ -111,6 +116,9 @@ public class ATMContainer extends GenericContainer {
 							list.appendTag(account.toNBT());
 						});
 						compound.setTag("account_list", list);
+					}
+					if(packet.getBoolean("inventory")){
+						compound.setLong("inventory", ItemManager.countInInventory(player));
 					}
 					compound.setString("cargo", "sync");
 					this.send(Side.CLIENT, compound);

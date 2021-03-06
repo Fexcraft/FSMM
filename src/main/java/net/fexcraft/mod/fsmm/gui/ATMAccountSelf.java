@@ -31,7 +31,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	private BasicText acc0, acc1, bal, fee, tot, amount;
 	private boolean expanded, mode;
 	private TextField amount_field;
-	private String oldtext = "";
+	private String oldtext = "", suf;
 	private long bf, am;
 
 	public ATMAccountSelf(EntityPlayer player, boolean bool){
@@ -41,6 +41,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		this.mode = bool;
 		this.xSize = 256;
 		this.ySize = 147;
+		suf = mode ? " (inventory)" : "(balance)";
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 			String id = i < 9 ? "n" + (i + 1) : i == 9 ? "cancel" : i == 10 ? "n0" : "exit";
 			this.buttons.put(id, numbers[i] = new BasicButton(id, guiLeft + x, guiTop + y, x, y, 15, 15, true));
 		}
-		this.container.sync("account", "bank");
+		this.container.sync("account", "bank", "inventory");
 	}
 
 	@Override
@@ -77,7 +78,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		if(container.account != null){
 			acc0.string = container.account.getName();
 			acc1.string = container.account.getType() + ":" + container.account.getId();
-			bal.string = Config.getWorthAsString(container.account.getBalance()) + "  (balance)";
+			bal.string = Config.getWorthAsString((mode ? container.inventory : container.account.getBalance())) + suf;
 			if(am + bf > container.account.getBalance()) pref = "&c";
 		}
 		amount.string = Config.getWorthAsString(am, false);
