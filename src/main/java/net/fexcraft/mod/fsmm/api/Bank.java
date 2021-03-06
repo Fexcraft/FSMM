@@ -102,7 +102,11 @@ public abstract class Bank extends Removable implements Manageable {
 	}
 	
 	/** To be overriden. */
-	public abstract boolean processAction(Action action, ICommandSender log, Account sender, long amount, @Nullable Account receiver);
+	public abstract boolean processAction(Action action, ICommandSender log, Account sender, long amount, Account receiver, boolean fee_included);
+	
+	public boolean processAction(Action action, ICommandSender log, Account sender, long amount, Account receiver){
+		return processAction(action, log, sender, amount, receiver, true);
+	}
 	
 	public static enum Action { TRANSFER, WITHDRAW, DEPOSIT }
 	

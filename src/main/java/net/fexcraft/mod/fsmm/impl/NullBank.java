@@ -19,7 +19,7 @@ public class NullBank extends Bank {
 	}
 
 	@Override
-	public boolean processAction(Action action, ICommandSender log, Account sender, long amount, Account receiver){
+	public boolean processAction(Action action, ICommandSender log, Account sender, long amount, Account receiver, boolean fee_included){
 		Print.chat(log, "BANK NOT FOUND >>> NULL BANK;"); return false;
 	}
 

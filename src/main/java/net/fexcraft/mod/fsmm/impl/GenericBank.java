@@ -19,6 +19,7 @@ public class GenericBank extends Bank {
 		super(obj);
 		fees = new TreeMap<>();
 		fees.put("self:player", "1%");
+		fees.put("player:self", "100");
 	}
 	
 	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
@@ -44,8 +45,9 @@ public class GenericBank extends Bank {
 	}
 
 	@Override
-	public boolean processAction(Bank.Action action, ICommandSender log, Account sender, long amount, Account receiver){
-		EntityPlayer player; long fee = 0;
+	public boolean processAction(Bank.Action action, ICommandSender log, Account sender, long amount, Account receiver, boolean included){
+		EntityPlayer player;
+		long fee = 0, total;
 		switch(action){
 			case WITHDRAW:{
 				if(sender == null){
@@ -63,11 +65,11 @@ public class GenericBank extends Bank {
 					String feestr = fees.get(sender.getType() + ":self");
 					fee = parseFee(feestr, amount);
 				}
-				if(sender.getBalance() - amount >= 0){
-					sender.modifyBalance(Manageable.Action.SUB, amount, player);
-					ItemManager.addToInventory(player, amount - fee);
-					String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + player.getName() + ";";
-					Print.debug(str); FSMM.LOGGER.info(str);
+				total = amount + (included ? 0 : fee);
+				if(sender.getBalance() - total >= 0){
+					sender.modifyBalance(Manageable.Action.SUB, total, player);
+					ItemManager.addToInventory(player, amount - (included ? fee : 0));
+					log(player, action, amount, fee, total, included, sender, receiver);
 					return true;
 				}
 				Print.chat(player, "Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
@@ -87,12 +89,12 @@ public class GenericBank extends Bank {
 				}
 				player = (EntityPlayer)log;
 				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
-					if(ItemManager.countInInventory(player) - amount >= 0){
-						fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
-						ItemManager.removeFromInventory(player, amount);
-						receiver.modifyBalance(Manageable.Action.ADD, amount - fee, player);
-						String str = player.getName() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
-						Print.debug(str); FSMM.LOGGER.info(str);
+					fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
+					total = amount + (included ? 0 : fee);
+					if(ItemManager.countInInventory(player) - total >= 0){
+						ItemManager.removeFromInventory(player, total);
+						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), player);
+						log(player, action, amount, fee, total, included, sender, receiver);
 						return true;
 					}
 					else{
@@ -122,11 +124,11 @@ public class GenericBank extends Bank {
 					return false;
 				}
 				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
-				if(sender.getBalance() - amount >= 0){
-					sender.modifyBalance(Manageable.Action.SUB, amount, log);
-					receiver.modifyBalance(Manageable.Action.ADD, amount - fee, log);
-					String str = sender.getAsResourceLocation().toString() + " -> ([T:" + amount + "] -- [F:" + fee + "] == [R:" + (amount - fee) + "]) -> " + receiver.getAsResourceLocation().toString() + ";";
-					Print.debug(str); FSMM.LOGGER.info(str);
+				total = amount + (included ? 0 : fee);
+				if(sender.getBalance() - total >= 0){
+					sender.modifyBalance(Manageable.Action.SUB, total, log);
+					receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), log);
+					log(null, action, amount, fee, total, included, sender, receiver);
 					return true;
 				}
 				Print.chat(log, "Transfer failed! Not enough money on your Account.");
@@ -139,6 +141,32 @@ public class GenericBank extends Bank {
 				return false;
 			}
 		}
+	}
+
+	private void log(EntityPlayer player, Action action, long amount, long fee, long total, boolean included, Account sender, Account receiver){
+		String s, r;
+		switch(action){
+			case DEPOSIT:
+				s = sender.getTypeAndId();
+				r = player.getName();
+				break;
+			case WITHDRAW:
+				s = player.getName();
+				r = receiver.getTypeAndId();
+				break;
+			case TRANSFER:
+				s = sender.getTypeAndId();
+				r = receiver.getTypeAndId();
+				break;
+			default:
+				s = "INVALID";
+				r = "ACTION";
+				break;
+		}
+		String str = s + " -> [A: " + amount + "] + [F: " + fee + (included ? "i" : "e") + "] == [R: " + total + "] -> " + r;
+		FSMM.LOGGER.info(str);
+		Print.debug(str);
+		
 	}
 
 	@Override

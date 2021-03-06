@@ -197,7 +197,7 @@ public class ATMContainer extends GenericContainer {
 		if(amount <= 0) return false;
 		String dep = deposit ? "&7Deposit" : "&7Withdraw";
 		Bank bank = DataManager.getBank(account.getBankId(), true, false);
-		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account)){
+		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
 			Print.chat(player, dep + " of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 			return true;
 		}
