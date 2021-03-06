@@ -180,7 +180,9 @@ public class ATMContainer extends GenericContainer {
 				}
 				case "action_deposit":
 				case "action_withdraw":{
-					processSelfAction(packet.getLong("amount"), packet.getString("cargo").endsWith("deposit"));
+					if(processSelfAction(packet.getLong("amount"), packet.getString("cargo").endsWith("deposit"))){
+						player.closeScreen();
+					}
 					break;
 				}
 				case "action_transfer":{
@@ -191,15 +193,17 @@ public class ATMContainer extends GenericContainer {
 		}
 	}
 
-	private void processSelfAction(long amount, boolean deposit){
-		if(amount <= 0) return;
+	private boolean processSelfAction(long amount, boolean deposit){
+		if(amount <= 0) return false;
 		String dep = deposit ? "&7Deposit" : "&7Withdraw";
 		Bank bank = DataManager.getBank(account.getBankId(), true, false);
-		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, null, amount, account)){
+		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account)){
 			Print.chat(player, dep + " of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
+			return true;
 		}
 		else{
 			Print.chat(player, dep + " &cfailed&7.");
+			return false;
 		}
 	}
 
