@@ -195,12 +195,21 @@ public class ATMContainer extends GenericContainer {
 				}
 				case "action_deposit":
 				case "action_withdraw":{
-					if(processSelfAction(packet.getLong("amount"), packet.getString("cargo").endsWith("deposit"))){
+					boolean deposit = packet.getString("cargo").endsWith("deposit");
+					if(!(deposit ? perm.deposit : perm.withdraw)){
+						Print.chat(player, "&cNo permission to " + (deposit ? "deposit to" : "withdraw from" ) + " this account.");
+						return;
+					}
+					if(processSelfAction(packet.getLong("amount"), deposit)){
 						player.closeScreen();
 					}
 					break;
 				}
 				case "action_transfer":{
+					if(!perm.transfer){
+						Print.chat(player, "&cNo permission to transfer from this account.");
+						return;
+					}
 					long amount = packet.getLong("amount"); 
 					if(amount <= 0) return;
 					if(receiver == null){
