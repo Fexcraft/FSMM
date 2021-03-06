@@ -36,7 +36,7 @@ public class ATMContainer extends GenericContainer {
 	protected ArrayList<AccountPermission> accounts;
 	protected PlayerCapability cap;
 	protected AccountPermission perm;
-	protected Account account;
+	protected Account account, receiver;
 	protected Bank bank;
 
 	public ATMContainer(EntityPlayer player){
@@ -44,6 +44,7 @@ public class ATMContainer extends GenericContainer {
 		cap = player.getCapability(FSMMCapabilities.PLAYER, null);
 		perm = cap.getSelectedAccountInATM() == null ? AccountPermission.FULL : cap.getSelectedAccountInATM();
 		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : perm.getAccount();
+		receiver = cap.getSelectedReiverInATM();
 		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBankId() : cap.getSelectedBankInATM(), true, true);
 		cap.setSelectedBankInATM(null);
 	}
@@ -56,6 +57,9 @@ public class ATMContainer extends GenericContainer {
 				case "sync":{
 					if(packet.hasKey("account")){
 						account = new Account(JsonUtil.getObjectFromString(packet.getString("account")));
+					}
+					if(packet.hasKey("receiver")){
+						receiver = new Account(JsonUtil.getObjectFromString(packet.getString("receiver")));
 					}
 					if(packet.hasKey("bank")){
 						bank = new GenericBank(JsonUtil.getObjectFromString(packet.getString("bank")));
@@ -88,6 +92,9 @@ public class ATMContainer extends GenericContainer {
 					NBTTagCompound compound = new NBTTagCompound();
 					if(packet.getBoolean("account")){
 						compound.setString("account", account.toJson().toString());
+					}
+					if(packet.getBoolean("receiver") && receiver != null){
+						compound.setString("receiver", receiver.toJson().toString());
 					}
 					if(packet.getBoolean("bank")){
 						compound.setString("bank", bank.toJson().toString());
