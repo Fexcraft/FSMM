@@ -60,7 +60,7 @@ public class GenericBank extends Bank {
 				}
 				player = (EntityPlayer)log;
 				if(fees != null){
-					String feestr = fees.get("player:" + (sender.getId().equals(player.getGameProfile().getId().toString()) ? "self" : sender.getType()));
+					String feestr = fees.get(sender.getType() + ":self");
 					fee = parseFee(feestr, amount);
 				}
 				if(sender.getBalance() - amount >= 0){
