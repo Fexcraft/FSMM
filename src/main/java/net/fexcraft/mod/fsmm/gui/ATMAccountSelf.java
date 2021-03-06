@@ -148,7 +148,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		}
 		TreeMap<String, String> fees = container.bank == null ? null : container.bank.getFees();
 		String type = container.account == null ? "player" : container.account.getType();
-		bf = GenericBank.parseFee(fees == null ? null : fees.get(mode ? type + ":self" : "self:" + type), am);
+		bf = GenericBank.parseFee(fees == null ? null : fees.get(mode ? "self:" + type : type + ":self"), am);
 	}
 	
 	private static final DecimalFormat df = new DecimalFormat("#.000", new DecimalFormatSymbols(Locale.US));
@@ -156,7 +156,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	
 	private final long format(){
 		try{
-			String str = amount_field.getText().replace("\\" + Config.getDot(), "").replace(",", ".");
+			String str = amount_field.getText().replace(Config.getDot(), "").replace(",", ".");
 			if(str.length() == 0) return 0;
 			String format = df.format(Double.parseDouble(str));
 			return Long.parseLong(format.replace(",", "").replace(".", ""));
