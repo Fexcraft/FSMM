@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TreeMap;
 
+import net.fexcraft.lib.common.Static;
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
@@ -163,7 +164,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		}
 		catch(Exception e){
 			Print.chat(player, "INVALID INPUT: " + e.getMessage());
-			e.printStackTrace();
+			if(Static.dev()) e.printStackTrace();
 			return 0;
 		}
 	}

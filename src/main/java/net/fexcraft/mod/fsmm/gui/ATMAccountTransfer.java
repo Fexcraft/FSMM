@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TreeMap;
 
+import net.fexcraft.lib.common.Static;
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
@@ -54,7 +55,7 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 		this.texts.put("total", tot = new BasicText(guiLeft + 6, guiTop + 94, 233, null, "").autoscale());
 		this.buttons.put("confirm", action = new BasicButton("action", guiLeft + 241, guiTop + 93, 241, 93, 10, 10, true));
 		this.buttons.put("select", select = new BasicButton("select", guiLeft + 242, guiTop + 32, 242, 32, 8, 8, true));
-		this.buttons.put("expand", expand = new BasicButton("expand", guiLeft + 191, guiTop + 105, 191, 148, 51, 8, true));
+		this.buttons.put("expand", expand = new BasicButton("expand", guiLeft + 191, guiTop + 105, 191, 105, 51, 8, true));
 		for(int i = 0; i < numbers.length; i++){
 			int x = 192 + ((i % 3) * 17), y = 105 + ((i / 3) * 16);
 			String id = i < 9 ? "n" + (i + 1) : i == 9 ? "cancel" : i == 10 ? "n0" : "exit";
@@ -179,7 +180,7 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 		}
 		catch(Exception e){
 			Print.chat(player, "INVALID INPUT: " + e.getMessage());
-			e.printStackTrace();
+			if(Static.dev()) e.printStackTrace();
 			return 0;
 		}
 	}
