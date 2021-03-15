@@ -11,7 +11,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
 public class ItemManager {
 	
@@ -21,13 +20,11 @@ public class ItemManager {
 	
 	public static long countInInventory(EntityPlayer player){
 		long value = 0l;
-		NonNullList<ItemStack> is = player.inventory.mainInventory;
-		ItemStack stack = null;
-		for(int in = 0; in < player.inventory.mainInventory.size(); in++){
-			if(!(stack = is.get(in)).isEmpty() && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
+		for(ItemStack stack : player.inventory.mainInventory){
+			if(!stack.isEmpty() && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
 				MoneyCapability cap = stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null);
 				Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
-				value += cap.getWorth() * is.get(in).getCount();
+				value += cap.getWorth() * stack.getCount();
 			}
 		}
 		return value;
@@ -36,10 +33,8 @@ public class ItemManager {
 	public static boolean hasSpace(EntityPlayer player, boolean countMoneyItemAsSpace){
 		int i = 0;
 		for(ItemStack stack : player.inventory.mainInventory){
-			while(i >= 1){
-				break;
-			}
-			if(stack == null || stack.isEmpty()){
+			while(i >= 1) break;
+			if(stack.isEmpty()){
 				i++;
 			}
 			else if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
@@ -51,7 +46,7 @@ public class ItemManager {
 				continue;
 			}
 		}
-		return i == 0 ? false : true;
+		return i > 0;
 	}
 	
 	public static long addToInventory(EntityPlayer player, long amount){
@@ -61,13 +56,11 @@ public class ItemManager {
 	public static long removeFromInventory(EntityPlayer player, long amount){
 		long old = countInInventory(player);
 		old -= amount; if(old < 0){ amount += old; old = 0; }
-		for(int i = 0; i < player.inventory.mainInventory.size(); i++){
-			if(player.inventory.mainInventory.get(i) == null){
-				continue;
-			}
-			if(player.inventory.mainInventory.get(i).hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
-				&& player.inventory.mainInventory.get(i).getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
-				player.inventory.removeStackFromSlot(i);
+		for(ItemStack stack : player.inventory.mainInventory){
+			if(stack.isEmpty()) continue;
+			if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
+				stack.shrink(64);
 			}
 		}
 		setInInventory(player, old);
@@ -75,13 +68,11 @@ public class ItemManager {
 	}
 	
 	public static long setInInventory(EntityPlayer player, long amount){
-		for(int i = 0; i < player.inventory.mainInventory.size(); i++){
-			if(player.inventory.mainInventory.get(i) == null){
-				continue;
-			}
-			if(player.inventory.mainInventory.get(i).hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
-				&& player.inventory.mainInventory.get(i).getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
-				player.inventory.removeStackFromSlot(i);
+		for(ItemStack stack : player.inventory.mainInventory){
+			if(stack.isEmpty()) continue;
+			if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
+				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
+				stack.shrink(64);
 			}
 		}
 		List<Money> list = FSMM.getSortedMoneyList();
