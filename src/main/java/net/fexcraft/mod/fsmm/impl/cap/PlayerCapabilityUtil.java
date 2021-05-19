@@ -13,12 +13,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 public class PlayerCapabilityUtil implements ICapabilitySerializable<NBTBase>{
 	
-	@CapabilityInject(PlayerCapability.class)
 	private PlayerCapability instance;
 	
 	public PlayerCapabilityUtil(EntityPlayer player){
