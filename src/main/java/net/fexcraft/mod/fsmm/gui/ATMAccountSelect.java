@@ -128,7 +128,7 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
 		if(button.name.startsWith("acc")){
 			int i = Integer.parseInt(button.name.substring(3));
-			if(i < 0 || i >= 4 || i + scroll >= accounts.size()) return false;
+			if(i < 0 || i >= 4 || accounts == null || i + scroll >= accounts.size()) return false;
 			AccountPermission perm = accounts.get(i + scroll);
 			NBTTagCompound compound = new NBTTagCompound();
 			compound.setString("cargo", "account_select");
