@@ -120,8 +120,8 @@ public class Config {
 		DEFAULT.put("200kfoney", 200000000l);
 		DEFAULT.put("500kfoney", 500000000l);
 	}
-	private static TreeMap<ResourceLocation, Long> EXTERNAL_ITEMS = new TreeMap<ResourceLocation, Long>();
-	private static TreeMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new TreeMap<String, Long>();
+	private static TreeMap<ResourceLocation, Long> EXTERNAL_ITEMS = new TreeMap<>();
+	private static TreeMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new TreeMap<>();
 	
 	public static void initialize(FMLPreInitializationEvent event){
 		CONFIG_PATH = event.getSuggestedConfigurationFile().getParentFile();
@@ -313,7 +313,10 @@ public class Config {
 			return EXTERNAL_ITEMS.containsKey(stack.getItem().getRegistryName())
 				|| EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
 		}
-		catch(Exception e){ e.printStackTrace(); return false; }
+		catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static String getComma(){

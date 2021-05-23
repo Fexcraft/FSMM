@@ -4,9 +4,7 @@ import java.util.List;
 
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.MoneyCapability;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,11 +19,10 @@ public class ItemManager {
 	public static long countInInventory(EntityPlayer player){
 		long value = 0l;
 		for(ItemStack stack : player.inventory.mainInventory){
-			if(!stack.isEmpty() && stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
-				MoneyCapability cap = stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null);
-				Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
-				value += cap.getWorth() * stack.getCount();
-			}
+			if(stack.isEmpty()) continue;
+			long worth = Config.getItemStackWorth(stack);
+			Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
+			value += worth * stack.getCount();
 		}
 		return value;
 	}
@@ -37,9 +34,7 @@ public class ItemManager {
 			if(stack.isEmpty()){
 				i++;
 			}
-			else if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
-				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0
-				&& countMoneyItemAsSpace){
+			else if(Config.getItemStackWorth(stack) > 0 && countMoneyItemAsSpace){
 				i++;
 			}
 			else{
@@ -58,8 +53,7 @@ public class ItemManager {
 		old -= amount; if(old < 0){ amount += old; old = 0; }
 		for(ItemStack stack : player.inventory.mainInventory){
 			if(stack.isEmpty()) continue;
-			if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
-				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
+			if(Config.getItemStackWorth(stack) > 0){
 				stack.shrink(64);
 			}
 		}
@@ -70,8 +64,7 @@ public class ItemManager {
 	public static long setInInventory(EntityPlayer player, long amount){
 		for(ItemStack stack : player.inventory.mainInventory){
 			if(stack.isEmpty()) continue;
-			if(stack.hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)
-				&& stack.getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth() > 0){
+			if(Config.getItemStackWorth(stack) > 0){
 				stack.shrink(64);
 			}
 		}

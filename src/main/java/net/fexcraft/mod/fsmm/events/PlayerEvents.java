@@ -6,22 +6,13 @@ import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
-import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.MoneyCapability;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
-import net.fexcraft.mod.fsmm.api.WorldCapability;
-import net.fexcraft.mod.fsmm.impl.cap.MoneyCapabilityUtil;
-import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
-import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -60,36 +51,14 @@ public class PlayerEvents {
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event){
-    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP || FSMMCapabilities.MONEY_ITEMSTACK == null){ return; }
-    	if(event.getItemStack().hasCapability(FSMMCapabilities.MONEY_ITEMSTACK, null)){
-    		long worth = event.getItemStack().getCapability(FSMMCapabilities.MONEY_ITEMSTACK, null).getWorth();
-    		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
-    		if(event.getItemStack().getCount() > 1){
-    			str += " &8(&7" + Config.getWorthAsString(worth * event.getItemStack().getCount(), true, worth < 10) + "&8)";
-    		}
-    		event.getToolTip().add(Formatter.format(str));
-    	}
-    }
-    
-    @SubscribeEvent
-    public static void onAttachItemStackCapabilities(AttachCapabilitiesEvent<net.minecraft.item.ItemStack> event){
-    	if(FSMMCapabilities.MONEY_ITEMSTACK != null && (event.getObject().getItem() instanceof Money.Item || Config.containsAsExternalItemStack(event.getObject()))){
-    		event.addCapability(MoneyCapability.REGISTRY_NAME, new MoneyCapabilityUtil(event.getObject()));
-    	}
-    }
-    
-    @SubscribeEvent
-    public static void onAttachWorldCapabilities(AttachCapabilitiesEvent<net.minecraft.world.World> event){
-    	if(FSMMCapabilities.WORLD != null && event.getObject() != null){
-    		event.addCapability(WorldCapability.REGISTRY_NAME, new WorldCapabilityUtil(event.getObject()));
-    	}
-    }
-    
-    @SubscribeEvent
-    public static void onAttachEntityCapabilities(AttachCapabilitiesEvent<net.minecraft.entity.Entity> event){
-    	if(FSMMCapabilities.PLAYER != null && event.getObject() instanceof EntityPlayer){
-    		event.addCapability(PlayerCapability.REGISTRY_NAME, new PlayerCapabilityUtil((EntityPlayer)event.getObject()));
-    	}
+    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP) return;
+		long worth = Config.getItemStackWorth(event.getItemStack());
+		if(worth <= 0) return;
+		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
+		if(event.getItemStack().getCount() > 1){
+			str += " &8(&7" + Config.getWorthAsString(worth * event.getItemStack().getCount(), true, worth < 10) + "&8)";
+		}
+		event.getToolTip().add(Formatter.format(str));
     }
     
 }
