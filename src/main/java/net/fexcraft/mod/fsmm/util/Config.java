@@ -33,9 +33,10 @@ public class Config {
 	public static File CONFIG_PATH;
 	private static Configuration config;
 	private static String COMMA = ",", DOT = ".";
+	private static String GENERAL = "General", DISPLAY = "Display/Logging";
 	//
 	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
-	public static String DEFAULT_BANK, CURRENCY_SIGN;
+	public static String DEFAULT_BANK, CURRENCY_SIGN, THOUSAND_SEPARATOR;
 	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true, PARTIAL_ACCOUNT_NAME_SEARCH = true;
 	private static JsonArray DEF_BANKS;
@@ -45,7 +46,7 @@ public class Config {
 	public static class SyncableConfig {
 		
 		public int starting_balance, unload_frequency;
-		public String default_bank, currency_sign;
+		public String default_bank, currency_sign, thousand_separator;
 		public boolean notify_balance_on_join, invert_comma, show_centesimals, enable_bank_cards;
 		public boolean show_item_worth_in_tooltip = true, partial_account_name_search = true;
 		
@@ -61,6 +62,7 @@ public class Config {
 			compound.setBoolean("enable_bank_cards", enable_bank_cards);
 			compound.setBoolean("show_item_worth_in_tooltip", show_item_worth_in_tooltip);
 			compound.setBoolean("partial_account_name_search", partial_account_name_search);
+			compound.setString("thousand_separator", thousand_separator);
 			return compound;
 		}
 		
@@ -76,6 +78,7 @@ public class Config {
 			config.enable_bank_cards = compound.getBoolean("enable_bank_cards");
 			config.show_item_worth_in_tooltip = compound.getBoolean("show_item_worth_in_tooltip");
 			config.partial_account_name_search = compound.getBoolean("partial_account_name_search");
+			config.thousand_separator = compound.getString("thousand_separator");
 			return config;
 		}
 		
@@ -90,6 +93,7 @@ public class Config {
 			ENABLE_BANK_CARDS = enable_bank_cards;
 			SHOW_ITEM_WORTH_IN_TOOLTIP = show_item_worth_in_tooltip;
 			PARTIAL_ACCOUNT_NAME_SEARCH = partial_account_name_search;
+			THOUSAND_SEPARATOR = thousand_separator;
 		}
 	}
 	//
@@ -127,12 +131,12 @@ public class Config {
 		CONFIG_PATH = event.getSuggestedConfigurationFile().getParentFile();
 		config = new Configuration(new File(event.getSuggestedConfigurationFile().getParentFile(), "/fsmm/config.cfg"), "2.1", true);
 		config.load();
-		config.setCategoryRequiresMcRestart("General", true);
-		config.setCategoryRequiresWorldRestart("General", true);
-		config.setCategoryComment("General", "General FSMM Settings.");
-		config.setCategoryRequiresMcRestart("Display/Logging", false);
-		config.setCategoryRequiresWorldRestart("Display/Logging", false);
-		config.setCategoryComment("Display/Logging", "Display and Logging Settings.");
+		config.setCategoryRequiresMcRestart(GENERAL, true);
+		config.setCategoryRequiresWorldRestart(GENERAL, true);
+		config.setCategoryComment(GENERAL, "General FSMM Settings.");
+		config.setCategoryRequiresMcRestart(DISPLAY, false);
+		config.setCategoryRequiresWorldRestart(DISPLAY, false);
+		config.setCategoryComment(DISPLAY, "Display and Logging Settings.");
 		refresh();
 		config.save();
 		//
@@ -199,15 +203,17 @@ public class Config {
 	}
 	
 	public static void refresh(){
-		LOCAL.starting_balance = STARTING_BALANCE = config.getInt("starting_balance", "General", 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
-		LOCAL.default_bank = DEFAULT_BANK = config.getString("default_bank", "General", "00000000", "Default Bank the player will have an account in.!");
-		LOCAL.notify_balance_on_join = NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", "Display/Logging", true, "Should the player be notified about his current balance when joining the game?");
-		LOCAL.currency_sign = CURRENCY_SIGN = config.getString("currency_sign", "Display/Logging", "F$", "So now you can even set a custom Currency Sign.");
-		LOCAL.invert_comma = INVERT_COMMA = config.getBoolean("invert_comma", "Display/Logging", false, "Invert ',' and '.' display.");
-		LOCAL.show_centesimals = SHOW_CENTESIMALS = config.getBoolean("show_centesimals", "Display/Logging", false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
-		LOCAL.show_item_worth_in_tooltip = SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", "Display/Logging", true, "Should the Item's Worth be shown in the tooltip?");
-		LOCAL.unload_frequency = UNLOAD_FREQUENCY = config.getInt("unload_frequency", "General", 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
-		LOCAL.partial_account_name_search = PARTIAL_ACCOUNT_NAME_SEARCH = config.getBoolean("partial_account_name_search", "General", true, "If true, accounts can be searched by inputing only part of the name, otherwhise on false, the full ID/Name is required.");
+		LOCAL.starting_balance = STARTING_BALANCE = config.getInt("starting_balance", GENERAL, 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
+		LOCAL.default_bank = DEFAULT_BANK = config.getString("default_bank", GENERAL, "00000000", "Default Bank the player will have an account in.!");
+		LOCAL.notify_balance_on_join = NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", DISPLAY, true, "Should the player be notified about his current balance when joining the game?");
+		LOCAL.currency_sign = CURRENCY_SIGN = config.getString("currency_sign", DISPLAY, "F$", "So now you can even set a custom Currency Sign.");
+		LOCAL.invert_comma = INVERT_COMMA = config.getBoolean("invert_comma", DISPLAY, false, "Invert ',' and '.' display.");
+		LOCAL.show_centesimals = SHOW_CENTESIMALS = config.getBoolean("show_centesimals", DISPLAY, false, "Should centesimals be shown? E.g. '29,503' instead of '29.50'.");
+		LOCAL.show_item_worth_in_tooltip = SHOW_ITEM_WORTH_IN_TOOLTIP = config.getBoolean("show_item_worth", DISPLAY, true, "Should the Item's Worth be shown in the tooltip?");
+		LOCAL.unload_frequency = UNLOAD_FREQUENCY = config.getInt("unload_frequency", GENERAL, 600000, Static.dev() ? 30000 : 60000, 86400000 / 2, "Frequency of how often it should be checked if (temporarily loaded) accounts/banks should be unloaded. Time in milliseconds.");
+		LOCAL.partial_account_name_search = PARTIAL_ACCOUNT_NAME_SEARCH = config.getBoolean("partial_account_name_search", GENERAL, true, "If true, accounts can be searched by inputing only part of the name, otherwhise on false, the full ID/Name is required.");
+		String thosep = config.getString("thousand_separator", DISPLAY, "null", "Custom thousand separator sign, leave as 'null' for default behaviour.");
+		LOCAL.thousand_separator = THOUSAND_SEPARATOR = thosep.equals("null") ? null : thosep;
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
@@ -276,7 +282,7 @@ public class Config {
 				String[] arr = str.split("(?<=\\G...)");
 				str = arr[0] + COMMA;
 				for(int i = 1; i < arr.length; i++){
-					str += arr[i] + ((i >= arr.length - 1) ? "" : DOT);
+					str += arr[i] + ((i >= arr.length - 1) ? "" : THOUSAND_SEPARATOR == null ? DOT : THOUSAND_SEPARATOR);
 				}
 				str = new StringBuilder(str).reverse().toString();
 				return (str = SHOW_CENTESIMALS || ignore ? str : str.substring(0, str.length() - 1)) + (append ? CURRENCY_SIGN : "");
