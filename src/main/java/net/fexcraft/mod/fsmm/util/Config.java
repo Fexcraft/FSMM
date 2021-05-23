@@ -62,7 +62,7 @@ public class Config {
 			compound.setBoolean("enable_bank_cards", enable_bank_cards);
 			compound.setBoolean("show_item_worth_in_tooltip", show_item_worth_in_tooltip);
 			compound.setBoolean("partial_account_name_search", partial_account_name_search);
-			compound.setString("thousand_separator", thousand_separator);
+			if(thousand_separator != null) compound.setString("thousand_separator", thousand_separator);
 			return compound;
 		}
 		
@@ -78,7 +78,7 @@ public class Config {
 			config.enable_bank_cards = compound.getBoolean("enable_bank_cards");
 			config.show_item_worth_in_tooltip = compound.getBoolean("show_item_worth_in_tooltip");
 			config.partial_account_name_search = compound.getBoolean("partial_account_name_search");
-			config.thousand_separator = compound.getString("thousand_separator");
+			config.thousand_separator = compound.hasKey("thousand_separator") ? compound.getString("thousand_separator") : null;
 			return config;
 		}
 		
