@@ -37,7 +37,7 @@ public class Config {
 	//
 	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
 	public static String DEFAULT_BANK, CURRENCY_SIGN, THOUSAND_SEPARATOR;
-	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, ENABLE_BANK_CARDS;
+	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, SHOW_DECIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true, PARTIAL_ACCOUNT_NAME_SEARCH = true;
 	private static JsonArray DEF_BANKS;
 	//
@@ -47,7 +47,7 @@ public class Config {
 		
 		public int starting_balance, unload_frequency;
 		public String default_bank, currency_sign, thousand_separator;
-		public boolean notify_balance_on_join, invert_comma, show_centesimals, enable_bank_cards;
+		public boolean notify_balance_on_join, invert_comma, show_centesimals, show_decimals, enable_bank_cards;
 		public boolean show_item_worth_in_tooltip = true, partial_account_name_search = true;
 		
 		public NBTTagCompound toNBT(){
@@ -63,6 +63,7 @@ public class Config {
 			compound.setBoolean("show_item_worth_in_tooltip", show_item_worth_in_tooltip);
 			compound.setBoolean("partial_account_name_search", partial_account_name_search);
 			if(thousand_separator != null) compound.setString("thousand_separator", thousand_separator);
+			compound.setBoolean("show_decimals", show_decimals);
 			return compound;
 		}
 		
@@ -79,6 +80,7 @@ public class Config {
 			config.show_item_worth_in_tooltip = compound.getBoolean("show_item_worth_in_tooltip");
 			config.partial_account_name_search = compound.getBoolean("partial_account_name_search");
 			config.thousand_separator = compound.hasKey("thousand_separator") ? compound.getString("thousand_separator") : null;
+			config.show_decimals = compound.getBoolean("show_decimals");
 			return config;
 		}
 		
@@ -94,6 +96,7 @@ public class Config {
 			SHOW_ITEM_WORTH_IN_TOOLTIP = show_item_worth_in_tooltip;
 			PARTIAL_ACCOUNT_NAME_SEARCH = partial_account_name_search;
 			THOUSAND_SEPARATOR = thousand_separator;
+			SHOW_DECIMALS = show_decimals;
 		}
 	}
 	//
@@ -214,6 +217,7 @@ public class Config {
 		LOCAL.partial_account_name_search = PARTIAL_ACCOUNT_NAME_SEARCH = config.getBoolean("partial_account_name_search", GENERAL, true, "If true, accounts can be searched by inputing only part of the name, otherwhise on false, the full ID/Name is required.");
 		String thosep = config.getString("thousand_separator", DISPLAY, "null", "Custom thousand separator sign, leave as 'null' for default behaviour.");
 		LOCAL.thousand_separator = THOUSAND_SEPARATOR = thosep.equals("null") ? null : thosep;
+		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, false, "Should decimals be shown when zero? e.g. '234.00'");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
@@ -272,6 +276,7 @@ public class Config {
 	public static final String getWorthAsString(long value, boolean append, boolean ignore){
 		String str = value + "";
 		if(value < 1000){
+			if(!SHOW_DECIMALS && (value == 0 || (!SHOW_CENTESIMALS && !ignore && value < 100))) return "0" + (append ? CURRENCY_SIGN : "");
 			str = value + "";
 			str = str.length() == 1 ? "00" + str : str.length() == 2 ? "0" + str : str;
 			return ((str = "0" + COMMA + str).length() == 5 && (ignore ? false : !SHOW_CENTESIMALS) ? str.substring(0, 4) : str) + (append ? CURRENCY_SIGN : "");
@@ -285,7 +290,7 @@ public class Config {
 					str += arr[i] + ((i >= arr.length - 1) ? "" : THOUSAND_SEPARATOR == null ? DOT : THOUSAND_SEPARATOR);
 				}
 				str = new StringBuilder(str).reverse().toString();
-				return (str = SHOW_CENTESIMALS || ignore ? str : str.substring(0, str.length() - 1)) + (append ? CURRENCY_SIGN : "");
+				return (str = SHOW_DECIMALS ? SHOW_CENTESIMALS || ignore ? str : str.substring(0, str.length() - 1) : str.substring(0, str.lastIndexOf(COMMA))) + (append ? CURRENCY_SIGN : "");
 			}
 			catch(Exception e){
 				e.printStackTrace();
