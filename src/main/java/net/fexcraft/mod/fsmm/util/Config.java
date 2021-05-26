@@ -217,7 +217,7 @@ public class Config {
 		LOCAL.partial_account_name_search = PARTIAL_ACCOUNT_NAME_SEARCH = config.getBoolean("partial_account_name_search", GENERAL, true, "If true, accounts can be searched by inputing only part of the name, otherwhise on false, the full ID/Name is required.");
 		String thosep = config.getString("thousand_separator", DISPLAY, "null", "Custom thousand separator sign, leave as 'null' for default behaviour.");
 		LOCAL.thousand_separator = THOUSAND_SEPARATOR = thosep.equals("null") ? null : thosep;
-		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, false, "Should decimals be shown when zero? e.g. '234.00'");
+		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, true, "Should decimals be shown when zero? e.g. '234.00'");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
