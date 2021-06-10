@@ -111,6 +111,7 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 		if(type.hovered){
 			tooltip.add(Formatter.format("&7Type of &9Account &7to be &6searched&7."));
 			tooltip.add(Formatter.format("&7(enter the full type name)."));
+			tooltip.add(Formatter.format("&9&oFor Player accounts type in \"player\"."));
 			if(mode == 1) tooltip.add(Formatter.format("&c&o*required"));
 		}
 		if(uid.hovered){
