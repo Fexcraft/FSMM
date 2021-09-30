@@ -178,7 +178,7 @@ public class ATMContainer extends GenericContainer {
 				case "account_search":{
 					String type = packet.getString("type").toLowerCase();
 					String id = packet.getString("id").toLowerCase();
-					if(type.trim().length() == 0 || id.trim().length() == 0 || id.length() < 3) break;
+					if(type.trim().length() == 0 || id.trim().length() == 0 || id.length() < Config.MIN_SEARCH_CHARS) break;
 					NBTTagCompound compound = new NBTTagCompound();
 					SearchAccounts event = new SearchAccounts(player, type, id);
 					MinecraftForge.EVENT_BUS.post(event);

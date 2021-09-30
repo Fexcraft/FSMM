@@ -165,8 +165,8 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 			Print.chat(player, "&cYou need to enter the searched account type.");
 			return;
 		}
-		if(mode == 1 && (noid || id.length() < 3)){
-			Print.chat(player, "&cYou need to enter at least 3 letters of the searched id.");
+		if(mode == 1 && (noid || id.length() < Config.MIN_SEARCH_CHARS)){
+			Print.chat(player, "&cYou need to enter at least " + Config.MIN_SEARCH_CHARS + " characters of the searched id.");
 			return;
 		}
 		if(notype && noid){

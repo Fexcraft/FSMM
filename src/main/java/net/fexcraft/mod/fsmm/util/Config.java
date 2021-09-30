@@ -35,7 +35,7 @@ public class Config {
 	private static String COMMA = ",", DOT = ".";
 	private static String GENERAL = "General", DISPLAY = "Display/Logging";
 	//
-	public static int STARTING_BALANCE, UNLOAD_FREQUENCY;
+	public static int STARTING_BALANCE, UNLOAD_FREQUENCY, MIN_SEARCH_CHARS;
 	public static String DEFAULT_BANK, CURRENCY_SIGN, THOUSAND_SEPARATOR;
 	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, SHOW_DECIMALS, ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true, PARTIAL_ACCOUNT_NAME_SEARCH = true;
@@ -45,7 +45,7 @@ public class Config {
 	/** Acts as a copy when disconnecting or connecting to a server. */
 	public static class SyncableConfig {
 		
-		public int starting_balance, unload_frequency;
+		public int starting_balance, unload_frequency, min_search_chars;
 		public String default_bank, currency_sign, thousand_separator;
 		public boolean notify_balance_on_join, invert_comma, show_centesimals, show_decimals, enable_bank_cards;
 		public boolean show_item_worth_in_tooltip = true, partial_account_name_search = true;
@@ -64,6 +64,7 @@ public class Config {
 			compound.setBoolean("partial_account_name_search", partial_account_name_search);
 			if(thousand_separator != null) compound.setString("thousand_separator", thousand_separator);
 			compound.setBoolean("show_decimals", show_decimals);
+			compound.setInteger("min_search_chars", min_search_chars);
 			return compound;
 		}
 		
@@ -81,6 +82,7 @@ public class Config {
 			config.partial_account_name_search = compound.getBoolean("partial_account_name_search");
 			config.thousand_separator = compound.hasKey("thousand_separator") ? compound.getString("thousand_separator") : null;
 			config.show_decimals = compound.getBoolean("show_decimals");
+			config.min_search_chars = compound.getInteger("min_search_chars");
 			return config;
 		}
 		
@@ -97,6 +99,7 @@ public class Config {
 			PARTIAL_ACCOUNT_NAME_SEARCH = partial_account_name_search;
 			THOUSAND_SEPARATOR = thousand_separator;
 			SHOW_DECIMALS = show_decimals;
+			MIN_SEARCH_CHARS = min_search_chars;
 		}
 	}
 	//
@@ -218,6 +221,7 @@ public class Config {
 		String thosep = config.getString("thousand_separator", DISPLAY, "null", "Custom thousand separator sign, leave as 'null' for default behaviour.");
 		LOCAL.thousand_separator = THOUSAND_SEPARATOR = thosep.equals("null") ? null : thosep;
 		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, true, "Should decimals be shown when zero? e.g. '234.00'");
+		LOCAL.min_search_chars = config.getInt("min_search_chars", GENERAL, 3, 1, 1000, "Minimum characters to enter in the 'Name/ID' search bar for search to work.");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
