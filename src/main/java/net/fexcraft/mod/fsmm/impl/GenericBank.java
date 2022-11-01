@@ -53,8 +53,8 @@ public class GenericBank extends Bank {
 					return false;
 				}
 				if(amount <= 0){
-					Print.chat(log, "Withdraw failed! Amount null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
-					Print.debug(log.getName() + " tried to withdraw a negative amout of money!");
+					Print.chat(log, "Withdraw failed! Amount is null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
+					Print.debug(log.getName() + " tried to withdraw a negative amount of money!");
 					return false;
 				}
 				player = (EntityPlayer)log;
@@ -81,7 +81,7 @@ public class GenericBank extends Bank {
 				}
 				if(amount <= 0){
 					Print.chat(log, "Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(log) + ");");
-					Print.debug(log.getName() + " tried to deposit a negative amout of money!");
+					Print.debug(log.getName() + " tried to deposit a negative amount of money!");
 					return false;
 				}
 				player = (EntityPlayer)log;
@@ -100,8 +100,8 @@ public class GenericBank extends Bank {
 						return false;
 					}
 				}
-				Print.chat(player, "Deposit failed! Result is above limit.. (D:" + amount + " || B:" + receiver.getBalance() + ");");
-				Print.log(receiver.getAsResourceLocation().toString() + " : Deposit failed! Result is above limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+				Print.chat(player, "Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+				Print.log(receiver.getAsResourceLocation().toString() + " : Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 				return false;
 			}
 			case TRANSFER:{
@@ -116,8 +116,8 @@ public class GenericBank extends Bank {
 					return false;
 				}
 				if(amount <= 0){
-					Print.chat(log, "Transfer failed! Amount null or negative. (T:" + amount + ");");
-					Print.debug(log.getName() + " tried to transfer a negative amout of money to " + receiver.getAsResourceLocation().toString() + "!");
+					Print.chat(log, "Transfer failed! Amount is null or negative. (T:" + amount + ");");
+					Print.debug(log.getName() + " tried to transfer a negative amount of money to " + receiver.getAsResourceLocation().toString() + "!");
 					return false;
 				}
 				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
@@ -128,8 +128,8 @@ public class GenericBank extends Bank {
 					log(null, action, amount, fee, total, included, sender, receiver);
 					return true;
 				}
-				Print.chat(log, "Transfer failed! Not enough money on your Account.");
-				Print.debug(sender.getAsResourceLocation().toString() + " -> " + sender.getAsResourceLocation().toString() + " : Transfer failed! Sender don't has enough money. (T:" + amount + " || F:" + fee + ");");
+				Print.chat(log, "Transfer failed! Not enough money on sender Account.");
+				Print.debug(sender.getAsResourceLocation().toString() + " -> " + sender.getAsResourceLocation().toString() + " : Transfer failed! Sender doesn't have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
 			default:{
