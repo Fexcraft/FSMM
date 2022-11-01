@@ -160,6 +160,7 @@ public class Config {
 				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new GenericMoneyItem(money), 1, null);
 				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.getAsJsonObject(), true);
 			});
+			GenericMoneyItem.sort();
 		}
 		//
 		if(obj.has("Banks")){
