@@ -16,6 +16,7 @@ import net.fexcraft.mod.fsmm.api.PlayerCapability;
 import net.fexcraft.mod.fsmm.api.WorldCapability;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
+import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Command;
@@ -24,6 +25,7 @@ import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
@@ -33,6 +35,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
@@ -65,6 +68,13 @@ public class FSMM {
 	    @Override
 	    public ItemStack createIcon() {
 	    	return new ItemStack(FCLRegistry.getBlock("fsmm:atm"));
+	    }
+	    @SideOnly(Side.CLIENT)
+	    public void displayAllRelevantItems(NonNullList<ItemStack> items){
+	        for(GenericMoneyItem item : GenericMoneyItem.sorted){
+	        	items.add(new ItemStack(item));
+	        }
+	        items.add(new ItemStack(FCLRegistry.getBlock("fsmm:atm")));
 	    }
 	};
 	
