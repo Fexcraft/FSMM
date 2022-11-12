@@ -49,12 +49,12 @@ public class GenericBank extends Bank {
 			case WITHDRAW:{
 				if(sender == null){
 					Print.chat(log, "Withdraw failed! Account is null.");
-					Print.debug(log.getName() + " -> player account is null.");
+					Print.debug(getName(log) + " -> player account is null.");
 					return false;
 				}
 				if(amount <= 0){
 					Print.chat(log, "Withdraw failed! Amount is null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
-					Print.debug(log.getName() + " tried to withdraw a negative amount of money!");
+					Print.debug(getName(log) + " tried to withdraw a negative amount of money!");
 					return false;
 				}
 				player = (EntityPlayer)log;
@@ -76,12 +76,12 @@ public class GenericBank extends Bank {
 			case DEPOSIT:{
 				if(receiver == null){
 					Print.chat(log, "Deposit failed! Account is null.");
-					Print.debug(log.getName() + " -> player account is null.");
+					Print.debug(getName(log) + " -> player account is null.");
 					return false;
 				}
 				if(amount <= 0){
 					Print.chat(log, "Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(log) + ");");
-					Print.debug(log.getName() + " tried to deposit a negative amount of money!");
+					Print.debug(getName(log) + " tried to deposit a negative amount of money!");
 					return false;
 				}
 				player = (EntityPlayer)log;
@@ -107,17 +107,17 @@ public class GenericBank extends Bank {
 			case TRANSFER:{
 				if(sender == null){
 					Print.chat(log, "Transfer failed! Sender is null.");
-					Print.debug(log.getName() + " -> sender account is null.");
+					Print.debug(getName(log) + " -> sender account is null.");
 					return false;
 				}
 				if(receiver == null){
 					Print.chat(log, "Transfer failed! Receiver is null.");
-					Print.debug(log.getName() + " -> receiver account is null.");
+					Print.debug(getName(log) + " -> receiver account is null.");
 					return false;
 				}
 				if(amount <= 0){
 					Print.chat(log, "Transfer failed! Amount is null or negative. (T:" + amount + ");");
-					Print.debug(log.getName() + " tried to transfer a negative amount of money to " + receiver.getAsResourceLocation().toString() + "!");
+					Print.debug(getName(log) + " tried to transfer a negative amount of money to " + receiver.getAsResourceLocation().toString() + "!");
 					return false;
 				}
 				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
@@ -133,7 +133,7 @@ public class GenericBank extends Bank {
 				return false;
 			}
 			default:{
-				Print.chat(log, "Invalid Bank Action. " + action.name() + " || " + log.getName() + " || "
+				Print.chat(log, "Invalid Bank Action. " + action.name() + " || " + getName(log) + " || "
 					+ (sender == null ? "null" : sender.getAsResourceLocation().toString()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getAsResourceLocation().toString()));
 				return false;
 			}
@@ -164,6 +164,10 @@ public class GenericBank extends Bank {
 		FSMM.LOGGER.info(str);
 		Print.debug(str);
 		
+	}
+	
+	public String getName(ICommandSender sender){
+		return sender == null ? "[NULL]" : sender.getName();
 	}
 
 	@Override
