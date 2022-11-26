@@ -141,8 +141,30 @@ public class Command extends CommandBase{
 		Account account = DataManager.getAccount(rs.toString(), false, false);
 		boolean online = account != null;
 		if(!online){ account = DataManager.getAccount(rs.toString(), true, false); }
-		if(account == null){ Print.chat(sender, "Account not found."); }
-		account.setBalance(Long.parseLong(args[2]));
+		if(account == null){
+			Print.chat(sender, "Account not found.");
+			return;
+		}
+		long am = Long.parseLong(args[2]);
+		switch(args[0]){
+			case "set":{
+				account.setBalance(am < 0 ? 0 : am);
+				break;
+			}
+			case "add":{
+				am = account.getBalance() + am;
+				if(am < 0) am = 0;
+				account.setBalance(am);
+				break;
+			}
+			case "'sub":{
+				am = account.getBalance() - am;
+				if(am < 0) am = 0;
+				account.setBalance(am);
+				break;
+			}
+			default: return;
+		}
 		Print.chat(sender, "&9New Balance&0: &7" + Config.getWorthAsString(account.getBalance()));
 		if(!online){
 			Print.chat(sender, "&7&oYou modified the balance of an Offline Account.");
