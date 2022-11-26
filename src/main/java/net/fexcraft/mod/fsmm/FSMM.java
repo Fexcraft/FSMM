@@ -47,7 +47,7 @@ public class FSMM {
 
 	public static IForgeRegistry<Money> CURRENCY;
 	public static final String MODID = "fsmm";
-	public static final String VERSION = "2.6.1";
+	public static final String VERSION = "2.6.2";
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
