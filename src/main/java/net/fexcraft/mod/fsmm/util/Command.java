@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
@@ -23,7 +24,7 @@ import net.minecraftforge.server.permission.PermissionAPI;
 
 public class Command extends CommandBase{
 
-	public static final String PREFIX = Formatter.format("&0[&3FSMM&0]&7 ");
+	public static final String PREFIX = Formatter.format("&0[&bFSMM&0]&7 ");
 	private final static ArrayList<String> aliases = new ArrayList<String>();
 	static{ aliases.add("money"); aliases.add("balance"); aliases.add("currency"); }
   
@@ -55,12 +56,12 @@ public class Command extends CommandBase{
     	if(args.length <= 0){
     		if(isp){
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
-    			Print.chat(sender,"&9In Inventory&0: &a" + Config.getWorthAsString(value));
-    			Print.chat(sender, "&9In Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
+    			Print.chat(sender,"&bIn Inventory&0: &a" + Config.getWorthAsString(value));
+    			Print.chat(sender, "&bIn Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
     		}
     		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
     			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);
-    			Print.chat(sender, "&9Default Bank Balance&0: &a" + Config.getWorthAsString(bank.getBalance()));
+    			Print.chat(sender, "&bDefault Bank Balance&0: &a" + Config.getWorthAsString(bank.getBalance()));
     		}
     		else{
     			Print.chat(sender, "No default bank found to display balance.");
@@ -71,24 +72,20 @@ public class Command extends CommandBase{
     	switch(args[0]){
 	    	case "help":{
 	        	Print.chat(sender, PREFIX + "= = = = = = = = = = =");
-	        	Print.chat(sender, "&9User commands:");
+	        	Print.chat(sender, "&bUser commands:");
 	        	Print.chat(sender, "&7/fsmm (shows balance/money)");
 	        	Print.chat(sender, "&7/fsmm help");
-	        	Print.chat(sender, "&7/fsmm info");
 	        	Print.chat(sender, "&7/fsmm version");
-	        	Print.chat(sender, "&5Admin commands:");
+	        	Print.chat(sender, "&dAdmin commands:");
 	        	Print.chat(sender, "&7/fsmm set <type:id/name> <amount>");
 	        	Print.chat(sender, "&7/fsmm add <type:id/name> <amount>");
 	        	Print.chat(sender, "&7/fsmm sub <type:id/name> <amount>");
+	        	Print.chat(sender, "&7/fsmm info <type:id/name>");
 	        	Print.chat(sender, "&7/fsmm status");
 	    		return;
 	    	}
-    		case "info":{
-	        	Print.chat(sender, "&9Main command for FSMM related things. ");
-    			return;
-    		}
     		case "version":{
-	        	Print.chat(sender,"&9FSMM Version: &e" + FSMM.VERSION + "&0.");
+	        	Print.chat(sender,"&bFSMM Version: &e" + FSMM.VERSION + "&0.");
     			return;
     		}
     		case "set":
@@ -102,20 +99,59 @@ public class Command extends CommandBase{
         			Print.chat(sender, "&cMissing Arguments.");
         			return;
     			}
-    			modify(sender, args);
+    			process(sender, args, (account, online) -> {
+    				long am = Long.parseLong(args[2]);
+    				switch(args[0]){
+    					case "set":{
+    						account.setBalance(am < 0 ? 0 : am);
+    						break;
+    					}
+    					case "add":{
+    						am = account.getBalance() + am;
+    						if(am < 0) am = 0;
+    						account.setBalance(am);
+    						break;
+    					}
+    					case "sub":{
+    						am = account.getBalance() - am;
+    						if(am < 0) am = 0;
+    						account.setBalance(am);
+    						break;
+    					}
+    					default: return;
+    				}
+    				Print.chat(sender, "&bNew Balance&0: &7" + Config.getWorthAsString(account.getBalance()));
+    				if(!online) Print.chat(sender, "&7&oYou modified the balance of an Offline Account.");
+    			});
+    			return;
+    		}
+    		case "info":{
+    			if(!op){
+        			Print.chat(sender, "&cNo Permission.");
+    				return;
+    			}
+    			if(args.length < 2){
+        			Print.chat(sender, "&cMissing Arguments.");
+        			return;
+    			}
+	        	process(sender, args, (account, online) -> {
+	        		Print.chat(sender, "&bAccount&0: &7" + account.getTypeAndId());
+	        		Print.chat(sender, "&bBalance&0: &7" + Config.getWorthAsString(account.getBalance()));
+	        		if(!online) Print.chat(sender, "&o&7Account Holder is currently offline.");
+	        	});
     			return;
     		}
     		case "status":{
-    			Print.chat(sender, "&9Accounts loaded (by type): &7");
+    			Print.chat(sender, "&bAccounts loaded (by type): &7");
     			long temp = 0;
     			for(String str : DataManager.getAccountTypes(false)){
     				Map<String, Account> map = DataManager.getAccountsOfType(str);
     				temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
-    				Print.chat(sender, "&2> &3" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
+    				Print.chat(sender, "&2> &b" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
     			}
     			temp = DataManager.getBanks().values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
-    			Print.chat(sender, "&9Banks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
-    			Print.chat(sender, "&5Last scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
+    			Print.chat(sender, "&bBanks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
+    			Print.chat(sender, "&aLast scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
     			return;
     		}
     		default:{
@@ -125,49 +161,35 @@ public class Command extends CommandBase{
     	}
     }
 
-	private void modify(ICommandSender sender, String[] args){
-		ResourceLocation rs = new UCResourceLocation(args[1].split(":"));
-		if(rs.getNamespace().equals("player")){
-			try{
-				UUID.fromString(rs.getPath());
-				//all OK
+	private void process(ICommandSender sender, String[] args, BiConsumer<Account, Boolean> cons){
+		ResourceLocation rs;
+		if(args[1].contains(":")){
+			rs = new UCResourceLocation(args[1].split(":"));
+			if(rs.getNamespace().equals("player")){
+				try{
+					UUID.fromString(rs.getPath());
+					//all OK
+				}
+				catch(Exception e){
+					//not an UUID, let's convert
+					UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getPath()).getId();
+					rs = new UCResourceLocation(rs.getNamespace(), uuid.toString());
+				}
 			}
-			catch(Exception e){
-				//not an UUID, let's convert
-				UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getPath()).getId();
-				rs = new UCResourceLocation(rs.getNamespace(), uuid.toString());
-			}
+		}
+		else{
+			UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(args[1]).getId();
+			rs = new UCResourceLocation("player", uuid.toString());
 		}
 		Account account = DataManager.getAccount(rs.toString(), false, false);
 		boolean online = account != null;
-		if(!online){ account = DataManager.getAccount(rs.toString(), true, false); }
+		if(!online) account = DataManager.getAccount(rs.toString(), true, false);
 		if(account == null){
 			Print.chat(sender, "Account not found.");
 			return;
 		}
-		long am = Long.parseLong(args[2]);
-		switch(args[0]){
-			case "set":{
-				account.setBalance(am < 0 ? 0 : am);
-				break;
-			}
-			case "add":{
-				am = account.getBalance() + am;
-				if(am < 0) am = 0;
-				account.setBalance(am);
-				break;
-			}
-			case "'sub":{
-				am = account.getBalance() - am;
-				if(am < 0) am = 0;
-				account.setBalance(am);
-				break;
-			}
-			default: return;
-		}
-		Print.chat(sender, "&9New Balance&0: &7" + Config.getWorthAsString(account.getBalance()));
+		cons.accept(account, online);
 		if(!online){
-			Print.chat(sender, "&7&oYou modified the balance of an Offline Account.");
 			DataManager.unloadAccount(account);
 		}
 	}
