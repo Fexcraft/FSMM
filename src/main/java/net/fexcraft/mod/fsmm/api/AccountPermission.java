@@ -52,7 +52,7 @@ public class AccountPermission {
 
 	public NBTTagCompound toNBT(){
 		NBTTagCompound com = new NBTTagCompound();
-		com.setString("a", getAccount().toJson().toString());
+		com.setString("a", getAccount().toJson(false).toString());
 		com.setBoolean("w", withdraw);
 		com.setBoolean("d", deposit);
 		com.setBoolean("t", transfer);
