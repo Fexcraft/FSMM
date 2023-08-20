@@ -9,10 +9,8 @@ import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
-import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,9 +23,6 @@ public class PlayerEvents {
 	
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-    	if(UpdateHandler.Status != null){
-        	event.player.sendMessage(new TextComponentString(Formatter.format(UpdateHandler.Status)));
-    	}
     	if(event.player.world.isRemote){ return; }
 		Print.debug("Loading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
     	Account account = event.player.world.getCapability(FSMMCapabilities.WORLD, null).getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
