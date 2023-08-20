@@ -96,10 +96,13 @@ public class ATMContainer extends GenericContainer {
 				case "sync":{
 					NBTTagCompound compound = new NBTTagCompound();
 					if(packet.getBoolean("account")){
-						compound.setString("account", account.toJson().toString());
+						compound.setString("account", account.toJson(false).toString());
+					}
+					if(packet.getBoolean("account_transfers")){
+						compound.setString("account", account.toJson(true).toString());
 					}
 					if(packet.getBoolean("receiver") && receiver != null){
-						compound.setString("receiver", receiver.toJson().toString());
+						compound.setString("receiver", receiver.toJson(false).toString());
 					}
 					if(packet.getBoolean("bank")){
 						compound.setString("bank", bank.toJson().toString());
