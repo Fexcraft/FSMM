@@ -1,12 +1,19 @@
 package net.fexcraft.mod.fsmm.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.events.AccountEvent;
+import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,6 +28,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	private String id, type, bank, name;
 	private long balance;
 	private JsonObject additionaldata;
+	private ArrayList<Transfer> transfers = new ArrayList<Transfer>();
 	
 	/** From JSON Constructor */
 	public Account(JsonObject obj){
@@ -30,6 +38,12 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		balance = obj.get("balance").getAsLong();
 		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
 		name = obj.has("name") ? obj.get("name").getAsString() : null;
+		if(obj.has("transfers")){
+			JsonArray array = obj.get("transfers").getAsJsonArray();
+			for(JsonElement elm : array.getAsJsonArray()){
+				transfers.add(new Transfer(elm.getAsJsonObject()));
+			}
+		}
 		this.updateLastAccess();
 	}
 	
@@ -97,10 +111,9 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		this.name = name;
 		return this;
 	}
-	
-	@Override
+
 	/** Mainly used for saving. */
-	public JsonObject toJson(){
+	public JsonObject toJson(boolean withtransfers){
 		this.updateLastAccess();
 		JsonObject obj = new JsonObject();
 		obj.addProperty("id", id);
@@ -111,7 +124,18 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 			obj.add("data", additionaldata);
 		}
 		if(name != null) obj.addProperty("name", name);
+		if(withtransfers){
+			JsonArray array = new JsonArray();
+			for(Transfer transfer : transfers) array.add(transfer.toJson());
+			if(array.size() > 0) obj.add("transfers", array);
+		}
 		return obj;
+	}
+
+	@Override
+	/** Mainly used for saving. */
+	public JsonObject toJson(){
+		return toJson(true);
 	}
 
 	@Override
@@ -139,5 +163,16 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 			default: return;
 		}
 	}
-	
+
+	public void addTransfer(Transfer transfer){
+		transfers.add(0, transfer);
+		while(transfers.size() > Config.TRANSFER_CACHE){
+			transfers.remove(Config.TRANSFER_CACHE);
+		}
+	}
+
+	public List<Transfer> getTransfers(){
+		return transfers;
+	}
+
 }
