@@ -32,23 +32,44 @@ public class Config {
 	
 	public static File CONFIG_PATH;
 	private static Configuration config;
-	private static String COMMA = ",", DOT = ".";
-	private static String GENERAL = "General", DISPLAY = "Display/Logging";
+	private static String COMMA = ",";
+	private static String DOT = ".";
+	private static String GENERAL = "General";
+	private static String DISPLAY = "Display/Logging";
 	//
-	public static int STARTING_BALANCE, UNLOAD_FREQUENCY, MIN_SEARCH_CHARS;
-	public static String DEFAULT_BANK, CURRENCY_SIGN, THOUSAND_SEPARATOR;
-	public static boolean NOTIFY_BALANCE_ON_JOIN, INVERT_COMMA, SHOW_CENTESIMALS, SHOW_DECIMALS, ENABLE_BANK_CARDS;
-	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true, PARTIAL_ACCOUNT_NAME_SEARCH = true;
+	public static int STARTING_BALANCE;
+	public static int UNLOAD_FREQUENCY;
+	public static int MIN_SEARCH_CHARS;
+	public static int TRANSFER_CACHE = 50;
+	public static String DEFAULT_BANK;
+	public static String CURRENCY_SIGN;
+	public static String THOUSAND_SEPARATOR;
+	public static boolean NOTIFY_BALANCE_ON_JOIN;
+	public static boolean INVERT_COMMA;
+	public static boolean SHOW_CENTESIMALS;
+	public static boolean SHOW_DECIMALS;
+	public static boolean ENABLE_BANK_CARDS;
+	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
+	public static boolean PARTIAL_ACCOUNT_NAME_SEARCH = true;
 	private static JsonArray DEF_BANKS;
 	//
 	public static SyncableConfig LOCAL = new SyncableConfig(), REMOTE;
 	/** Acts as a copy when disconnecting or connecting to a server. */
 	public static class SyncableConfig {
 		
-		public int starting_balance, unload_frequency, min_search_chars;
-		public String default_bank, currency_sign, thousand_separator;
-		public boolean notify_balance_on_join, invert_comma, show_centesimals, show_decimals, enable_bank_cards;
-		public boolean show_item_worth_in_tooltip = true, partial_account_name_search = true;
+		public int starting_balance;
+		public int unload_frequency;
+		public int min_search_chars;
+		public String default_bank;
+		public String currency_sign;
+		public String thousand_separator;
+		public boolean notify_balance_on_join;
+		public boolean invert_comma;
+		public boolean show_centesimals;
+		public boolean show_decimals;
+		public boolean enable_bank_cards;
+		public boolean show_item_worth_in_tooltip = true;
+		public boolean partial_account_name_search = true;
 		
 		public NBTTagCompound toNBT(){
 			NBTTagCompound compound = new NBTTagCompound();
@@ -223,6 +244,7 @@ public class Config {
 		LOCAL.thousand_separator = THOUSAND_SEPARATOR = thosep.equals("null") ? null : thosep;
 		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, true, "Should decimals be shown when zero? e.g. '234.00'");
 		LOCAL.min_search_chars = config.getInt("min_search_chars", GENERAL, 3, 1, 1000, "Minimum characters to enter in the 'Name/ID' search bar for search to work.");
+		TRANSFER_CACHE = config.getInt("transfer_cache", GENERAL, 50, 10, 1000, "Amount of executed transfer data to be cached per account.");
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
