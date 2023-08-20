@@ -9,6 +9,7 @@ import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.api.Account;
 import net.fexcraft.mod.fsmm.api.Bank;
 import net.fexcraft.mod.fsmm.api.Manageable;
+import net.fexcraft.mod.fsmm.api.Transfer;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -146,14 +147,18 @@ public class GenericBank extends Bank {
 			case DEPOSIT:
 				s = sender.getTypeAndId();
 				r = player.getName();
+				sender.addTransfer(new Transfer(amount, fee, included, action, sender.getName(), sender));
 				break;
 			case WITHDRAW:
 				s = player.getName();
 				r = receiver.getTypeAndId();
+				sender.addTransfer(new Transfer(-amount, fee, included, action, sender.getName(), sender));
 				break;
 			case TRANSFER:
 				s = sender.getTypeAndId();
 				r = receiver.getTypeAndId();
+				sender.addTransfer(new Transfer(-amount, fee, included, action, sender.getName(), receiver));
+				receiver.addTransfer(new Transfer(amount, fee, included, action, sender.getName(), sender));
 				break;
 			default:
 				s = "INVALID";
