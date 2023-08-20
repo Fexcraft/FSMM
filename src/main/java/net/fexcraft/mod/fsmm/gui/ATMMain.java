@@ -14,7 +14,7 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	
 	private static final ResourceLocation texture = new ResourceLocation("fsmm:textures/gui/main.png");
 	private ArrayList<String> tooltip = new ArrayList<>();
-	private BasicButton bi, ca, wd, dp, tr;
+	private BasicButton bi, vt, ca, wd, dp, tr;
 	private BasicText b0, b1, b2, b3, ac, ba;
 
 	public ATMMain(EntityPlayer player){
@@ -32,6 +32,7 @@ public class ATMMain extends GenericGui<ATMContainer> {
 		this.texts.put("ac", ac = new BasicText(guiLeft + 6, guiTop + 58, 235, null, "- - -"));
 		this.texts.put("ba", ba = new BasicText(guiLeft + 6, guiTop + 70, 211, null, "0" + Config.CURRENCY_SIGN));
 		this.buttons.put("bi", bi = new BasicButton("bi", guiLeft + 242, guiTop + 42, 242, 42, 8, 8, true));
+		this.buttons.put("vt", vt = new BasicButton("vt", guiLeft + 231, guiTop + 58, 231, 58, 8, 8, true));
 		this.buttons.put("ca", ca = new BasicButton("ca", guiLeft + 242, guiTop + 58, 242, 58, 8, 8, true));
 		this.buttons.put("wd", wd = new BasicButton("wd", guiLeft + 219, guiTop + 69, 219, 69, 10, 10, true));
 		this.buttons.put("dp", dp = new BasicButton("dp", guiLeft + 230, guiTop + 69, 230, 69, 10, 10, true));
@@ -62,6 +63,7 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	protected void drawlast(float pticks, int mouseX, int mouseY){
 		tooltip.clear();
 		if(bi.hovered) tooltip.add(Formatter.format("&7Bank Info &8/ &9 Change Bank"));
+		if(vt.hovered) tooltip.add(Formatter.format("&bView Account Activity"));
 		if(ca.hovered) tooltip.add(Formatter.format("&aChange &7managed &9Account"));
 		if(wd.hovered) tooltip.add(Formatter.format("&eWidthdraw &7from &9Account"));
 		if(dp.hovered) tooltip.add(Formatter.format("&6Deposit &7to &9Account"));
@@ -74,6 +76,10 @@ public class ATMMain extends GenericGui<ATMContainer> {
 		switch(button.name){
 			case "bi":{
 				openGui(GuiHandler.BANK_SELECT, new int[]{ 0, 0, 0 }, LISTENERID);
+				return true;
+			}
+			case "vt":{
+				openGui(GuiHandler.VIEW_TRANSFERS, new int[]{ 0, 0, 0 }, LISTENERID);
 				return true;
 			}
 			case "ca":{
