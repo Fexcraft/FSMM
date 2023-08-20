@@ -22,7 +22,6 @@ import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.UpdateHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -47,7 +46,7 @@ public class FSMM {
 
 	public static IForgeRegistry<Money> CURRENCY;
 	public static final String MODID = "fsmm";
-	public static final String VERSION = "2.6.2";
+	public static final String VERSION = "2.7.1";
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
@@ -86,7 +85,6 @@ public class FSMM {
 	@Mod.EventHandler
     public void init(FMLInitializationEvent event){
 		NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new GuiHandler());
-		UpdateHandler.initialize();
 		PermissionAPI.registerNode("fsmm.admin", DefaultPermissionLevel.OP, "FSMM Admin Permission");
     }
 
