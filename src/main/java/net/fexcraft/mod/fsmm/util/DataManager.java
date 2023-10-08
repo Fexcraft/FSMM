@@ -95,16 +95,28 @@ public class DataManager extends TimerTask {
 	public final void saveAll(){
 		for(Map<String, Account> map : ACCOUNTS.values()){
 			for(Account account : map.values()){
-				try{ save(account); } catch(Exception e){ e.printStackTrace(); return; }
+				try{
+					save(account);
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
 			}
 		}
 		for(Bank bank : BANKS.values()){
-			try{ save(bank); } catch(Exception e){ e.printStackTrace(); return; }
+			try{
+				save(bank);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public void clearAll(){
-		ACCOUNTS.clear(); BANKS.clear(); timer.cancel();
+		ACCOUNTS.clear();
+		BANKS.clear();
+		timer.cancel();
 	}
 	
 	public static void unloadAccount(Account account){
