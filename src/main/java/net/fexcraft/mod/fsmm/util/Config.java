@@ -7,14 +7,12 @@ import java.util.TreeMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.impl.GenericBank;
-import net.fexcraft.mod.fsmm.impl.GenericMoney;
+import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -176,8 +174,8 @@ public class Config {
 		JsonObject obj = JsonUtil.get(file);
 		if(obj.has("Items")){
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
-				GenericMoney money = null;
-				FSMM.CURRENCY.register(money = new GenericMoney(elm.getAsJsonObject(), true));
+				Money money = new Money(elm.getAsJsonObject(), true);
+				FSMM.CURRENCY.register(money);
 				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new GenericMoneyItem(money), 1, null);
 				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.getAsJsonObject(), true);
 			});
@@ -195,7 +193,7 @@ public class Config {
 			String uuid = elm.getAsJsonObject().get("uuid").getAsString();
 			File file = new File(DataManager.BANK_DIR, uuid + ".json");
 			if(!file.exists() && !DataManager.getBanks().containsKey(uuid)){
-				DataManager.addBank(new GenericBank(elm.getAsJsonObject()));
+				DataManager.addBank(new Bank(elm.getAsJsonObject()));
 			}
 		});
 	}
@@ -280,7 +278,7 @@ public class Config {
 						EXTERNAL_ITEMS.put(rs, worth);
 					}
 					if(jsn.has("register") && jsn.get("register").getAsBoolean()){
-						event.getRegistry().register(new GenericMoney(jsn, false));
+						event.getRegistry().register(new Money(jsn, false));
 					}
 				});
 			}

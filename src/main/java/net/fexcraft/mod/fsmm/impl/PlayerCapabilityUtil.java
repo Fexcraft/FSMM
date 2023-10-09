@@ -1,10 +1,10 @@
-package net.fexcraft.mod.fsmm.impl.cap;
+package net.fexcraft.mod.fsmm.impl;
 
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.AccountPermission;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.AccountPermission;
+import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.data.PlayerCapability;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
 import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.mod.fsmm.util.DataManager;

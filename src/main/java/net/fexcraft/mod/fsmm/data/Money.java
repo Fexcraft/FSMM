@@ -1,26 +1,25 @@
-package net.fexcraft.mod.fsmm.impl;
+package net.fexcraft.mod.fsmm.data;
 
 import com.google.gson.JsonObject;
-
 import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Money;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public class GenericMoney implements Money {
-	
+public class Money implements IForgeRegistryEntry<Money> {
+
 	private ResourceLocation regname;
 	private ItemStack stack;
 	private long worth;
-	
-	public GenericMoney(JsonObject obj, boolean internal){
+
+	public Money(JsonObject obj, boolean internal){
 		regname = new ResourceLocation((internal ? FSMM.MODID + ":" : "") + JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
 		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
 		int meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
@@ -29,7 +28,7 @@ public class GenericMoney implements Money {
 			stackload(null, obj, internal);
 		}
 	}
-	
+
 	public void stackload(net.minecraft.item.Item item, JsonObject obj, boolean internal){
 		if(item == null || !internal){
 			String id = JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate());
@@ -71,18 +70,27 @@ public class GenericMoney implements Money {
 	}
 
 	@Override
-	public long getWorth(){
-		return worth;
-	}
-	
-	@Override
 	public String toString(){
 		return super.toString() + "#" + this.getWorth();
 	}
 
-	@Override
+	public long getWorth(){
+		return worth;
+	}
+
 	public ItemStack getItemStack(){
 		return stack;
 	}
 	
+	//
+	
+	public static interface Item {
+		
+		public Money getType();
+		
+		/** Singular worth, do not multiply by count! **/
+		public long getWorth(ItemStack stack);
+		
+	}
+
 }

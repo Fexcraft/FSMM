@@ -1,24 +1,20 @@
 package net.fexcraft.mod.fsmm;
- 
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.Logger;
 
 import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
-import net.fexcraft.mod.fsmm.api.Money;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
-import net.fexcraft.mod.fsmm.api.WorldCapability;
+import net.fexcraft.mod.fsmm.data.Money;
+import net.fexcraft.mod.fsmm.data.PlayerCapability;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
 import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
-import net.fexcraft.mod.fsmm.impl.cap.PlayerCapabilityUtil;
-import net.fexcraft.mod.fsmm.impl.cap.WorldCapabilityUtil;
+import net.fexcraft.mod.fsmm.impl.PlayerCapabilityUtil;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
@@ -39,6 +35,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = FSMM.MODID, name = "Fex's Small Money Mod", version = FSMM.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*",
 		updateJSON = "http://fexcraft.net/minecraft/fcl/request?mode=getForgeUpdateJson&modid=fsmm", dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
@@ -46,7 +43,7 @@ public class FSMM {
 
 	public static IForgeRegistry<Money> CURRENCY;
 	public static final String MODID = "fsmm";
-	public static final String VERSION = "2.7.1";
+	public static final String VERSION = "2.8.0";
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
@@ -55,7 +52,6 @@ public class FSMM {
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
-    	CapabilityManager.INSTANCE.register(WorldCapability.class, new WorldCapabilityUtil.Storage(), new WorldCapabilityUtil.Callable());
     	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapabilityUtil.Storage(), new PlayerCapabilityUtil.Callable());
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//

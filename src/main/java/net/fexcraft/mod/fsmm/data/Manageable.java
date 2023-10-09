@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
 import net.minecraft.command.ICommandSender;
 

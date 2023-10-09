@@ -1,6 +1,6 @@
 package net.fexcraft.mod.fsmm.events;
 
-import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.data.Account;
 import net.minecraftforge.fml.common.eventhandler.Event;
 
 public class AccountEvent extends Event {

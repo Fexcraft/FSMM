@@ -11,15 +11,14 @@ import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.lib.mc.gui.GenericContainer;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.AccountPermission;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
-import net.fexcraft.mod.fsmm.api.Manageable.Action;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.AccountPermission;
+import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.data.Manageable.Action;
+import net.fexcraft.mod.fsmm.data.PlayerCapability;
 import net.fexcraft.mod.fsmm.events.ATMEvent.GatherAccounts;
 import net.fexcraft.mod.fsmm.events.ATMEvent.SearchAccounts;
-import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
@@ -64,7 +63,7 @@ public class ATMContainer extends GenericContainer {
 						receiver = new Account(JsonUtil.getObjectFromString(packet.getString("receiver")));
 					}
 					if(packet.hasKey("bank")){
-						bank = new GenericBank(JsonUtil.getObjectFromString(packet.getString("bank")));
+						bank = new Bank(JsonUtil.getObjectFromString(packet.getString("bank")));
 					}
 					if(packet.hasKey("bank_list")){
 						TreeMap<String, String> banks = new TreeMap<>();

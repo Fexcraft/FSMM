@@ -1,9 +1,8 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.fexcraft.lib.common.math.Time;
-import net.fexcraft.mod.fsmm.api.Bank.Action;
+import net.fexcraft.mod.fsmm.data.Bank.Action;
 
 /**
  * @author Ferdinand Calo' (FEX___96)

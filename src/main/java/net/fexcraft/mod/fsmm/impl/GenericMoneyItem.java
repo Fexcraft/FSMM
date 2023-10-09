@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Money;
+import net.fexcraft.mod.fsmm.data.Money;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 

@@ -1,48 +1,109 @@
-package net.fexcraft.mod.fsmm.impl;
+package net.fexcraft.mod.fsmm.data;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import javax.annotation.Nullable;
+
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.Manageable;
-import net.fexcraft.mod.fsmm.api.Transfer;
+import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class GenericBank extends Bank {
-
-	public GenericBank(JsonObject obj){
-		super(obj);
+/**
+ * Base Bank Object.<br>
+ * Unlike the Account Object, even though it processes most things itself,<br>
+ * it needs at least one method to be overridden/implemented.
+ * 
+ * @author Ferdinand Calo' (FEX___96)
+ */
+public class Bank extends Removable implements Manageable {
+	
+	private String id;
+	protected String name;
+	protected long balance;
+	private JsonObject additionaldata;
+	protected TreeMap<String, String> fees;
+	protected ArrayList<String> status = new ArrayList<>();
+	
+	/** From JSON Constructor */
+	public Bank(JsonObject obj){
+		id = obj.get("uuid").getAsString();
+		name = obj.get("name").getAsString();
+		balance = obj.has("balance") ? obj.get("balance").getAsLong() : 0;
+		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
+		if(obj.has("fees")){
+			fees = new TreeMap<>();
+			obj.get("fees").getAsJsonObject().entrySet().forEach(entry -> {
+				try{
+					fees.put(entry.getKey(), entry.getValue().getAsString());
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			});
+		}
+		if(obj.has("status")){
+			obj.get("status").getAsJsonArray().forEach(elm -> status.add(elm.getAsString()));
+		}
+		DataManager.getBankNameCache().put(id, name);
+		this.updateLastAccess();
 	}
 	
-	public GenericBank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
-		super(id, name, balance, data, map);
+	/** Manual Constructor */
+	public Bank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
+		this.id = id; this.name = name; this.balance = balance;
+		this.fees = map; this.additionaldata = data;
+		this.updateLastAccess();
 	}
 	
-	public static long parseFee(String fee, long amount){
-		if(fee == null){
-			return 0;
-		}
-		long result = 0;
-		if(fee.endsWith("%")){
-			float pc = Float.parseFloat(fee.replace("%", ""));
-			if(pc < 0) return 0;
-			if(pc > 100) pc = 100;
-			result = (long)((amount / 100) * pc);
-		}
-		else{
-			result = Long.parseLong(fee);
-			result = result < 0 ? 0 : /*result > amount ? amount :*/ result;
-		}
-		return result;
+	/** Unique ID of this Bank. */
+	public String getId(){ return id; }
+	
+	/** Name of this Bank. */
+	public String getName(){ return name; }
+
+	/** Method to set the Bank Name. */
+	public boolean setName(String name){
+		this.updateLastAccess();
+		return this.name.equals(name) ? false : (this.name = name).equals(name);
+	}
+	
+	/** Current balance of this Bank (1000 = 1 currency unit, usually) */
+	public long getBalance(){
+		this.updateLastAccess();
+		return balance;
+	}
+	
+	/** Method to set the balance (1000 = 1 currency unit, usually)
+	 * @param rpl new balance for this account
+	 * @return new balance */
+	public long setBalance(long rpl){
+		this.updateLastAccess();
+		return balance = rpl;
+	}
+	
+	@Nullable
+	public JsonObject getData(){
+		return additionaldata;
+	}
+	
+	public void setData(JsonObject obj){
+		this.updateLastAccess();
+		additionaldata = obj;
+	}
+	
+	@Nullable
+	public TreeMap<String, String> getFees(){
+		return fees;
 	}
 
-	@Override
 	public boolean processAction(Bank.Action action, ICommandSender log, Account sender, long amount, Account receiver, boolean included){
 		EntityPlayer player;
 		long fee = 0, total;
@@ -68,6 +129,7 @@ public class GenericBank extends Bank {
 					sender.modifyBalance(Manageable.Action.SUB, total, player);
 					ItemManager.addToInventory(player, amount - (included ? fee : 0));
 					log(player, action, amount, fee, total, included, sender, receiver);
+					DataManager.save(sender);
 					return true;
 				}
 				Print.chat(player, "Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
@@ -93,6 +155,7 @@ public class GenericBank extends Bank {
 						ItemManager.removeFromInventory(player, total);
 						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), player);
 						log(player, action, amount, fee, total, included, sender, receiver);
+						DataManager.save(receiver);
 						return true;
 					}
 					else{
@@ -127,6 +190,8 @@ public class GenericBank extends Bank {
 					sender.modifyBalance(Manageable.Action.SUB, total, log);
 					receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), log);
 					log(null, action, amount, fee, total, included, sender, receiver);
+					DataManager.save(sender);
+					DataManager.save(receiver);
 					return true;
 				}
 				Print.chat(log, "Transfer failed! Not enough money on sender Account.");
@@ -135,11 +200,92 @@ public class GenericBank extends Bank {
 			}
 			default:{
 				Print.chat(log, "Invalid Bank Action. " + action.name() + " || " + getName(log) + " || "
-					+ (sender == null ? "null" : sender.getAsResourceLocation().toString()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getAsResourceLocation().toString()));
+						+ (sender == null ? "null" : sender.getAsResourceLocation().toString()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getAsResourceLocation().toString()));
 				return false;
 			}
 		}
 	}
+	
+	public boolean processAction(Action action, ICommandSender log, Account sender, long amount, Account receiver){
+		return processAction(action, log, sender, amount, receiver, true);
+	}
+
+	public static long parseFee(String fee, long amount){
+		if(fee == null){
+			return 0;
+		}
+		long result = 0;
+		if(fee.endsWith("%")){
+			float pc = Float.parseFloat(fee.replace("%", ""));
+			if(pc < 0) return 0;
+			if(pc > 100) pc = 100;
+			result = (long)((amount / 100) * pc);
+		}
+		else{
+			result = Long.parseLong(fee);
+			result = result < 0 ? 0 : /*result > amount ? amount :*/ result;
+		}
+		return result;
+	}
+	
+	public static enum Action { TRANSFER, WITHDRAW, DEPOSIT }
+	
+	@Override
+	/** Mainly used for saving. */
+	public JsonObject toJson(){
+		this.updateLastAccess();
+		JsonObject obj = new JsonObject();
+		obj.addProperty("uuid", id);
+		obj.addProperty("name", name);
+		obj.addProperty("balance", balance);
+		if(fees != null){
+			JsonObject of = new JsonObject();
+			for(Entry<String, String> entry : fees.entrySet()){
+				of.addProperty(entry.getKey(), entry.getValue());
+			}
+			obj.add("fees", of);
+		}
+		if(additionaldata != null){
+			obj.add("data", additionaldata);
+		}
+		if(!status.isEmpty()){
+			JsonArray array = new JsonArray();
+			for(String str : status) array.add(str);
+			obj.add("status", array);
+		}
+		return obj;
+	}
+
+	@Override
+	public void modifyBalance(Manageable.Action action, long amount, ICommandSender log){
+		switch(action){
+			case SET :{ balance = amount; return; }
+			case SUB :{
+				if(balance - amount >= 0){ balance -= amount; }
+				else{
+					Print.chat(log, "Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
+				}
+				return;
+			}
+			case ADD:{
+				if(balance + amount >= Long.MAX_VALUE){
+					Print.chat(log, "Max Value reached.");
+				}
+				else{ balance += amount; }
+			}
+			default: return;
+		}
+	}
+	
+	public ArrayList<String> getStatus(){
+		return status;
+	}
+
+	public boolean hasFee(String fee_id){
+		return fees != null && fees.containsKey(fee_id);
+	}
+
+	//
 
 	private void log(EntityPlayer player, Action action, long amount, long fee, long total, boolean included, Account sender, Account receiver){
 		String s, r;
@@ -168,16 +314,11 @@ public class GenericBank extends Bank {
 		String str = s + " -> [A: " + amount + "] + [F: " + fee + (included ? "i" : "e") + "] == [R: " + total + "] -> " + r;
 		FSMM.LOGGER.info(str);
 		Print.debug(str);
-		
+
 	}
-	
+
 	public String getName(ICommandSender sender){
 		return sender == null ? "[NULL]" : sender.getName();
 	}
 
-	@Override
-	public boolean isNull(){
-		return false;
-	}
-	
 }

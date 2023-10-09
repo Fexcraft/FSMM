@@ -3,10 +3,10 @@ package net.fexcraft.mod.fsmm.events;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.AccountPermission;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.AccountPermission;
+import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.eventhandler.Event;

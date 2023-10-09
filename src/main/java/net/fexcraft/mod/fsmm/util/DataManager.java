@@ -23,10 +23,8 @@ import net.fexcraft.lib.common.json.JsonUtil;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.impl.GenericBank;
-import net.fexcraft.mod.fsmm.impl.NullBank;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.Bank;
 import net.minecraft.util.ResourceLocation;
 
 public class DataManager extends TimerTask {
@@ -49,7 +47,7 @@ public class DataManager extends TimerTask {
 		for(File bfl : BANK_DIR.listFiles()){
 			if(bfl.isDirectory()) continue;
 			try{
-				new GenericBank(JsonUtil.get(bfl));
+				new Bank(JsonUtil.get(bfl));
 			}
 			catch(Throwable thr){}
 		}
@@ -231,7 +229,7 @@ public class DataManager extends TimerTask {
 			return !tempload && bank.isTemporary() ? bank.setTemporary(false) : bank;
 		}
 		if(tempload || create){
-			impl = impl == null ? GenericBank.class : impl; File file = new File(BANK_DIR, id + ".json");
+			impl = impl == null ? Bank.class : impl; File file = new File(BANK_DIR, id + ".json");
 			if(file.exists()){
 				try{
 					Bank bank = impl.getConstructor(JsonObject.class).newInstance(JsonUtil.get(file));
@@ -242,7 +240,7 @@ public class DataManager extends TimerTask {
 				}
 				catch(ReflectiveOperationException | RuntimeException e){
 					e.printStackTrace();
-					return NullBank.INSTANCE;
+					return null;
 				}
 			}
 			else if(create){
@@ -253,12 +251,12 @@ public class DataManager extends TimerTask {
 				}
 				catch(ReflectiveOperationException | RuntimeException e){
 					e.printStackTrace();
-					return NullBank.INSTANCE;
+					return null;
 				}
 			}
-			else return NullBank.INSTANCE;
+			else return null;
 		}
-		return NullBank.INSTANCE;
+		return null;
 	}
 	
 	public static boolean addBank(Bank bank){
