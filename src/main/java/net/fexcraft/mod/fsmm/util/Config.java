@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.app.json.JsonArray;
+import net.fexcraft.app.json.JsonHandler;
+import net.fexcraft.app.json.JsonHandler.PrintOption;
+import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
@@ -169,63 +170,64 @@ public class Config {
 		//
 		File file = new File(CONFIG_PATH, "/fsmm/configuration.json");
 		if(!file.exists()){
-			JsonUtil.write(file, getDefaultContent());
+			JsonHandler.print(file, getDefaultContent(), PrintOption.SPACED);
 		}
-		JsonObject obj = JsonUtil.get(file);
-		if(obj.has("Items")){
-			obj.get("Items").getAsJsonArray().forEach((elm) -> {
-				Money money = new Money(elm.getAsJsonObject(), true);
+		JsonMap map = JsonHandler.parse(file);
+		if(map.has("Items")){
+			map.getArray("Items").value.forEach((elm) -> {
+				Money money = new Money(elm.asMap(), true);
 				FSMM.CURRENCY.register(money);
 				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new MoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.getAsJsonObject(), true);
+				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.asMap(), true);
 			});
 			MoneyItem.sort();
 		}
 		//
-		if(obj.has("Banks")){
-			DEF_BANKS = obj.get(("Banks")).getAsJsonArray();
+		if(map.has("Banks")){
+			DEF_BANKS = map.get(("Banks")).asArray();
 		}
 	}
 	
 	public static void loadDefaultBanks(){
 		if(DEF_BANKS == null) return;
-		DEF_BANKS.forEach((elm) -> {
-			String uuid = elm.getAsJsonObject().get("uuid").getAsString();
+		DEF_BANKS.value.forEach(val -> {
+			JsonMap map = val.asMap();
+			String uuid = map.getString("uuid", map.getString("id", null));
 			File file = new File(DataManager.BANK_DIR, uuid + ".json");
 			if(!file.exists() && !DataManager.getBanks().containsKey(uuid)){
-				DataManager.addBank(new Bank(elm.getAsJsonObject()));
+				DataManager.addBank(new Bank(map));
 			}
 		});
 	}
 	
-	private static JsonObject getDefaultContent(){
-		JsonObject obj = new JsonObject();
+	private static JsonMap getDefaultContent(){
+		JsonMap map = new JsonMap();
 		JsonArray items = new JsonArray();
 		DEFAULT.forEach((id, worth) -> {
-			JsonObject jsn = new JsonObject();
-			jsn.addProperty("id", id);
-			jsn.addProperty("worth", worth);
+			JsonMap jsn = new JsonMap();
+			jsn.add("id", id);
+			jsn.add("worth", worth);
 			items.add(jsn);
 		});
-		obj.add("Items", items);
+		map.add("Items", items);
 		//
 		JsonArray banks = new JsonArray();
-		JsonObject def = new JsonObject();
-		def.addProperty("uuid", DEFAULT_BANK);
-		def.addProperty("name", "Default Server Bank");
-		def.add("data", new JsonObject());
+		JsonMap def = new JsonMap();
+		def.add("uuid", DEFAULT_BANK);
+		def.add("name", "Default Server Bank");
+		def.add("data", new JsonMap());
 		banks.add(def);
-		obj.add("Banks", banks);
+		map.add("Banks", banks);
 		//
-		JsonObject extexp = new JsonObject();
+		JsonMap extexp = new JsonMap();
 		JsonArray ext = new JsonArray();
-		extexp.addProperty("id", "minecraft:nether_star");
-		extexp.addProperty("worth", 100000);
-		extexp.addProperty("register", false);
+		extexp.add("id", "minecraft:nether_star");
+		extexp.add("worth", 100000);
+		extexp.add("register", false);
 		ext.add(extexp);
-		obj.add("ExternalItems", ext);
+		map.add("ExternalItems", ext);
 		//
-		return obj;
+		return map;
 	}
 	
 	public static void refresh(){
@@ -257,16 +259,14 @@ public class Config {
 	    @SubscribeEvent
 	    public void onRegistry(RegistryEvent.Register<Money> event){
 			File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
-			if(!file.exists()){
-				return;
-			}
-			JsonObject obj = JsonUtil.get(file);
-			if(obj.has("ExternalItems")){
-				obj.get("ExternalItems").getAsJsonArray().forEach(elm -> {
-					JsonObject jsn = elm.getAsJsonObject();
-					ResourceLocation rs = new ResourceLocation(jsn.get("id").getAsString());
-					long worth = jsn.get("worth").getAsLong();
-					int meta = jsn.has("meta") ? jsn.get("meta").getAsInt() : -1;
+			if(!file.exists()) return;
+			JsonMap map = JsonHandler.parse(file);
+			if(map.has("ExternalItems")){
+				map.getArray("ExternalItems").value.forEach(elm -> {
+					JsonMap jsn = elm.asMap();
+					ResourceLocation rs = new ResourceLocation(jsn.get("id").string_value());
+					long worth = jsn.get("worth").long_value();
+					int meta = jsn.getInteger("meta", -1);
 					//
 					if(meta >= 0){
 						EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
@@ -277,7 +277,7 @@ public class Config {
 					else{
 						EXTERNAL_ITEMS.put(rs, worth);
 					}
-					if(jsn.has("register") && jsn.get("register").getAsBoolean()){
+					if(jsn.has("register") && jsn.get("register").bool()){
 						event.getRegistry().register(new Money(jsn, false));
 					}
 				});
