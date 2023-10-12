@@ -13,6 +13,7 @@ import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.events.AccountEvent;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,8 +24,10 @@ import net.minecraftforge.common.MinecraftForge;
  * @author Ferdinand Calo' (FEX___96)
  */
 public class Account extends Removable implements Manageable /*, net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>*/ {
-	
-	private String id, type, bank, name;
+
+	private final String id, type;
+	private String name;
+	private Bank bank;
 	private long balance;
 	private JsonObject additionaldata;
 	private ArrayList<Transfer> transfers = new ArrayList<Transfer>();
@@ -33,7 +36,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	public Account(JsonObject obj){
 		id = obj.get("id").getAsString();
 		type = obj.get("type").getAsString();
-		bank = obj.get("bank").getAsString();
+		bank = DataManager.getBank(obj.get("bank").getAsString());
 		balance = obj.get("balance").getAsLong();
 		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
 		name = obj.has("name") ? obj.get("name").getAsString() : null;
@@ -49,7 +52,8 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	/** Manual Constructor */
 	public Account(String id, String type, long balance, String bank, JsonObject data){
 		this.id = id; this.type = type; this.balance = balance;
-		this.bank = bank; this.additionaldata = data;
+		this.bank = DataManager.getBank(id);
+		this.additionaldata = data;
 		this.updateLastAccess();
 	}
 	
@@ -71,17 +75,20 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		return balance = rpl;
 	}
 	
-	/** Bank ID of this Account. */
-	public String getBankId(){ return bank; }
-	
-	/** Method to set the Bank ID */
-	public boolean setBankId(String id){
+	/** Bank of this Account. */
+	public Bank getBank(){
+		return bank;
+	}
+
+	public void setBank(Bank nbank){
 		this.updateLastAccess();
-		return bank.equals(id) ? false : (bank = id).equals(id);
+		bank = nbank;
 	}
 	
 	/** Type of this Account, as not only players can hold Accounts. */
-	public String getType(){ return type; }
+	public String getType(){
+		return type;
+	}
 	
 	public ResourceLocation getAsResourceLocation(){
 		return new UCResourceLocation(this.getType(), this.getId());
@@ -117,7 +124,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		JsonObject obj = new JsonObject();
 		obj.addProperty("id", id);
 		obj.addProperty("type", type);
-		obj.addProperty("bank", bank);
+		obj.addProperty("bank", bank.id);
 		obj.addProperty("balance", balance);
 		if(additionaldata != null){
 			obj.add("data", additionaldata);
