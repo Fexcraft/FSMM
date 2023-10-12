@@ -13,7 +13,7 @@ import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.data.Money;
-import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
+import net.fexcraft.mod.fsmm.data.MoneyItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -176,10 +176,10 @@ public class Config {
 			obj.get("Items").getAsJsonArray().forEach((elm) -> {
 				Money money = new Money(elm.getAsJsonObject(), true);
 				FSMM.CURRENCY.register(money);
-				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new GenericMoneyItem(money), 1, null);
+				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new MoneyItem(money), 1, null);
 				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.getAsJsonObject(), true);
 			});
-			GenericMoneyItem.sort();
+			MoneyItem.sort();
 		}
 		//
 		if(obj.has("Banks")){
