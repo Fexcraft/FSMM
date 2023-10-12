@@ -3,12 +3,9 @@ package net.fexcraft.mod.fsmm.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
+import net.fexcraft.app.json.JsonArray;
+import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.app.json.JsonValue;
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.events.AccountEvent;
@@ -29,32 +26,33 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	private String name;
 	private Bank bank;
 	private long balance;
-	private JsonObject additionaldata;
+	private JsonMap additionaldata;
 	private ArrayList<Transfer> transfers = new ArrayList<Transfer>();
 	
 	/** From JSON Constructor */
-	public Account(JsonObject obj){
-		id = obj.get("id").getAsString();
-		type = obj.get("type").getAsString();
-		bank = DataManager.getBank(obj.get("bank").getAsString());
-		balance = obj.get("balance").getAsLong();
-		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
-		name = obj.has("name") ? obj.get("name").getAsString() : null;
-		if(obj.has("transfers")){
-			JsonArray array = obj.get("transfers").getAsJsonArray();
-			for(JsonElement elm : array.getAsJsonArray()){
-				transfers.add(new Transfer(elm.getAsJsonObject()));
+	public Account(JsonMap map){
+		id = map.get("id").string_value();
+		type = map.get("type").string_value();
+		bank = DataManager.getBank(map.get("bank").string_value());
+		balance = map.get("balance").long_value();
+		additionaldata = map.has("data") ? map.getMap("data") : null;
+		name = map.has("name") ? map.get("name").string_value() : null;
+		if(map.has("transfers")){
+			for(JsonValue<?> elm : map.getArray("transfers").value){
+				transfers.add(new Transfer(elm.asMap()));
 			}
 		}
-		this.updateLastAccess();
+		updateLastAccess();
 	}
 	
 	/** Manual Constructor */
-	public Account(String id, String type, long balance, String bank, JsonObject data){
-		this.id = id; this.type = type; this.balance = balance;
-		this.bank = DataManager.getBank(id);
-		this.additionaldata = data;
-		this.updateLastAccess();
+	public Account(String id, String type, long bal, Bank bank_, JsonMap data){
+		this.id = id;
+		this.type = type;
+		balance = bal;
+		bank = bank_;
+		additionaldata = data;
+		updateLastAccess();
 	}
 	
 	/** Unique ID of this Account. */
@@ -62,7 +60,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	
 	/** Current balance on this Account (1000 = 1 currency unit, usually) */
 	public long getBalance(){
-		//this.updateLastAccess();
+		//updateLastAccess();
 		return balance;
 	}
 	
@@ -71,7 +69,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	 * @return new balance */
 	public long setBalance(long rpl){
 		MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, rpl));
-		this.updateLastAccess();
+		updateLastAccess();
 		return balance = rpl;
 	}
 	
@@ -81,7 +79,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	}
 
 	public void setBank(Bank nbank){
-		this.updateLastAccess();
+		updateLastAccess();
 		bank = nbank;
 	}
 	
@@ -97,39 +95,37 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	public String getTypeAndId(){
 		return this.getType() + ":" + this.getId();
 	}
-	
-	@Nullable
-	public JsonObject getData(){
+
+	public JsonMap getData(){
 		return additionaldata;
 	}
 	
-	public void setData(JsonObject obj){
-		this.updateLastAccess();
+	public void setData(JsonMap obj){
+		updateLastAccess();
 		additionaldata = obj;
 	}
-	
-	@Nullable
+
 	public String getName(){
 		return name == null ? id : name;
 	}
 	
-	public Account setName(String name){
-		this.name = name;
+	public Account setName(String nname){
+		name = nname;
 		return this;
 	}
 
 	/** Mainly used for saving. */
-	public JsonObject toJson(boolean withtransfers){
-		this.updateLastAccess();
-		JsonObject obj = new JsonObject();
-		obj.addProperty("id", id);
-		obj.addProperty("type", type);
-		obj.addProperty("bank", bank.id);
-		obj.addProperty("balance", balance);
+	public JsonMap toJson(boolean withtransfers){
+		updateLastAccess();
+		JsonMap obj = new JsonMap();
+		obj.add("id", id);
+		obj.add("type", type);
+		obj.add("bank", bank.id);
+		obj.add("balance", balance);
 		if(additionaldata != null){
 			obj.add("data", additionaldata);
 		}
-		if(name != null) obj.addProperty("name", name);
+		if(name != null) obj.add("name", name);
 		if(withtransfers){
 			JsonArray array = new JsonArray();
 			for(Transfer transfer : transfers) array.add(transfer.toJson());
@@ -140,7 +136,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 
 	@Override
 	/** Mainly used for saving. */
-	public JsonObject toJson(){
+	public JsonMap toJson(){
 		return toJson(true);
 	}
 
@@ -149,7 +145,8 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 		switch(action){
 			case SET :{
 				MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, amount));
-				balance = amount; return;
+				balance = amount;
+				return;
 			}
 			case SUB :{
 				if(balance - amount >= 0){
@@ -164,7 +161,9 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 				if(balance + amount >= Long.MAX_VALUE){
 					Print.chat(log, "Max Value reached.");
 				}
-				else{ MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance += amount)); }
+				else{
+					MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance += amount));
+				}
 			}
 			default: return;
 		}
