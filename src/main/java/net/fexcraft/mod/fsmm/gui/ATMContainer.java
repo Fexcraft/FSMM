@@ -46,7 +46,7 @@ public class ATMContainer extends GenericContainer {
 		perm = cap.getSelectedAccountInATM() == null ? AccountPermission.FULL : cap.getSelectedAccountInATM();
 		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : perm.getAccount();
 		receiver = cap.getSelectedReiverInATM();
-		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBankId() : cap.getSelectedBankInATM(), true, true);
+		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBank().id : cap.getSelectedBankInATM());
 		cap.setSelectedBankInATM(null);
 	}
 
@@ -70,7 +70,7 @@ public class ATMContainer extends GenericContainer {
 						NBTTagList list = (NBTTagList)packet.getTag("bank_list");
 						for(int i = 0; i < list.tagCount(); i++){
 							String[] str = list.getStringTagAt(i).split(":");
-							if(bank != null && str[0].equals(bank.getId())) continue;
+							if(bank != null && str[0].equals(bank.id)) continue;
 							banks.put(str[0], str[1]);
 						}
 						this.banks = new ArrayList<>();
@@ -137,7 +137,7 @@ public class ATMContainer extends GenericContainer {
 						player.closeScreen();
 						break;
 					}
-					Bank bank = DataManager.getBank(packet.getString("bank"), true, true);
+					Bank bank = DataManager.getBank(packet.getString("bank"));
 					String feeid = account.getType() + ":setup_account";
 					long fee = bank.hasFee(feeid) ? Long.parseLong(bank.getFees().get(feeid).replace("%", "")) : 0;
 					if(account.getBalance() < fee){
@@ -146,7 +146,7 @@ public class ATMContainer extends GenericContainer {
 					}
 					else{
 						if(fee > 0) account.modifyBalance(Action.SUB, fee, player);
-						account.setBankId(bank.getId());
+						account.setBank(bank);
 						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, 0, 0, 0);
 					}
 					break;
@@ -218,8 +218,7 @@ public class ATMContainer extends GenericContainer {
 						Print.chat(player, "&cPlease select a receiver!");
 						return;
 					}
-					Bank bank = DataManager.getBank(account.getBankId(), true, false);
-					if(bank.processAction(Bank.Action.TRANSFER, player, account, amount, receiver, false)){
+					if(account.getBank().processAction(Bank.Action.TRANSFER, player, account, amount, receiver, false)){
 						Print.chat(player, "&bTransfer &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 						player.closeScreen();
 					}
@@ -235,8 +234,7 @@ public class ATMContainer extends GenericContainer {
 	private boolean processSelfAction(long amount, boolean deposit){
 		if(amount <= 0) return false;
 		String dep = deposit ? "&eDeposit" : "&aWithdraw";
-		Bank bank = DataManager.getBank(account.getBankId(), true, false);
-		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
+		if(account.getBank().processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
 			Print.chat(player, dep + " &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 			return true;
 		}
@@ -248,8 +246,8 @@ public class ATMContainer extends GenericContainer {
 
 	private NBTBase getBankList(){
 		NBTTagList list = new NBTTagList();
-		DataManager.getBankNameCache().forEach((key, val) -> {
-			list.appendTag(new NBTTagString(key + ":" + val));
+		DataManager.getBanks().forEach((key, val) -> {
+			list.appendTag(new NBTTagString(key + ":" + val.getName()));
 		});
 		return list;
 	}
