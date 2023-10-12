@@ -10,16 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonObject;
-
-import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.app.json.JsonHandler;
+import net.fexcraft.app.json.JsonHandler.PrintOption;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
@@ -45,9 +43,11 @@ public class DataManager extends TimerTask {
 		for(File bfl : BANK_DIR.listFiles()){
 			if(bfl.isDirectory()) continue;
 			try{
-				new Bank(JsonUtil.get(bfl));
+				new Bank(JsonHandler.parse(bfl));
 			}
-			catch(Throwable thr){}
+			catch(Throwable thr){
+				thr.printStackTrace();
+			}
 		}
 	}
 
@@ -69,17 +69,17 @@ public class DataManager extends TimerTask {
 	}
 	
 	public static final void save(Account account){
-		if(account == null){ return; }
+		if(account == null) return;
 		File file = new File(ACCOUNT_DIR, account.getType() + "/" + account.getId() + ".json");
-		if(!file.exists()){ file.getParentFile().mkdirs(); }
-		JsonUtil.write(file, account.toJson(), true);
+		if(!file.exists()) file.getParentFile().mkdirs();
+		JsonHandler.print(file, account.toJson(), PrintOption.FLAT);
 	}
 	
 	public static final void save(Bank bank){
-		if(bank == null){ return; }
+		if(bank == null) return;
 		File file = new File(BANK_DIR, bank.id + ".json");
-		if(!file.exists()){ file.getParentFile().mkdirs(); }
-		JsonUtil.write(file, bank.toJson(), true);
+		if(!file.exists()) file.getParentFile().mkdirs();
+		JsonHandler.print(file, bank.toJson(), PrintOption.FLAT);
 	}
 
 	public final void saveAll(){
@@ -132,48 +132,42 @@ public class DataManager extends TimerTask {
 	public static final DataManager getInstance(){
 		return FSMM.CACHE;
 	}
-
-	@Nullable
-	public static final Account getAccount(String accid, boolean tempload, boolean create){
-		return getAccount(accid, tempload, create, null);
-	}
 	
 	@Nullable
-	public static final Account getAccount(String accid, boolean tempload, boolean create, Class<? extends Account> impl){
+	public static final Account getAccount(String accid, boolean tempload, boolean create){
 		String[] arr = accid.split(":");
 		if(arr.length < 2){ return null; }
 		if(ACCOUNTS.containsKey(arr[0]) && ACCOUNTS.get(arr[0]).containsKey(arr[1])){
 			Account account = ACCOUNTS.get(arr[0]).get(arr[1]);
 			return !tempload && account.isTemporary() ? account.setTemporary(false) : account;
 		}
-		return tempload || create ? loadAccount(arr, tempload, create, impl) : null;
+		return tempload || create ? loadAccount(arr, tempload, create) : null;
 	}
 	
-	private static final Account loadAccount(String[] arr, boolean tempload, boolean create, Class<? extends Account> impl){
-		impl = impl == null ? Account.class : impl;
+	private static final Account loadAccount(String[] arr, boolean tempload, boolean create){
 		File file = new File(ACCOUNT_DIR, arr[0] + "/" + arr[1] + ".json");
 		if(file.exists()){
 			try{
-				Account account = impl.getConstructor(JsonObject.class).newInstance(JsonUtil.get(file));
+				Account account = new Account(JsonHandler.parse(file));
 				if(!account.getType().equals(arr[0]) || !account.getId().equals(arr[1])){
-					throw new RuntimeException("Account data from file doesn't match request! This is file error which should get controlled.\n" + file.getPath());
+					throw new RuntimeException("Account data from file doesn't match request! This is a file error which should get controlled.\n" + file.getPath());
 				}
 				addAccount(arr[0], account);
 				return account.setTemporary(tempload);
 			}
-			catch(ReflectiveOperationException | RuntimeException e){
+			catch(RuntimeException e){
 				e.printStackTrace();
 				return null;
 			}
 		}
 		else if(create){
 			try{
-				Account account = impl.getConstructor(String.class, String.class, long.class, String.class, JsonObject.class).newInstance(arr[1], arr[0], arr[0].equals("player") ? Config.STARTING_BALANCE : 0, Config.DEFAULT_BANK, null);
+				Account account = new Account(arr[1], arr[0], arr[0].equals("player") ? Config.STARTING_BALANCE : 0, getDefaultBank(), null);
 				addAccount(arr[0], account);
 				FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + "!");
 				return account.setTemporary(tempload);
 			}
-			catch(ReflectiveOperationException | RuntimeException e){
+			catch(RuntimeException e){
 				e.printStackTrace();
 				return null;
 			}
@@ -208,7 +202,7 @@ public class DataManager extends TimerTask {
 		}
 		File file = new File(BANK_DIR, id + ".json");
 		if(file.exists()){
-			Bank bank = new Bank(JsonUtil.get(file));
+			Bank bank = new Bank(JsonHandler.parse(file));
 			addBank(bank);
 			return bank;
 		}
