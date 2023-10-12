@@ -31,14 +31,12 @@ public class DataManager extends TimerTask {
 	
 	private static final Map<String, Map<String, Account>> ACCOUNTS = new ConcurrentHashMap<>();
 	private static final Map<String, Bank> BANKS = new ConcurrentHashMap<>();
-	private static final Map<String, String> BANK_NAME_CACHE = new ConcurrentHashMap<>();
 	public static File ACCOUNT_DIR, BANK_DIR;
 	public static long LAST_TIMERTASK;
 	protected static Timer timer;
 
 	public DataManager(File file){
 		timer = new Timer();
-		BANK_NAME_CACHE.clear();
 		ACCOUNT_DIR = new File(file, "/fsmm/accounts/");
 		if(!ACCOUNT_DIR.exists()){ ACCOUNT_DIR.mkdirs(); }
 		BANK_DIR = new File(file, "/fsmm/banks/");
@@ -67,12 +65,6 @@ public class DataManager extends TimerTask {
 				}
 			}
 		}
-		ImmutableMap<String, Bank> map = ImmutableMap.copyOf(BANKS);
-		for(Entry<String, Bank> entry : map.entrySet()){
-			if(entry.getValue().lastAccessed() >= 0 && entry.getValue().lastAccessed() < mndt){
-				unloadBank(entry.getKey());
-			}
-		}
 		saveAll();
 	}
 	
@@ -85,7 +77,7 @@ public class DataManager extends TimerTask {
 	
 	public static final void save(Bank bank){
 		if(bank == null){ return; }
-		File file = new File(BANK_DIR, bank.getId() + ".json");
+		File file = new File(BANK_DIR, bank.id + ".json");
 		if(!file.exists()){ file.getParentFile().mkdirs(); }
 		JsonUtil.write(file, bank.toJson(), true);
 	}
@@ -134,16 +126,6 @@ public class DataManager extends TimerTask {
 				e.printStackTrace();
 				return;
 			}
-		}
-	}
-	
-	public static void unloadBank(String id){
-		try{
-			save(BANKS.remove(id));
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			return;
 		}
 	}
 
@@ -216,51 +198,29 @@ public class DataManager extends TimerTask {
 	public static final Map<String, Account> getAccountsOfType(String type){
 		return ACCOUNTS.get(type);
 	}
-	
-	@Nullable
-	public static final Bank getBank(String id, boolean tempload, boolean create){
-		return getBank(id, tempload, create, null);
-	}
-	
-	@Nullable
-	public static final Bank getBank(String id, boolean tempload, boolean create, Class<? extends Bank> impl){
+
+	/**
+	 * @return loaded bank with the id, loads bank if savefile present, otherwise returns default bank
+	 */
+	public static final Bank getBank(String id){
 		if(BANKS.containsKey(id)){
-			Bank bank = BANKS.get(id);
-			return !tempload && bank.isTemporary() ? bank.setTemporary(false) : bank;
+			return BANKS.get(id);
 		}
-		if(tempload || create){
-			impl = impl == null ? Bank.class : impl; File file = new File(BANK_DIR, id + ".json");
-			if(file.exists()){
-				try{
-					Bank bank = impl.getConstructor(JsonObject.class).newInstance(JsonUtil.get(file));
-					if(!bank.getId().equals(id)){
-						throw new RuntimeException("Bank data from file doesn't match request! This is file error which should get controlled.\n" + file.getPath());
-					} addBank(bank);
-					return bank.setTemporary(tempload);
-				}
-				catch(ReflectiveOperationException | RuntimeException e){
-					e.printStackTrace();
-					return null;
-				}
-			}
-			else if(create){
-				try{
-					Bank bank = impl.getConstructor(String.class, String.class, long.class, JsonObject.class, TreeMap.class).newInstance(id, id.equals(Config.DEFAULT_BANK) ? "Default Server Bank" : "Generated Bank", Config.STARTING_BALANCE, null, null);
-					addBank(bank); FSMM.LOGGER.info("Created new bank with ID " + id + ".");
-					return bank.setTemporary(tempload);
-				}
-				catch(ReflectiveOperationException | RuntimeException e){
-					e.printStackTrace();
-					return null;
-				}
-			}
-			else return null;
+		File file = new File(BANK_DIR, id + ".json");
+		if(file.exists()){
+			Bank bank = new Bank(JsonUtil.get(file));
+			addBank(bank);
+			return bank;
 		}
-		return null;
+		else return BANKS.get(Config.DEFAULT_BANK);
+	}
+
+	public static final Bank getDefaultBank(){
+		return BANKS.get(Config.DEFAULT_BANK);
 	}
 	
 	public static boolean addBank(Bank bank){
-		return BANKS.put(bank.getId(), bank) == null;
+		return BANKS.put(bank.id, bank) == null;
 	}
 	
 	@Nullable
@@ -281,10 +241,6 @@ public class DataManager extends TimerTask {
 			return ACCOUNT_DIR.list();
 		}
 		return ACCOUNTS.keySet().toArray(new String[0]);
-	}
-
-	public static Map<String, String> getBankNameCache(){
-		return BANK_NAME_CACHE;
 	}
 
 	public static boolean exists(String type, String id){
