@@ -1,6 +1,6 @@
 package net.fexcraft.mod.fsmm.data;
 
-import com.google.gson.JsonObject;
+import net.fexcraft.app.json.JsonMap;
 import net.minecraft.command.ICommandSender;
 
 /**
@@ -17,6 +17,6 @@ public interface Manageable {
 		ADD, SUB, SET;
 	}
 
-	public abstract JsonObject toJson();
+	public JsonMap toJson();
 	
 }
