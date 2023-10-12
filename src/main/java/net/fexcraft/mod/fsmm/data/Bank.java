@@ -23,9 +23,9 @@ import net.minecraft.entity.player.EntityPlayer;
  * 
  * @author Ferdinand Calo' (FEX___96)
  */
-public class Bank extends Removable implements Manageable {
+public class Bank implements Manageable {
 	
-	private String id;
+	public final String id;
 	protected String name;
 	protected long balance;
 	private JsonObject additionaldata;
@@ -52,32 +52,27 @@ public class Bank extends Removable implements Manageable {
 		if(obj.has("status")){
 			obj.get("status").getAsJsonArray().forEach(elm -> status.add(elm.getAsString()));
 		}
-		DataManager.getBankNameCache().put(id, name);
-		this.updateLastAccess();
 	}
 	
 	/** Manual Constructor */
 	public Bank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
-		this.id = id; this.name = name; this.balance = balance;
-		this.fees = map; this.additionaldata = data;
-		this.updateLastAccess();
+		this.id = id;
+		this.name = name;
+		this.balance = balance;
+		fees = map;
+		additionaldata = data;
 	}
-	
-	/** Unique ID of this Bank. */
-	public String getId(){ return id; }
 	
 	/** Name of this Bank. */
 	public String getName(){ return name; }
 
 	/** Method to set the Bank Name. */
 	public boolean setName(String name){
-		this.updateLastAccess();
 		return this.name.equals(name) ? false : (this.name = name).equals(name);
 	}
 	
 	/** Current balance of this Bank (1000 = 1 currency unit, usually) */
 	public long getBalance(){
-		this.updateLastAccess();
 		return balance;
 	}
 	
@@ -85,7 +80,6 @@ public class Bank extends Removable implements Manageable {
 	 * @param rpl new balance for this account
 	 * @return new balance */
 	public long setBalance(long rpl){
-		this.updateLastAccess();
 		return balance = rpl;
 	}
 	
@@ -95,7 +89,6 @@ public class Bank extends Removable implements Manageable {
 	}
 	
 	public void setData(JsonObject obj){
-		this.updateLastAccess();
 		additionaldata = obj;
 	}
 	
@@ -233,7 +226,6 @@ public class Bank extends Removable implements Manageable {
 	@Override
 	/** Mainly used for saving. */
 	public JsonObject toJson(){
-		this.updateLastAccess();
 		JsonObject obj = new JsonObject();
 		obj.addProperty("uuid", id);
 		obj.addProperty("name", name);
