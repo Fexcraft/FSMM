@@ -1,5 +1,6 @@
 package net.fexcraft.mod.fsmm.data;
 
+import com.google.gson.JsonObject;
 import net.minecraft.command.ICommandSender;
 
 /**
@@ -15,5 +16,7 @@ public interface Manageable {
 	public static enum Action {
 		ADD, SUB, SET;
 	}
+
+	public abstract JsonObject toJson();
 	
 }
