@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import javax.annotation.Nullable;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
+import net.fexcraft.app.json.JsonArray;
+import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.app.json.JsonValue;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.util.DataManager;
@@ -17,10 +15,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
- * Base Bank Object.<br>
- * Unlike the Account Object, even though it processes most things itself,<br>
- * it needs at least one method to be overridden/implemented.
- * 
  * @author Ferdinand Calo' (FEX___96)
  */
 public class Bank implements Manageable {
@@ -28,34 +22,29 @@ public class Bank implements Manageable {
 	public final String id;
 	protected String name;
 	protected long balance;
-	private JsonObject additionaldata;
+	private JsonMap additionaldata;
 	protected TreeMap<String, String> fees;
 	protected ArrayList<String> status = new ArrayList<>();
 	
 	/** From JSON Constructor */
-	public Bank(JsonObject obj){
-		id = obj.get("uuid").getAsString();
-		name = obj.get("name").getAsString();
-		balance = obj.has("balance") ? obj.get("balance").getAsLong() : 0;
-		additionaldata = obj.has("data") ? obj.get("data").getAsJsonObject() : null;
-		if(obj.has("fees")){
+	public Bank(JsonMap map){
+		id = map.getString("uuid", map.getString("id", null));
+		name = map.getString("name", "Unnamed Bank");
+		balance = map.getLong("balance", 0);
+		additionaldata = map.has("data") ? map.getMap("data") : null;
+		if(map.has("fees")){
 			fees = new TreeMap<>();
-			obj.get("fees").getAsJsonObject().entrySet().forEach(entry -> {
-				try{
-					fees.put(entry.getKey(), entry.getValue().getAsString());
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}
-			});
+			for(Entry<String, JsonValue<?>> entry : map.getMap("fees").entries()){
+				fees.put(entry.getKey(), entry.getValue().string_value());
+			}
 		}
-		if(obj.has("status")){
-			obj.get("status").getAsJsonArray().forEach(elm -> status.add(elm.getAsString()));
+		if(map.has("status")){
+			map.getArray("status").value.forEach(val -> status.add(val.string_value()));
 		}
 	}
 	
 	/** Manual Constructor */
-	public Bank(String id, String name, long balance, JsonObject data, TreeMap<String, String> map){
+	public Bank(String id, String name, long balance, JsonMap data, TreeMap<String, String> map){
 		this.id = id;
 		this.name = name;
 		this.balance = balance;
@@ -82,17 +71,15 @@ public class Bank implements Manageable {
 	public long setBalance(long rpl){
 		return balance = rpl;
 	}
-	
-	@Nullable
-	public JsonObject getData(){
+
+	public JsonMap getData(){
 		return additionaldata;
 	}
 	
-	public void setData(JsonObject obj){
+	public void setData(JsonMap obj){
 		additionaldata = obj;
 	}
-	
-	@Nullable
+
 	public TreeMap<String, String> getFees(){
 		return fees;
 	}
@@ -225,27 +212,27 @@ public class Bank implements Manageable {
 	
 	@Override
 	/** Mainly used for saving. */
-	public JsonObject toJson(){
-		JsonObject obj = new JsonObject();
-		obj.addProperty("uuid", id);
-		obj.addProperty("name", name);
-		obj.addProperty("balance", balance);
+	public JsonMap toJson(){
+		JsonMap map = new JsonMap();
+		map.add("id", id);
+		map.add("name", name);
+		map.add("balance", balance);
 		if(fees != null){
-			JsonObject of = new JsonObject();
+			JsonMap of = new JsonMap();
 			for(Entry<String, String> entry : fees.entrySet()){
-				of.addProperty(entry.getKey(), entry.getValue());
+				of.add(entry.getKey(), entry.getValue());
 			}
-			obj.add("fees", of);
+			map.add("fees", of);
 		}
 		if(additionaldata != null){
-			obj.add("data", additionaldata);
+			map.add("data", additionaldata);
 		}
 		if(!status.isEmpty()){
 			JsonArray array = new JsonArray();
 			for(String str : status) array.add(str);
-			obj.add("status", array);
+			map.add("status", array);
 		}
-		return obj;
+		return map;
 	}
 
 	@Override
