@@ -13,8 +13,9 @@ import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.fsmm.data.PlayerCapability;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
-import net.fexcraft.mod.fsmm.impl.GenericMoneyItem;
-import net.fexcraft.mod.fsmm.impl.PlayerCapabilityUtil;
+import net.fexcraft.mod.fsmm.data.MoneyItem;
+import net.fexcraft.mod.fsmm.data.cap.PlayerCapCallable;
+import net.fexcraft.mod.fsmm.data.cap.PlayerCapStorage;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
@@ -52,7 +53,7 @@ public class FSMM {
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
-    	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapabilityUtil.Storage(), new PlayerCapabilityUtil.Callable());
+    	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapStorage(), new PlayerCapCallable());
 		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
@@ -66,7 +67,7 @@ public class FSMM {
 	    }
 	    @SideOnly(Side.CLIENT)
 	    public void displayAllRelevantItems(NonNullList<ItemStack> items){
-	        for(GenericMoneyItem item : GenericMoneyItem.sorted){
+	        for(MoneyItem item : MoneyItem.sorted){
 	        	items.add(new ItemStack(item));
 	        }
 	        items.add(new ItemStack(FCLRegistry.getBlock("fsmm:atm")));
