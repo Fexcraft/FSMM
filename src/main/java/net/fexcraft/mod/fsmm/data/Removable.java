@@ -36,6 +36,4 @@ public abstract class Removable {
 		return temporary;
 	}
 	
-	public abstract JsonObject toJson();
-	
 }
