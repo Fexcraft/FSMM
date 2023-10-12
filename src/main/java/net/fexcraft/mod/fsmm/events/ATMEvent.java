@@ -15,7 +15,6 @@ public class ATMEvent extends Event {
 	
 	private final EntityPlayer player;
 	private final Account account;
-	private Bank bank;
 	
 	private ATMEvent(EntityPlayer player){
 		this.player = player;
@@ -31,8 +30,7 @@ public class ATMEvent extends Event {
 	}
 	
 	public Bank getBank(){
-		if(bank == null) bank = DataManager.getBank(account.getBankId(), true, true);
-		return bank;
+		return account.getBank();
 	}
 	
 	/** Event so other mods can add into this list accounts manageable by this player. */
