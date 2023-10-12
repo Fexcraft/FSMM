@@ -1,6 +1,6 @@
 package net.fexcraft.mod.fsmm.data;
 
-import com.google.gson.JsonObject;
+import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.mod.fsmm.data.Bank.Action;
 
@@ -19,16 +19,16 @@ public class Transfer {
 	public boolean included;
 	public boolean negative;
 
-	public Transfer(JsonObject data){
-		time = data.get("time").getAsLong();
-		amount = data.get("amount").getAsLong();
-		fee = data.get("fee").getAsLong();
-		if(fee > 0) included = data.get("included").getAsBoolean();
-		from = data.get("from").getAsString();
-		name = data.get("name").getAsString();
-		type = data.get("type").getAsString();
-		action = Action.valueOf(data.get("action").getAsString());
-		if(data.has("minus")) negative = data.get("minus").getAsBoolean();
+	public Transfer(JsonMap data){
+		time = data.get("time").long_value();
+		amount = data.get("amount").long_value();
+		fee = data.get("fee").long_value();
+		if(fee > 0) included = data.get("included").bool();
+		from = data.get("from").string_value();
+		name = data.get("name").string_value();
+		type = data.get("type").string_value();
+		action = Action.valueOf(data.get("action").string_value());
+		if(data.has("minus")) negative = data.get("minus").bool();
 	}
 
 	public Transfer(long am, long f, boolean in, Action act, String nm, Account acc){
@@ -43,17 +43,17 @@ public class Transfer {
 		type = acc.getType();
 	}
 
-	public JsonObject toJson(){
-		JsonObject obj = new JsonObject();
-		obj.addProperty("time", time);
-		obj.addProperty("amount", amount);
-		obj.addProperty("fee", fee);
-		if(included) obj.addProperty("included", included);
-		obj.addProperty("from", from);
-		obj.addProperty("name", name);
-		obj.addProperty("type", type);
-		obj.addProperty("action", action.name());
-		if(negative) obj.addProperty("minus", true);
+	public JsonMap toJson(){
+		JsonMap obj = new JsonMap();
+		obj.add("time", time);
+		obj.add("amount", amount);
+		obj.add("fee", fee);
+		if(included) obj.add("included", included);
+		obj.add("from", from);
+		obj.add("name", name);
+		obj.add("type", type);
+		obj.add("action", action.name());
+		if(negative) obj.add("minus", true);
 		return obj;
 	}
 
