@@ -59,12 +59,9 @@ public class Command extends CommandBase{
     			Print.chat(sender,"&bIn Inventory&0: &a" + Config.getWorthAsString(value));
     			Print.chat(sender, "&bIn Bank&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
     		}
-    		else if(DataManager.getBank(Config.DEFAULT_BANK, true, true) != null){
-    			Bank bank = DataManager.getBank(Config.DEFAULT_BANK, true, false);
-    			Print.chat(sender, "&bDefault Bank Balance&0: &a" + Config.getWorthAsString(bank.getBalance()));
-    		}
     		else{
-    			Print.chat(sender, "No default bank found to display balance.");
+    			Bank bank = DataManager.getDefaultBank();
+    			Print.chat(sender, "&bDefault Bank Balance&0: &a" + Config.getWorthAsString(bank.getBalance()));
     		}
     		return;
     	}
@@ -149,8 +146,7 @@ public class Command extends CommandBase{
     				temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
     				Print.chat(sender, "&2> &b" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
     			}
-    			temp = DataManager.getBanks().values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
-    			Print.chat(sender, "&bBanks loaded: &7" + DataManager.getBanks().size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
+    			Print.chat(sender, "&bBanks active: &7" + DataManager.getBanks().size());
     			Print.chat(sender, "&aLast scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
     			return;
     		}
