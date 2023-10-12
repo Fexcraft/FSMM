@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.lib.mc.gui.GenericContainer;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
@@ -57,13 +57,13 @@ public class ATMContainer extends GenericContainer {
 			switch(packet.getString("cargo")){
 				case "sync":{
 					if(packet.hasKey("account")){
-						account = new Account(JsonUtil.getObjectFromString(packet.getString("account")));
+						account = new Account(JsonHandler.parse(packet.getString("account"), true).asMap());
 					}
 					if(packet.hasKey("receiver")){
-						receiver = new Account(JsonUtil.getObjectFromString(packet.getString("receiver")));
+						receiver = new Account(JsonHandler.parse(packet.getString("receiver"), true).asMap());
 					}
 					if(packet.hasKey("bank")){
-						bank = new Bank(JsonUtil.getObjectFromString(packet.getString("bank")));
+						bank = new Bank(JsonHandler.parse(packet.getString("bank"), true).asMap());
 					}
 					if(packet.hasKey("bank_list")){
 						TreeMap<String, String> banks = new TreeMap<>();
