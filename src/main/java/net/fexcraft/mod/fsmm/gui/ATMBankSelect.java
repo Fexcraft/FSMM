@@ -72,7 +72,7 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 		tooltip.clear();
 		if(info.hovered){
 			tooltip.add(Formatter.format("&7View info of &9your &7Bank."));
-			tooltip.add(Formatter.format("&9Bank ID: &7" + container.bank.getId()));
+			tooltip.add(Formatter.format("&9Bank ID: &7" + container.bank.id));
 		}
 		if(container.banks != null){
 			for(int i = 0; i < 8; i++){
