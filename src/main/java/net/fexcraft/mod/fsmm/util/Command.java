@@ -7,8 +7,8 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import net.fexcraft.lib.common.math.Time;
+import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
-import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
