@@ -1,8 +1,8 @@
 package net.fexcraft.mod.fsmm.events;
 
+import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
-import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.util.Config;
