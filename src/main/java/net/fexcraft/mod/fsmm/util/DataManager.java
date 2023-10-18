@@ -43,7 +43,7 @@ public class DataManager extends TimerTask {
 		for(File bfl : BANK_DIR.listFiles()){
 			if(bfl.isDirectory()) continue;
 			try{
-				new Bank(JsonHandler.parse(bfl));
+				addBank(new Bank(JsonHandler.parse(bfl)));
 			}
 			catch(Throwable thr){
 				thr.printStackTrace();
