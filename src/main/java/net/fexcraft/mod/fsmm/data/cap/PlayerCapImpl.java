@@ -14,7 +14,7 @@ public class PlayerCapImpl implements PlayerCapability {
     private Account account;
     private AccountPermission atmacc;
     private Account selected;
-    private String atmbank;
+    private Bank atmbank;
 
     @Override
     public <T> T setEntityPlayer(EntityPlayer player) {
@@ -63,13 +63,13 @@ public class PlayerCapImpl implements PlayerCapability {
     }
 
     @Override
-    public String getSelectedBankInATM() {
+    public Bank getSelectedBankInATM() {
         return atmbank;
     }
 
     @Override
-    public void setSelectedBankInATM(String bankid) {
-        atmbank = bankid;
+    public void setSelectedBankInATM(Bank bank) {
+        atmbank = bank;
     }
 
     @Override
