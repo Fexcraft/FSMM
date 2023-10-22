@@ -206,7 +206,7 @@ public class DataManager extends TimerTask {
 			addBank(bank);
 			return bank;
 		}
-		else return BANKS.get(Config.DEFAULT_BANK);
+		else return getDefaultBank();
 	}
 
 	public static final Bank getDefaultBank(){
