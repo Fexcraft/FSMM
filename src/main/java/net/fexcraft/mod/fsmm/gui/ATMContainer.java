@@ -46,7 +46,7 @@ public class ATMContainer extends GenericContainer {
 		perm = cap.getSelectedAccountInATM() == null ? AccountPermission.FULL : cap.getSelectedAccountInATM();
 		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : perm.getAccount();
 		receiver = cap.getSelectedReiverInATM();
-		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBank().id : cap.getSelectedBankInATM());
+		bank = cap.getSelectedBankInATM() == null ? account.getBank() : cap.getSelectedBankInATM();
 		cap.setSelectedBankInATM(null);
 	}
 
@@ -127,7 +127,7 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 				case "bank_info":{
-					cap.setSelectedBankInATM(packet.getString("bank"));
+					cap.setSelectedBankInATM(DataManager.getBank(packet.getString("bank")));
 					cap.getEntityPlayer().openGui(FSMM.getInstance(), BANK_INFO, player.world, 0, 0, 0);
 					break;
 				}
