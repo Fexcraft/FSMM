@@ -39,16 +39,13 @@ public class DataManager extends TimerTask {
 		if(!ACCOUNT_DIR.exists()){ ACCOUNT_DIR.mkdirs(); }
 		BANK_DIR = new File(file, "/fsmm/banks/");
 		if(!BANK_DIR.exists()){ BANK_DIR.mkdirs(); }
-		Config.loadDefaultBanks();
-		for(File bfl : BANK_DIR.listFiles()){
-			if(bfl.isDirectory()) continue;
-			try{
-				addBank(new Bank(JsonHandler.parse(bfl)));
-			}
-			catch(Throwable thr){
-				thr.printStackTrace();
-			}
+		if(Config.DEFAULT_BANKS != null){
+			Config.DEFAULT_BANKS.forEach(str -> addBank(new Bank(str)));
 		}
+		if(BANKS.isEmpty() || !BANKS.containsKey(Config.DEFAULT_BANK)){
+			BANKS.put(Config.DEFAULT_BANK, new Bank(Config.DEFAULT_BANK));
+		}
+		for(Bank bank : BANKS.values()) loadBank(bank);
 	}
 
 	@Override
@@ -132,6 +129,11 @@ public class DataManager extends TimerTask {
 	public static final DataManager getInstance(){
 		return FSMM.CACHE;
 	}
+
+	@Nullable
+	public static final Account getAccount(String accid, boolean tempload){
+		return getAccount(accid, tempload, true);
+	}
 	
 	@Nullable
 	public static final Account getAccount(String accid, boolean tempload, boolean create){
@@ -150,6 +152,7 @@ public class DataManager extends TimerTask {
 			try{
 				Account account = new Account(JsonHandler.parse(file));
 				if(!account.getType().equals(arr[0]) || !account.getId().equals(arr[1])){
+					Print.log(arr[0] + ":" + arr[1] + " != " + account.getType() + ":" + account.getId());
 					throw new RuntimeException("Account data from file doesn't match request! This is a file error which should get controlled.\n" + file.getPath());
 				}
 				addAccount(arr[0], account);
@@ -194,19 +197,18 @@ public class DataManager extends TimerTask {
 	}
 
 	/**
-	 * @return loaded bank with the id, loads bank if savefile present, otherwise returns default bank
+	 * @return bank with the id, or default server bank
 	 */
 	public static final Bank getBank(String id){
 		if(BANKS.containsKey(id)){
 			return BANKS.get(id);
 		}
-		File file = new File(BANK_DIR, id + ".json");
-		if(file.exists()){
-			Bank bank = new Bank(JsonHandler.parse(file));
-			addBank(bank);
-			return bank;
-		}
-		else return getDefaultBank();
+		return getDefaultBank();
+	}
+
+	public static void loadBank(Bank bank){
+		if(bank == null) return;
+		bank.load(JsonHandler.parse(new File(BANK_DIR, bank.id + ".json")));
 	}
 
 	public static final Bank getDefaultBank(){
