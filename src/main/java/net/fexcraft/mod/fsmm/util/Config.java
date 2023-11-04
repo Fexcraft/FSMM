@@ -12,7 +12,6 @@ import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.fsmm.data.MoneyItem;
 import net.minecraft.item.ItemStack;
@@ -50,7 +49,7 @@ public class Config {
 	public static boolean ENABLE_BANK_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
 	public static boolean PARTIAL_ACCOUNT_NAME_SEARCH = true;
-	private static JsonArray DEF_BANKS;
+	public static ArrayList<String> DEFAULT_BANKS;
 	//
 	public static SyncableConfig LOCAL = new SyncableConfig(), REMOTE;
 	/** Acts as a copy when disconnecting or connecting to a server. */
@@ -183,21 +182,9 @@ public class Config {
 			MoneyItem.sort();
 		}
 		//
-		if(map.has("Banks")){
-			DEF_BANKS = map.get(("Banks")).asArray();
+		if(map.has("DefaultBanks")){
+			DEFAULT_BANKS = map.getArray("DefaultBanks").toStringList();
 		}
-	}
-	
-	public static void loadDefaultBanks(){
-		if(DEF_BANKS == null) return;
-		DEF_BANKS.value.forEach(val -> {
-			JsonMap map = val.asMap();
-			String uuid = map.getString("uuid", map.getString("id", null));
-			File file = new File(DataManager.BANK_DIR, uuid + ".json");
-			if(!file.exists() && !DataManager.getBanks().containsKey(uuid)){
-				DataManager.addBank(new Bank(map));
-			}
-		});
 	}
 	
 	private static JsonMap getDefaultContent(){
@@ -232,7 +219,7 @@ public class Config {
 	
 	public static void refresh(){
 		LOCAL.starting_balance = STARTING_BALANCE = config.getInt("starting_balance", GENERAL, 100000, 0, Integer.MAX_VALUE, "Starting balance for a new player. (1000 == 1F$)");
-		LOCAL.default_bank = DEFAULT_BANK = config.getString("default_bank", GENERAL, "00000000", "Default Bank the player will have an account in.!");
+		LOCAL.default_bank = DEFAULT_BANK = config.getString("default_bank", GENERAL, "default", "Default Bank of the Server.");
 		LOCAL.notify_balance_on_join = NOTIFY_BALANCE_ON_JOIN = config.getBoolean("notify_balance_on_join", DISPLAY, true, "Should the player be notified about his current balance when joining the game?");
 		LOCAL.currency_sign = CURRENCY_SIGN = config.getString("currency_sign", DISPLAY, "F$", "So now you can even set a custom Currency Sign.");
 		LOCAL.invert_comma = INVERT_COMMA = config.getBoolean("invert_comma", DISPLAY, false, "Invert ',' and '.' display.");
