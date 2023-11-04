@@ -34,6 +34,9 @@ public class WorldEvents {
 	@SubscribeEvent
 	public static void onGatherAccounts(ATMEvent.GatherAccounts event){
 		event.getAccountsList().add(new AccountPermission(event.getAccount(), true, true, true, true));
+		if(Static.getServer().isSinglePlayer()){
+			event.getAccountsList().add(new AccountPermission(event.getBank().getAccount(), true, true, true, true));
+		}
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
