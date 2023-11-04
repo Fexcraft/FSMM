@@ -33,7 +33,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	public Account(JsonMap map){
 		id = map.get("id").string_value();
 		type = map.get("type").string_value();
-		bank = DataManager.getBank(map.get("bank").string_value());
+		bank = DataManager.getBank(map.getString("bank", Config.DEFAULT_BANK));
 		balance = map.get("balance").long_value();
 		additionaldata = map.has("data") ? map.getMap("data") : null;
 		name = map.has("name") ? map.get("name").string_value() : null;
