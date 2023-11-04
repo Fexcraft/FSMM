@@ -21,7 +21,7 @@ public class Bank implements Manageable {
 	
 	public final String id;
 	protected String name;
-	protected long balance;
+	protected Account account;
 	private JsonMap additionaldata;
 	protected TreeMap<String, String> fees;
 	protected ArrayList<String> status = new ArrayList<>();
@@ -29,25 +29,18 @@ public class Bank implements Manageable {
 	/** From JSON Constructor */
 	public Bank(JsonMap map){
 		id = map.getString("uuid", map.getString("id", null));
-		name = map.getString("name", "Unnamed Bank");
-		balance = map.getLong("balance", 0);
-		additionaldata = map.has("data") ? map.getMap("data") : null;
-		if(map.has("fees")){
-			fees = new TreeMap<>();
-			for(Entry<String, JsonValue<?>> entry : map.getMap("fees").entries()){
-				fees.put(entry.getKey(), entry.getValue().string_value());
-			}
-		}
-		if(map.has("status")){
-			map.getArray("status").value.forEach(val -> status.add(val.string_value()));
-		}
+		load(map);
+	}
+
+	/** For inserting a bank which gets loaded later or afterwards. */
+	public Bank(String bankid){
+		id = bankid;
 	}
 	
 	/** Manual Constructor */
-	public Bank(String id, String name, long balance, JsonMap data, TreeMap<String, String> map){
+	public Bank(String id, String name, JsonMap data, TreeMap<String, String> map){
 		this.id = id;
 		this.name = name;
-		this.balance = balance;
 		fees = map;
 		additionaldata = data;
 	}
@@ -62,14 +55,14 @@ public class Bank implements Manageable {
 	
 	/** Current balance of this Bank (1000 = 1 currency unit, usually) */
 	public long getBalance(){
-		return balance;
+		return account.getBalance();
 	}
 	
 	/** Method to set the balance (1000 = 1 currency unit, usually)
 	 * @param rpl new balance for this account
 	 * @return new balance */
 	public long setBalance(long rpl){
-		return balance = rpl;
+		return account.setBalance(rpl);
 	}
 
 	public JsonMap getData(){
@@ -207,16 +200,37 @@ public class Bank implements Manageable {
 		}
 		return result;
 	}
-	
+
+	public Account getAccount(){
+		return account;
+	}
+
 	public static enum Action { TRANSFER, WITHDRAW, DEPOSIT }
-	
+
+	public void load(JsonMap map){
+		name = map.getString("name", "Unnamed Bank");
+		additionaldata = map.has("data") ? map.getMap("data") : null;
+		if(map.has("fees")){
+			fees = new TreeMap<>();
+			for(Entry<String, JsonValue<?>> entry : map.getMap("fees").entries()){
+				fees.put(entry.getKey(), entry.getValue().string_value());
+			}
+		}
+		if(map.has("status")){
+			map.getArray("status").value.forEach(val -> status.add(val.string_value()));
+		}
+		account = DataManager.getAccount("bank:" + id, false, true);
+		if(map.has("balance")) account.setBalance(map.getLong("balance", 0));
+		account.setName(name);
+		account.setBank(this);
+	}
+
 	@Override
 	/** Mainly used for saving. */
 	public JsonMap toJson(){
 		JsonMap map = new JsonMap();
 		map.add("id", id);
 		map.add("name", name);
-		map.add("balance", balance);
 		if(fees != null){
 			JsonMap of = new JsonMap();
 			for(Entry<String, String> entry : fees.entrySet()){
@@ -237,23 +251,7 @@ public class Bank implements Manageable {
 
 	@Override
 	public void modifyBalance(Manageable.Action action, long amount, ICommandSender log){
-		switch(action){
-			case SET :{ balance = amount; return; }
-			case SUB :{
-				if(balance - amount >= 0){ balance -= amount; }
-				else{
-					Print.chat(log, "Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
-				}
-				return;
-			}
-			case ADD:{
-				if(balance + amount >= Long.MAX_VALUE){
-					Print.chat(log, "Max Value reached.");
-				}
-				else{ balance += amount; }
-			}
-			default: return;
-		}
+		account.modifyBalance(action, amount, log);
 	}
 	
 	public ArrayList<String> getStatus(){
