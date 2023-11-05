@@ -1,8 +1,10 @@
 package net.fexcraft.mod.fsmm.util;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -22,11 +24,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.server.permission.PermissionAPI;
 
+/**
+ * @author Ferdinand Calo' (FEX___96)
+ */
 public class Command extends CommandBase{
 
 	public static final String PREFIX = Formatter.format("&0[&bFSMM&0]&7 ");
 	private final static ArrayList<String> aliases = new ArrayList<String>();
 	static{ aliases.add("money"); aliases.add("balance"); aliases.add("currency"); }
+	protected static LinkedHashMap<String, FSMMSubCommand> SUB_CMDS = new LinkedHashMap<>();
   
     public Command(){ return; }
     
@@ -79,10 +85,12 @@ public class Command extends CommandBase{
 	        	Print.chat(sender, "&7/fsmm sub <type:id/name> <amount>");
 	        	Print.chat(sender, "&7/fsmm info <type:id/name>");
 	        	Print.chat(sender, "&7/fsmm status");
+				for(FSMMSubCommand cmd : SUB_CMDS.values()) cmd.printHelp(sender);
 	    		return;
 	    	}
     		case "version":{
 	        	Print.chat(sender,"&bFSMM Version: &e" + FSMM.VERSION + "&0.");
+				for(FSMMSubCommand cmd : SUB_CMDS.values()) cmd.printVersion(sender);
     			return;
     		}
     		case "set":
@@ -148,13 +156,18 @@ public class Command extends CommandBase{
     			}
     			Print.chat(sender, "&bBanks active: &7" + DataManager.getBanks().size());
     			Print.chat(sender, "&aLast scheduled unload: &r&7" + Time.getAsString(DataManager.LAST_TIMERTASK));
+				for(FSMMSubCommand cmd : SUB_CMDS.values()) cmd.printStatus(sender);
     			return;
     		}
-    		default:{
-    			Print.chat(sender, "&cInvalid Argument.");
-    			return;
-    		}
+			default: break;
     	}
+		for(Entry<String, FSMMSubCommand> entry : SUB_CMDS.entrySet()){
+			if(entry.getKey().equals(args[0])){
+				entry.getValue().process(server, sender, args);
+				return;
+			}
+		}
+		Print.chat(sender, "&cInvalid Argument. Try &7/fsmm help");
     }
 
 	private void process(ICommandSender sender, String[] args, BiConsumer<Account, Boolean> cons){
