@@ -14,10 +14,10 @@ public interface FSMMSubCommand {
 
 	public void process(MinecraftServer server, ICommandSender sender, String[] args);
 
-	public void printHelp(ICommandSender sender);
+	public default void printHelp(ICommandSender sender){}
 
-	public void printVersion(ICommandSender sender);
+	public default void printVersion(ICommandSender sender){}
 
-	public void printStatus(ICommandSender sender);
+	public default void printStatus(ICommandSender sender){}
 
 }
