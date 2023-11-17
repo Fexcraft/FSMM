@@ -7,19 +7,18 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.lib.mc.gui.GenericContainer;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.AccountPermission;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
-import net.fexcraft.mod.fsmm.api.Manageable.Action;
-import net.fexcraft.mod.fsmm.api.PlayerCapability;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.AccountPermission;
+import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.data.Manageable.Action;
+import net.fexcraft.mod.fsmm.data.PlayerCapability;
 import net.fexcraft.mod.fsmm.events.ATMEvent.GatherAccounts;
 import net.fexcraft.mod.fsmm.events.ATMEvent.SearchAccounts;
-import net.fexcraft.mod.fsmm.impl.GenericBank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
@@ -47,7 +46,7 @@ public class ATMContainer extends GenericContainer {
 		perm = cap.getSelectedAccountInATM() == null ? AccountPermission.FULL : cap.getSelectedAccountInATM();
 		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : perm.getAccount();
 		receiver = cap.getSelectedReiverInATM();
-		bank = DataManager.getBank(cap.getSelectedBankInATM() == null ? account.getBankId() : cap.getSelectedBankInATM(), true, true);
+		bank = cap.getSelectedBankInATM() == null ? account.getBank() : cap.getSelectedBankInATM();
 		cap.setSelectedBankInATM(null);
 	}
 
@@ -58,20 +57,20 @@ public class ATMContainer extends GenericContainer {
 			switch(packet.getString("cargo")){
 				case "sync":{
 					if(packet.hasKey("account")){
-						account = new Account(JsonUtil.getObjectFromString(packet.getString("account")));
+						account = new Account(JsonHandler.parse(packet.getString("account"), true).asMap());
 					}
 					if(packet.hasKey("receiver")){
-						receiver = new Account(JsonUtil.getObjectFromString(packet.getString("receiver")));
+						receiver = new Account(JsonHandler.parse(packet.getString("receiver"), true).asMap());
 					}
 					if(packet.hasKey("bank")){
-						bank = new GenericBank(JsonUtil.getObjectFromString(packet.getString("bank")));
+						bank = new Bank(JsonHandler.parse(packet.getString("bank"), true).asMap());
 					}
 					if(packet.hasKey("bank_list")){
 						TreeMap<String, String> banks = new TreeMap<>();
 						NBTTagList list = (NBTTagList)packet.getTag("bank_list");
 						for(int i = 0; i < list.tagCount(); i++){
 							String[] str = list.getStringTagAt(i).split(":");
-							if(bank != null && str[0].equals(bank.getId())) continue;
+							if(bank != null && str[0].equals(bank.id)) continue;
 							banks.put(str[0], str[1]);
 						}
 						this.banks = new ArrayList<>();
@@ -128,7 +127,7 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 				case "bank_info":{
-					cap.setSelectedBankInATM(packet.getString("bank"));
+					cap.setSelectedBankInATM(DataManager.getBank(packet.getString("bank")));
 					cap.getEntityPlayer().openGui(FSMM.getInstance(), BANK_INFO, player.world, 0, 0, 0);
 					break;
 				}
@@ -138,7 +137,7 @@ public class ATMContainer extends GenericContainer {
 						player.closeScreen();
 						break;
 					}
-					Bank bank = DataManager.getBank(packet.getString("bank"), true, true);
+					Bank bank = DataManager.getBank(packet.getString("bank"));
 					String feeid = account.getType() + ":setup_account";
 					long fee = bank.hasFee(feeid) ? Long.parseLong(bank.getFees().get(feeid).replace("%", "")) : 0;
 					if(account.getBalance() < fee){
@@ -147,7 +146,7 @@ public class ATMContainer extends GenericContainer {
 					}
 					else{
 						if(fee > 0) account.modifyBalance(Action.SUB, fee, player);
-						account.setBankId(bank.getId());
+						account.setBank(bank);
 						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, 0, 0, 0);
 					}
 					break;
@@ -219,8 +218,7 @@ public class ATMContainer extends GenericContainer {
 						Print.chat(player, "&cPlease select a receiver!");
 						return;
 					}
-					Bank bank = DataManager.getBank(account.getBankId(), true, false);
-					if(bank.processAction(Bank.Action.TRANSFER, player, account, amount, receiver, false)){
+					if(account.getBank().processAction(Bank.Action.TRANSFER, player, account, amount, receiver, false)){
 						Print.chat(player, "&bTransfer &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 						player.closeScreen();
 					}
@@ -236,8 +234,7 @@ public class ATMContainer extends GenericContainer {
 	private boolean processSelfAction(long amount, boolean deposit){
 		if(amount <= 0) return false;
 		String dep = deposit ? "&eDeposit" : "&aWithdraw";
-		Bank bank = DataManager.getBank(account.getBankId(), true, false);
-		if(bank.processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
+		if(account.getBank().processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
 			Print.chat(player, dep + " &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 			return true;
 		}
@@ -249,8 +246,8 @@ public class ATMContainer extends GenericContainer {
 
 	private NBTBase getBankList(){
 		NBTTagList list = new NBTTagList();
-		DataManager.getBankNameCache().forEach((key, val) -> {
-			list.appendTag(new NBTTagString(key + ":" + val));
+		DataManager.getBanks().forEach((key, val) -> {
+			list.appendTag(new NBTTagString(key + ":" + val.getName()));
 		});
 		return list;
 	}

@@ -1,38 +1,36 @@
-package net.fexcraft.mod.fsmm.impl;
+package net.fexcraft.mod.fsmm.data;
 
-import com.google.gson.JsonObject;
-
-import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Money;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public class GenericMoney implements Money {
-	
+public class Money implements IForgeRegistryEntry<Money> {
+
 	private ResourceLocation regname;
 	private ItemStack stack;
 	private long worth;
-	
-	public GenericMoney(JsonObject obj, boolean internal){
-		regname = new ResourceLocation((internal ? FSMM.MODID + ":" : "") + JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate()));
-		worth = JsonUtil.getIfExists(obj, "worth", -1).longValue();
-		int meta = JsonUtil.getIfExists(obj, "meta", -1).intValue();
-		if(meta >= 0 && !internal){ regname = new ResourceLocation(regname.toString() + "_" + meta); }
+
+	public Money(JsonMap map, boolean internal){
+		regname = new ResourceLocation((internal ? FSMM.MODID + ":" : "") + map.getString("id", "invalid_" + map.toString() + "_" + Time.getDate()));
+		worth = map.getLong("worth", -1);
+		int meta = map.getInteger("meta", -1);
+		if(meta >= 0 && !internal) regname = new ResourceLocation(regname.toString() + "_" + meta);
 		if(!internal){
-			stackload(null, obj, internal);
+			stackload(null, map, internal);
 		}
 	}
-	
-	public void stackload(net.minecraft.item.Item item, JsonObject obj, boolean internal){
+
+	public void stackload(net.minecraft.item.Item item, JsonMap map, boolean internal){
 		if(item == null || !internal){
-			String id = JsonUtil.getIfExists(obj, "id", "invalid_" + obj.toString() + "_" + Time.getDate());
+			String id = map.getString("id", "invalid_" + map.toString() + "_" + Time.getDate());
 			item = net.minecraft.item.Item.getByNameOrId(internal ? FSMM.MODID + ":" + id : id);
 			if(item == null){
 				Print.log("[FSMM] ERROR - External Item with ID '" + regname.toString() + "' couldn't be found! This is bad!");
@@ -40,9 +38,9 @@ public class GenericMoney implements Money {
 			}
 		}
 		NBTTagCompound compound = null;
-		if(obj.has("nbt")){
+		if(map.has("nbt")){
 			try{
-				compound = JsonToNBT.getTagFromJson(obj.get("nbt").getAsString());
+				compound = JsonToNBT.getTagFromJson(map.get("nbt").string_value());
 			}
 			catch(NBTException e){
 				Print.log("[FSMM] ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
@@ -50,7 +48,7 @@ public class GenericMoney implements Money {
 			}
 		}
 		//
-		stack = new ItemStack(item, 1, JsonUtil.getIfExists(obj, "meta", -1).intValue());
+		stack = new ItemStack(item, 1, map.getInteger("meta", -1));
 		if(compound != null){ stack.setTagCompound(compound); }
 	}
 
@@ -71,18 +69,27 @@ public class GenericMoney implements Money {
 	}
 
 	@Override
-	public long getWorth(){
-		return worth;
-	}
-	
-	@Override
 	public String toString(){
 		return super.toString() + "#" + this.getWorth();
 	}
 
-	@Override
+	public long getWorth(){
+		return worth;
+	}
+
 	public ItemStack getItemStack(){
 		return stack;
 	}
 	
+	//
+	
+	public static interface Item {
+		
+		public Money getType();
+		
+		/** Singular worth, do not multiply by count! **/
+		public long getWorth(ItemStack stack);
+		
+	}
+
 }

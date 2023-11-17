@@ -5,8 +5,8 @@ import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.gui.GenericGui;
-import net.fexcraft.lib.mc.utils.Formatter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -72,7 +72,7 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 		tooltip.clear();
 		if(info.hovered){
 			tooltip.add(Formatter.format("&7View info of &9your &7Bank."));
-			tooltip.add(Formatter.format("&9Bank ID: &7" + container.bank.getId()));
+			tooltip.add(Formatter.format("&9Bank ID: &7" + container.bank.id));
 		}
 		if(container.banks != null){
 			for(int i = 0; i < 8; i++){

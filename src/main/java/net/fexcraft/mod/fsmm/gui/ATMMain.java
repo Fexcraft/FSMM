@@ -4,8 +4,8 @@ import static net.fexcraft.mod.fsmm.gui.Processor.LISTENERID;
 
 import java.util.ArrayList;
 
+import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.gui.GenericGui;
-import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;

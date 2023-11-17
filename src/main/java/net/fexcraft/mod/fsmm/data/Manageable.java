@@ -1,5 +1,6 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
+import net.fexcraft.app.json.JsonMap;
 import net.minecraft.command.ICommandSender;
 
 /**
@@ -15,5 +16,7 @@ public interface Manageable {
 	public static enum Action {
 		ADD, SUB, SET;
 	}
+
+	public JsonMap toJson();
 	
 }

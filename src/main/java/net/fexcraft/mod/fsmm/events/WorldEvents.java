@@ -7,8 +7,8 @@ import com.mojang.authlib.GameProfile;
 
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.AccountPermission;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraftforge.event.world.WorldEvent;
@@ -34,6 +34,9 @@ public class WorldEvents {
 	@SubscribeEvent
 	public static void onGatherAccounts(ATMEvent.GatherAccounts event){
 		event.getAccountsList().add(new AccountPermission(event.getAccount(), true, true, true, true));
+		if(Static.getServer().isSinglePlayer()){
+			event.getAccountsList().add(new AccountPermission(event.getBank().getAccount(), true, true, true, true));
+		}
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)

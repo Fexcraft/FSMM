@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -38,10 +38,10 @@ public interface PlayerCapability {
 	public void setSelectedReceiverInATM(Account account);
 
 	/** Gets the currently looked at Bank in the ATM. */
-	public String getSelectedBankInATM();
+	public Bank getSelectedBankInATM();
 
 	/** Sets the currently looked at Bank in the ATM. */
-	public void setSelectedBankInATM(String id);
+	public void setSelectedBankInATM(Bank bank);
 
 	public EntityPlayer getEntityPlayer();
 

@@ -1,11 +1,10 @@
 package net.fexcraft.mod.fsmm.events;
 
+import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
-import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
@@ -25,7 +24,7 @@ public class PlayerEvents {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     	if(event.player.world.isRemote){ return; }
 		Print.debug("Loading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
-    	Account account = event.player.world.getCapability(FSMMCapabilities.WORLD, null).getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
+    	Account account = DataManager.getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
     	if(Config.NOTIFY_BALANCE_ON_JOIN){
     		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + Config.getWorthAsString(account.getBalance()));
     		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));

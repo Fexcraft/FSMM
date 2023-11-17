@@ -3,10 +3,10 @@ package net.fexcraft.mod.fsmm.events;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.fexcraft.mod.fsmm.api.Account;
-import net.fexcraft.mod.fsmm.api.AccountPermission;
-import net.fexcraft.mod.fsmm.api.Bank;
-import net.fexcraft.mod.fsmm.api.FSMMCapabilities;
+import net.fexcraft.mod.fsmm.data.Account;
+import net.fexcraft.mod.fsmm.data.AccountPermission;
+import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -15,7 +15,6 @@ public class ATMEvent extends Event {
 	
 	private final EntityPlayer player;
 	private final Account account;
-	private Bank bank;
 	
 	private ATMEvent(EntityPlayer player){
 		this.player = player;
@@ -31,8 +30,7 @@ public class ATMEvent extends Event {
 	}
 	
 	public Bank getBank(){
-		if(bank == null) bank = DataManager.getBank(account.getBankId(), true, true);
-		return bank;
+		return account.getBank();
 	}
 	
 	/** Event so other mods can add into this list accounts manageable by this player. */

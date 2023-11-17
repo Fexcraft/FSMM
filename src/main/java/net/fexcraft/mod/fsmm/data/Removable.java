@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
 import com.google.gson.JsonObject;
 
@@ -35,7 +35,5 @@ public abstract class Removable {
 	public boolean isTemporary(){
 		return temporary;
 	}
-	
-	public abstract JsonObject toJson();
 	
 }

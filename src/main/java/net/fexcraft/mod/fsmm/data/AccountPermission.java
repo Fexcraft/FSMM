@@ -1,6 +1,6 @@
-package net.fexcraft.mod.fsmm.api;
+package net.fexcraft.mod.fsmm.data;
 
-import net.fexcraft.lib.common.json.JsonUtil;
+import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -35,7 +35,7 @@ public class AccountPermission {
 	}
 	
 	public AccountPermission(NBTTagCompound compound){
-		account = new Account(JsonUtil.getObjectFromString(compound.getString("a")));
+		account = new Account(JsonHandler.parse(compound.getString("a"), true).asMap());
 		account_id = account.getId();
 		withdraw = compound.getBoolean("w");
 		deposit = compound.getBoolean("d");

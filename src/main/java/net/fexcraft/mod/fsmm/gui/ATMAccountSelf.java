@@ -11,10 +11,10 @@ import java.util.Locale;
 import java.util.TreeMap;
 
 import net.fexcraft.lib.common.Static;
+import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.gui.GenericGui;
-import net.fexcraft.lib.mc.utils.Formatter;
 import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.mod.fsmm.impl.GenericBank;
+import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.entity.player.EntityPlayer;
@@ -150,7 +150,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 		}
 		TreeMap<String, String> fees = container.bank == null ? null : container.bank.getFees();
 		String type = container.account == null ? "player" : container.account.getType();
-		bf = GenericBank.parseFee(fees == null ? null : fees.get(mode ? "self:" + type : type + ":self"), am);
+		bf = Bank.parseFee(fees == null ? null : fees.get(mode ? "self:" + type : type + ":self"), am);
 	}
 	
 	private static final DecimalFormat df = new DecimalFormat("#.000", new DecimalFormatSymbols(Locale.US));
