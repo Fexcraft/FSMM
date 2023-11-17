@@ -51,6 +51,11 @@ public class Command extends CommandBase{
     	return true;
     }
 
+	@Override
+	public int getRequiredPermissionLevel(){
+		return 0;
+	}
+
     @Override 
     public List<String> getAliases(){ 
         return aliases;
