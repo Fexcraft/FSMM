@@ -43,9 +43,9 @@ public class ATMContainer extends GenericContainer {
 	public ATMContainer(EntityPlayer player){
 		super(player);
 		cap = player.getCapability(FSMMCapabilities.PLAYER, null);
-		perm = cap.getSelectedAccountInATM() == null ? AccountPermission.FULL : cap.getSelectedAccountInATM();
-		account = cap.getSelectedAccountInATM() == null ? cap.getAccount() : perm.getAccount();
-		receiver = cap.getSelectedReiverInATM();
+		perm = cap.getSelectedAccount() == null ? AccountPermission.FULL : cap.getSelectedAccount();
+		account = cap.getSelectedAccount() == null ? cap.getAccount() : perm.getAccount();
+		receiver = cap.getSelectedReiver();
 		bank = cap.getSelectedBankInATM() == null ? account.getBank() : cap.getSelectedBankInATM();
 		cap.setSelectedBankInATM(null);
 	}
@@ -163,11 +163,11 @@ public class ATMContainer extends GenericContainer {
 					}
 					if(acc != null){
 						if(mode == 0){
-							cap.setSelectedAccountInATM(acc);
+							cap.setSelectedAccount(acc);
 							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, 0, 0, 0);
 						}
 						if(mode == 1){
-							cap.setSelectedReceiverInATM(acc.getAccount());
+							cap.setSelectedReceiver(acc.getAccount());
 							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, 0, 0, 0);
 						}
 					}
