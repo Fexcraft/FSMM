@@ -53,12 +53,12 @@ public class PlayerCapImpl implements PlayerCapability {
     }
 
     @Override
-    public AccountPermission getSelectedAccountInATM() {
+    public AccountPermission getSelectedAccount() {
         return atmacc;
     }
 
     @Override
-    public void setSelectedAccountInATM(AccountPermission perm) {
+    public void setSelectedAccount(AccountPermission perm) {
         atmacc = perm;
     }
 
@@ -78,12 +78,12 @@ public class PlayerCapImpl implements PlayerCapability {
     }
 
     @Override
-    public Account getSelectedReiverInATM() {
+    public Account getSelectedReiver() {
         return selected;
     }
 
     @Override
-    public void setSelectedReceiverInATM(Account account) {
+    public void setSelectedReceiver(Account account) {
         selected = account;
     }
 
