@@ -68,4 +68,8 @@ public class AccountPermission {
 		return account == null ? account_id.split(":")[1] : account.getId();
 	}
 
+	public String getTypeAndId(){
+		return account == null ? account_id : account.getTypeAndId();
+	}
+
 }
