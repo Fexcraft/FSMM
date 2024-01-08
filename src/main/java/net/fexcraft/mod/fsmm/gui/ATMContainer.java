@@ -261,4 +261,9 @@ public class ATMContainer extends GenericContainer {
 		this.send(Side.SERVER, compound);
 	}
 
+    @Override
+    public boolean canInteractWith(EntityPlayer player){
+        return !(player == null);
+    }
+
 }
