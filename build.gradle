@@ -21,7 +21,22 @@ configurations.all {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 
-version = '2.8.1'
+// reads the build.properties file
+// and provides the contents via the config variable
+// values from build.properties can be accessed via
+// config.PROPERTY_NAME
+// or
+// config.PROPERTY_NAME.SUB_NAME and so on
+file "build.properties" withReader {
+    def prop = new Properties()
+    prop.load(it)
+    ext.config = new ConfigSlurper().parse prop
+}
+
+// Result: 1.12.2-2.8.1
+//version = "${config.minecraftVersion}-${config.modVersion}"
+// Result: 2.8.1
+version = "${config.modVersion}"
 group = 'net.fexcraft.mod.fsmm'
 archivesBaseName = 'FSMM'
 
@@ -36,7 +51,7 @@ minecraft {
     //mappings channel: 'snapshot', version: '20171003-1.12'
     mappings channel: 'stable', version: '39-1.12'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    
+
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
@@ -89,27 +104,72 @@ dependencies {
 
 
     def localrepos = new File(project.projectDir, '/localrepos');
-	if(localrepos.exists()){
-		print "LocalRepos marker exists, using local copies.\n"
-		implementation project(':FCL')
-	}
-	else{
-		implementation 'com.github.Fexcraft:FCL:1.12.2-SNAPSHOT'
-	}
+    if (localrepos.exists()) {
+        print "LocalRepos marker exists, using local copies.\n"
+        implementation project(':FCL')
+    } else {
+        implementation 'com.github.Fexcraft:FCL:1.12.2-SNAPSHOT'
+    }
 
+}
+
+sourceSets {
+    main {
+        output.resourcesDir = 'build/classes/java/main'
+    }
+}
+
+tasks.register('updateVersion', Copy) {
+    inputs.files('build.gradle', 'build.properties')
+    from('src') {
+        exclude 'mcmod.info'
+    }
+    filter { line ->
+        line.replaceAll('@VERSION@', config.modVersion)
+    }
+    into 'build/sources/java'
+}.configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+/* Do not pull this in on IDEA, as it changes the compiler's source path, making navigating to errors harder */
+//if (!System.getProperty('idea.active')) {
+compileJava {
+    source = updateVersion.outputs
+}
+//}
+
+compileJava.dependsOn(updateVersion)
+
+// https://github.com/Vexatos/Computronics/blob/b0ade53cab10529dbe91ebabfa882d1b4b21fa90/build.gradle#L147
+processResources {
+    inputs.files('build.gradle', 'build.properties')
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        // replace version and mcversion
+        expand 'version': project.version, 'mcversion': config.minecraftVersion
+    }
+
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}.configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-            "Specification-Title": "FSMM",
-            "Specification-Vendor": "fexcraft.net",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"fexcraft.net",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title"     : "FSMM",
+                "Specification-Vendor"    : "fexcraft.net",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "fexcraft.net",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
