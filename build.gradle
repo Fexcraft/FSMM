@@ -21,7 +21,7 @@ configurations.all {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 
-version = '2.8.1'
+version = project.properties['fsmm.version']
 group = 'net.fexcraft.mod.fsmm'
 archivesBaseName = 'FSMM'
 
@@ -61,6 +61,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
         }
     }
+
 }
 
 dependencies {
@@ -96,7 +97,6 @@ dependencies {
 	else{
 		implementation 'com.github.Fexcraft:FCL:1.12.2-SNAPSHOT'
 	}
-
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -113,6 +113,23 @@ jar {
         ])
     }
 }
+
+tasks.register('applyVersionOnSource', Copy){
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from('src/main/java')
+    filter { line -> line.replaceAll('#VERSION#', version) }
+    into 'build/sources/main'
+}
+compileJava.dependsOn('applyVersionOnSource');
+compileJava { source = applyVersionOnSource.outputs; }
+
+tasks.register('applyVersionOnResources', Copy){
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from('src/main/resources'){ include 'mcmod.info' }
+    filter { line -> line.replaceAll('#VERSION#', version) }
+    into 'build/resources/main'
+}
+processResources.finalizedBy('applyVersionOnResources');
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
