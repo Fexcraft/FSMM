@@ -34,8 +34,8 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 	private String oldtext = "";
 	private long bf, am;
 
-	public ATMAccountTransfer(EntityPlayer player){
-		super(texture, new ATMContainer(player), player);
+	public ATMAccountTransfer(EntityPlayer player, int[] pos){
+		super(texture, new ATMContainer(player, pos), player);
 		this.deftexrect = false;
 		//this.defbackground = false;
 		this.xSize = 256;
@@ -134,7 +134,7 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 				return true;
 			}
 			case "select":{
-				openGui(GuiHandler.ACCOUNT_SELECT, new int[]{ 1, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.ACCOUNT_SELECT_RECEIVER, container.pos, LISTENERID);
 				return true;
 			}
 			case "cancel":{
@@ -193,7 +193,7 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
         if(keyCode == 1){
-			openGui(GuiHandler.ATM_MAIN, new int[]{ 0, 0, 0 }, LISTENERID);
+			openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
             return;
         }
         super.keyTyped(typedChar, keyCode);
