@@ -30,3 +30,4 @@ item.fsmm:key.name=Private Key
 item.fsmm:key2.name=Shared Key
 tile.fsmm:atm.name=ATM
 tile.fsmm:safe.name=Safe
+item.fsmm:mobile.name=FSMM Mobile Banking
