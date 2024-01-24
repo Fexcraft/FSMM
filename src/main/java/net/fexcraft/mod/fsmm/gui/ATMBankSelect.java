@@ -22,8 +22,8 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 	private BasicText[] banks = new BasicText[8];
 	private int scroll;
 
-	public ATMBankSelect(EntityPlayer player){
-		super(texture, new ATMContainer(player), player);
+	public ATMBankSelect(EntityPlayer player, int[] pos){
+		super(texture, new ATMContainer(player, pos), player);
 		this.xSize = 256;
 		this.ySize = 124;
 	}
@@ -123,7 +123,7 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 				return true;
 			}
 			case "info":{
-				openGui(GuiHandler.BANK_INFO, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.BANK_INFO, container.pos, LISTENERID);
 				return true;
 			}
 		}
@@ -139,7 +139,7 @@ public class ATMBankSelect extends GenericGui<ATMContainer> {
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
         if(keyCode == 1){
-			openGui(GuiHandler.ATM_MAIN, new int[]{ 0, 0, 0 }, LISTENERID);
+			openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
             return;
         }
         else super.keyTyped(typedChar, keyCode);
