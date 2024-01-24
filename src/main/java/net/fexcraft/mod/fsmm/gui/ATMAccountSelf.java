@@ -34,8 +34,8 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	private String oldtext = "", suf;
 	private long bf, am;
 
-	public ATMAccountSelf(EntityPlayer player, boolean bool){
-		super(texture, new ATMContainer(player), player);
+	public ATMAccountSelf(EntityPlayer player, boolean bool, int[] pos){
+		super(texture, new ATMContainer(player, pos), player);
 		this.deftexrect = false;
 		//this.defbackground = false;
 		this.mode = bool;
@@ -178,7 +178,7 @@ public class ATMAccountSelf extends GenericGui<ATMContainer> {
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
         if(keyCode == 1){
-			openGui(GuiHandler.ATM_MAIN, new int[]{ 0, 0, 0 }, LISTENERID);
+			openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
             return;
         }
         super.keyTyped(typedChar, keyCode);
