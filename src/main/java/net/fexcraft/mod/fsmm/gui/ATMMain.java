@@ -17,8 +17,8 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	private BasicButton bi, vt, ca, wd, dp, tr;
 	private BasicText b0, b1, b2, b3, ac, ba;
 
-	public ATMMain(EntityPlayer player){
-		super(texture, new ATMContainer(player), player);
+	public ATMMain(EntityPlayer player, int[] pos){
+		super(texture, new ATMContainer(player, pos), player);
 		this.xSize = 256;
 		this.ySize = 88;
 	}
@@ -75,27 +75,27 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
 		switch(button.name){
 			case "bi":{
-				openGui(GuiHandler.BANK_SELECT, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.BANK_SELECT, container.pos, LISTENERID);
 				return true;
 			}
 			case "vt":{
-				openGui(GuiHandler.VIEW_TRANSFERS, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.VIEW_TRANSFERS, container.pos, LISTENERID);
 				return true;
 			}
 			case "ca":{
-				openGui(GuiHandler.ACCOUNT_SELECT, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.ACCOUNT_SELECT_ACTIVE, container.pos, LISTENERID);
 				return true;
 			}
 			case "wd":{
-				openGui(GuiHandler.ACCOUNT_WITHDRAW, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.ACCOUNT_WITHDRAW, container.pos, LISTENERID);
 				return true;
 			}
 			case "dp":{
-				openGui(GuiHandler.ACCOUNT_DEPOSIT, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.ACCOUNT_DEPOSIT, container.pos, LISTENERID);
 				return true;
 			}
 			case "tr":{
-				openGui(GuiHandler.ACCOUNT_TRANSFER, new int[]{ 0, 0, 0 }, LISTENERID);
+				openGui(GuiHandler.ACCOUNT_TRANSFER, container.pos, LISTENERID);
 				return true;
 			}
 		}
