@@ -11,6 +11,7 @@ import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.lib.mc.gui.GenericContainer;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.blocks.ATM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Bank;
@@ -27,6 +28,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -39,8 +41,9 @@ public class ATMContainer extends GenericContainer {
 	protected Account account, receiver;
 	protected long inventory;
 	protected Bank bank;
+	protected int[] pos;
 
-	public ATMContainer(EntityPlayer player){
+	public ATMContainer(EntityPlayer player, int[] pos){
 		super(player);
 		cap = player.getCapability(FSMMCapabilities.PLAYER, null);
 		perm = cap.getSelectedAccount() == null ? AccountPermission.FULL : cap.getSelectedAccount();
@@ -48,6 +51,7 @@ public class ATMContainer extends GenericContainer {
 		receiver = cap.getSelectedReiver();
 		bank = cap.getSelectedBankInATM() == null ? account.getBank() : cap.getSelectedBankInATM();
 		cap.setSelectedBankInATM(null);
+		this.pos = pos;
 	}
 
 	@Override
@@ -154,7 +158,7 @@ public class ATMContainer extends GenericContainer {
 				case "account_select":{
 					AccountPermission acc = null;
 					String type = packet.getString("type"), id = packet.getString("id");
-					int mode = packet.getInteger("mode");
+					boolean mode = packet.getBoolean("mode");
 					for(AccountPermission perm : accounts){
 						if(perm.getAccount().getType().equals(type) && perm.getAccount().getId().equals(id)){
 							acc = perm;
@@ -162,11 +166,11 @@ public class ATMContainer extends GenericContainer {
 						}
 					}
 					if(acc != null){
-						if(mode == 0){
+						if(mode){
 							cap.setSelectedAccount(acc);
 							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, 0, 0, 0);
 						}
-						if(mode == 1){
+						else{
 							cap.setSelectedReceiver(acc.getAccount());
 							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, 0, 0, 0);
 						}
