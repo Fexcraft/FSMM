@@ -9,12 +9,16 @@ import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.app.json.JsonHandler.PrintOption;
 import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.lib.mc.crafting.RecipeRegistry;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.fsmm.data.MoneyItem;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,6 +38,7 @@ public class Config {
 	private static String DOT = ".";
 	private static String GENERAL = "General";
 	private static String DISPLAY = "Display/Logging";
+	private static boolean initial = true;
 	//
 	public static int STARTING_BALANCE;
 	public static int UNLOAD_FREQUENCY;
@@ -232,6 +237,30 @@ public class Config {
 		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, true, "Should decimals be shown when zero? e.g. '234.00'");
 		LOCAL.min_search_chars = config.getInt("min_search_chars", GENERAL, 3, 1, 1000, "Minimum characters to enter in the 'Name/ID' search bar for search to work.");
 		TRANSFER_CACHE = config.getInt("transfer_cache", GENERAL, 50, 10, 1000, "Amount of executed transfer data to be cached per account.");
+		if(initial){
+			initial = false;
+			if(config.getBoolean("enable_atm_recipe", GENERAL, true, "If the default ATM recipe should be enabled.")){
+				RecipeRegistry.addShapelessRecipe("fsmm:atm", "atm_recipe",
+					new ItemStack(FCLRegistry.getItem("fsmm:atm")),
+					Ingredient.fromStacks(new ItemStack(Items.REDSTONE)),
+					Ingredient.fromStacks(new ItemStack(Items.GOLD_INGOT)),
+					Ingredient.fromStacks(new ItemStack(Blocks.IRON_BLOCK)),
+					Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+					Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+					Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON))
+				);
+			}
+			if(config.getBoolean("enable_mobile_recipe", GENERAL, true, "If the default Mobile Banking Item recipe should be enabled.")){
+				RecipeRegistry.addShapelessRecipe("fsmm:mobile", "mobile_recipe",
+					new ItemStack(FCLRegistry.getItem("fsmm:mobile")),
+					Ingredient.fromStacks(new ItemStack(Items.IRON_INGOT)),
+					Ingredient.fromStacks(new ItemStack(Items.REDSTONE)),
+					Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+					Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+					Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON))
+				);
+			}
+		}
 		//
 		COMMA = INVERT_COMMA ? "." : ","; DOT = INVERT_COMMA ? "," : ".";
 	}
