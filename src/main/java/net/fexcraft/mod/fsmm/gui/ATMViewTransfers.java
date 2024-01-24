@@ -28,8 +28,8 @@ public class ATMViewTransfers extends GenericGui<ATMContainer> {
 	private BasicButton[] trn_bt = new BasicButton[5];
 	private int scroll;
 
-	public ATMViewTransfers(EntityPlayer player){
-		super(texture, new ATMContainer(player), player);
+	public ATMViewTransfers(EntityPlayer player, int[] pos){
+		super(texture, new ATMContainer(player, pos), player);
 		this.xSize = 256;
 		this.ySize = 198;
 	}
@@ -130,7 +130,7 @@ public class ATMViewTransfers extends GenericGui<ATMContainer> {
 
 	@Override
     public void keyTyped(char cher, int key) throws IOException{
-        if(key == 1) openGui(GuiHandler.ATM_MAIN, new int[]{ 0, 0, 0 }, LISTENERID);
+        if(key == 1) openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
         else super.keyTyped(cher, key);
     }
 
