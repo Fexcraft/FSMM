@@ -132,7 +132,7 @@ public class ATMContainer extends GenericContainer {
 				}
 				case "bank_info":{
 					cap.setSelectedBankInATM(DataManager.getBank(packet.getString("bank")));
-					cap.getEntityPlayer().openGui(FSMM.getInstance(), BANK_INFO, player.world, 0, 0, 0);
+					cap.getEntityPlayer().openGui(FSMM.getInstance(), BANK_INFO, player.world, pos[0], pos[1], pos[2]);
 					break;
 				}
 				case "bank_select":{
@@ -151,7 +151,7 @@ public class ATMContainer extends GenericContainer {
 					else{
 						if(fee > 0) account.modifyBalance(Action.SUB, fee, player);
 						account.setBank(bank);
-						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, 0, 0, 0);
+						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
 					}
 					break;
 				}
@@ -168,11 +168,11 @@ public class ATMContainer extends GenericContainer {
 					if(acc != null){
 						if(mode){
 							cap.setSelectedAccount(acc);
-							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, 0, 0, 0);
+							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
 						}
 						else{
 							cap.setSelectedReceiver(acc.getAccount());
-							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, 0, 0, 0);
+							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, pos[0], pos[1], pos[2]);
 						}
 					}
 					else{
