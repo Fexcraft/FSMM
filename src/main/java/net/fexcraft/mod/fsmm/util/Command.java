@@ -16,11 +16,15 @@ import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.*;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.server.permission.PermissionAPI;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
@@ -172,6 +176,19 @@ public class Command extends CommandBase{
 				for(FSMMSubCommand cmd : SUB_CMDS.values()) cmd.printStatus(sender);
     			return;
     		}
+			case "quickpay":{
+				try{
+					EntityPlayer player = server.getPlayerList().getPlayerByUsername(args[1]);
+					long amount = Long.parseLong(args[2]);
+					//
+					sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, 1);
+				}
+				catch(Exception e){
+					e.printStackTrace();
+					sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, 0);
+				}
+				return;
+			}
 			default: break;
     	}
 		for(Entry<String, FSMMSubCommand> entry : SUB_CMDS.entrySet()){
