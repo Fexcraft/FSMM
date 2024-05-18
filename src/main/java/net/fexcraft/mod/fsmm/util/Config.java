@@ -51,7 +51,7 @@ public class Config {
 	public static boolean INVERT_COMMA;
 	public static boolean SHOW_CENTESIMALS;
 	public static boolean SHOW_DECIMALS;
-	public static boolean ENABLE_BANK_CARDS;
+	public static boolean ENABLE_CARDS;
 	public static boolean SHOW_ITEM_WORTH_IN_TOOLTIP = true;
 	public static boolean PARTIAL_ACCOUNT_NAME_SEARCH = true;
 	public static ArrayList<String> DEFAULT_BANKS;
@@ -70,7 +70,7 @@ public class Config {
 		public boolean invert_comma;
 		public boolean show_centesimals;
 		public boolean show_decimals;
-		public boolean enable_bank_cards;
+		public boolean enable_cards;
 		public boolean show_item_worth_in_tooltip = true;
 		public boolean partial_account_name_search = true;
 		
@@ -83,7 +83,7 @@ public class Config {
 			compound.setBoolean("notify_balance_on_join", notify_balance_on_join);
 			compound.setBoolean("invert_comma", invert_comma);
 			compound.setBoolean("show_centesimals", show_centesimals);
-			compound.setBoolean("enable_bank_cards", enable_bank_cards);
+			compound.setBoolean("enable_cards", enable_cards);
 			compound.setBoolean("show_item_worth_in_tooltip", show_item_worth_in_tooltip);
 			compound.setBoolean("partial_account_name_search", partial_account_name_search);
 			if(thousand_separator != null) compound.setString("thousand_separator", thousand_separator);
@@ -101,7 +101,7 @@ public class Config {
 			config.notify_balance_on_join = compound.getBoolean("notify_balance_on_join");
 			config.invert_comma = compound.getBoolean("invert_comma");
 			config.show_centesimals = compound.getBoolean("show_centesimals");
-			config.enable_bank_cards = compound.getBoolean("enable_bank_cards");
+			config.enable_cards = compound.getBoolean("enable_cards");
 			config.show_item_worth_in_tooltip = compound.getBoolean("show_item_worth_in_tooltip");
 			config.partial_account_name_search = compound.getBoolean("partial_account_name_search");
 			config.thousand_separator = compound.hasKey("thousand_separator") ? compound.getString("thousand_separator") : null;
@@ -118,7 +118,7 @@ public class Config {
 			NOTIFY_BALANCE_ON_JOIN = notify_balance_on_join;
 			INVERT_COMMA = invert_comma;
 			SHOW_CENTESIMALS = show_centesimals;
-			ENABLE_BANK_CARDS = enable_bank_cards;
+			ENABLE_CARDS = enable_cards;
 			SHOW_ITEM_WORTH_IN_TOOLTIP = show_item_worth_in_tooltip;
 			PARTIAL_ACCOUNT_NAME_SEARCH = partial_account_name_search;
 			THOUSAND_SEPARATOR = thousand_separator;
@@ -236,6 +236,7 @@ public class Config {
 		LOCAL.thousand_separator = THOUSAND_SEPARATOR = thosep.equals("null") ? null : thosep;
 		LOCAL.show_decimals = config.getBoolean("show_decimals", DISPLAY, true, "Should decimals be shown when zero? e.g. '234.00'");
 		LOCAL.min_search_chars = config.getInt("min_search_chars", GENERAL, 3, 1, 1000, "Minimum characters to enter in the 'Name/ID' search bar for search to work.");
+		LOCAL.enable_cards = config.getBoolean("enable_cards", GENERAL, true, "Should (Debit) Cards be enabled?");
 		TRANSFER_CACHE = config.getInt("transfer_cache", GENERAL, 50, 10, 1000, "Amount of executed transfer data to be cached per account.");
 		if(initial){
 			initial = false;
