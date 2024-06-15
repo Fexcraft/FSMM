@@ -25,6 +25,19 @@ version = project.properties['fsmm.version']
 group = 'net.fexcraft.mod.fsmm'
 archivesBaseName = 'FSMM'
 
+sourceSets {
+    main {
+        java {
+            srcDirs += 'src/main/java'
+            srcDirs += new File(file('.'), 'common/java')
+        }
+        resources {
+            srcDirs += 'src/main/resources'
+            srcDirs += new File(file('.'), 'common/resources')
+        }
+    }
+}
+
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
