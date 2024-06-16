@@ -85,7 +85,8 @@ public class ATMContainer extends GenericContainer {
 						accounts = new ArrayList<>();
 						NBTTagList list = (NBTTagList)packet.getTag("account_list");
 						for(int i = 0; i < list.tagCount(); i++){
-							accounts.add(new AccountPermission(TagCW.wrap(list.getCompoundTagAt(i))));
+							TagCW tag = TagCW.wrap(list.getCompoundTagAt(i));
+							accounts.add(new AccountPermission(tag));
 						}
 					}
 					if(packet.hasKey("inventory")){
