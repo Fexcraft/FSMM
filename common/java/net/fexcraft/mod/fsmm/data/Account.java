@@ -6,12 +6,12 @@ import java.util.List;
 import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.app.json.JsonValue;
-import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.mod.fsmm.events.AccountEvent;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.uni.IDL;
+import net.fexcraft.mod.uni.IDLManager;
 import net.fexcraft.mod.uni.world.MessageSender;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -21,7 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public class Account extends Removable implements Manageable {
 
-	private final String id, type;
+	private final IDL idtype;
 	private String name;
 	private Bank bank;
 	private long balance;
@@ -30,8 +30,7 @@ public class Account extends Removable implements Manageable {
 	
 	/** From JSON Constructor */
 	public Account(JsonMap map){
-		id = map.get("id").string_value();
-		type = map.get("type").string_value();
+		idtype = IDLManager.getIDLCached(map.get("type").string_value() + ":" + map.get("id").string_value());
 		bank = DataManager.getBank(map.getString("bank", Config.DEFAULT_BANK));
 		balance = map.get("balance").long_value();
 		additionaldata = map.has("data") ? map.getMap("data") : null;
@@ -46,8 +45,7 @@ public class Account extends Removable implements Manageable {
 	
 	/** Manual Constructor */
 	public Account(String id, String type, long bal, Bank bank_, JsonMap data){
-		this.id = id;
-		this.type = type;
+		idtype = IDLManager.getIDLCached(type + ":" + id);
 		balance = bal;
 		bank = bank_;
 		additionaldata = data;
@@ -55,15 +53,15 @@ public class Account extends Removable implements Manageable {
 	}
 	
 	/** Unique ID of this Account. */
-	public String getId(){ return id; }
+	public String getId(){ return idtype.id(); }
 	
-	/** Current balance on this Account (1000 = 1 currency unit, usually) */
+	/** Current balance on this Account (1000 = 1 currency unit). */
 	public long getBalance(){
 		//updateLastAccess();
 		return balance;
 	}
 	
-	/** Method to set the balance (1000 = 1 currency unit, usually)
+	/** Method to set the balance (1000 = 1 currency unit)
 	 * @param rpl new balance for this account
 	 * @return new balance */
 	public long setBalance(long rpl){
@@ -82,17 +80,17 @@ public class Account extends Removable implements Manageable {
 		bank = nbank;
 	}
 	
-	/** Type of this Account, as not only players can hold Accounts. */
+	/** Type of this Account. */
 	public String getType(){
-		return type;
+		return idtype.space();
 	}
 	
-	public ResourceLocation getAsResourceLocation(){
-		return new UCResourceLocation(this.getType(), this.getId());
+	public IDL getIDL(){
+		return idtype;
 	}
 	
 	public String getTypeAndId(){
-		return this.getType() + ":" + this.getId();
+		return idtype.colon();
 	}
 
 	public JsonMap getData(){
@@ -105,7 +103,7 @@ public class Account extends Removable implements Manageable {
 	}
 
 	public String getName(){
-		return name == null ? id : name;
+		return name == null ? idtype.id() : name;
 	}
 	
 	public Account setName(String nname){
@@ -117,8 +115,8 @@ public class Account extends Removable implements Manageable {
 	public JsonMap toJson(boolean withtransfers){
 		updateLastAccess();
 		JsonMap obj = new JsonMap();
-		obj.add("id", id);
-		obj.add("type", type);
+		obj.add("id", idtype.id());
+		obj.add("type", idtype.space());
 		obj.add("bank", bank.id);
 		obj.add("balance", balance);
 		if(additionaldata != null){
