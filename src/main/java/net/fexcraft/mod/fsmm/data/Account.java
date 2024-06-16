@@ -7,11 +7,10 @@ import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.app.json.JsonValue;
 import net.fexcraft.lib.mc.registry.UCResourceLocation;
-import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.events.AccountEvent;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
-import net.minecraft.command.ICommandSender;
+import net.fexcraft.mod.uni.world.MessageSender;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -20,7 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
  * 
  * @author Ferdinand Calo' (FEX___96)
  */
-public class Account extends Removable implements Manageable /*, net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>*/ {
+public class Account extends Removable implements Manageable {
 
 	private final String id, type;
 	private String name;
@@ -141,7 +140,7 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 	}
 
 	@Override
-	public void modifyBalance(Manageable.Action action, long amount, ICommandSender log){
+	public void modifyBalance(Manageable.Action action, long amount, MessageSender log){
 		switch(action){
 			case SET :{
 				MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, amount));
@@ -153,13 +152,13 @@ public class Account extends Removable implements Manageable /*, net.minecraftfo
 					MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance -= amount));
 				}
 				else{
-					Print.chat(log, "Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
+					log.send("Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
 				}
 				return;
 			}
 			case ADD:{
 				if(balance + amount >= Long.MAX_VALUE){
-					Print.chat(log, "Max Value reached.");
+					log.send("Max Value reached.");
 				}
 				else{
 					MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance += amount));
