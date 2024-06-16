@@ -15,6 +15,7 @@ import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.fsmm.data.MoneyItem;
+import net.fexcraft.mod.uni.IDLManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -180,9 +181,9 @@ public class Config {
 		if(map.has("Items")){
 			map.getArray("Items").value.forEach((elm) -> {
 				Money money = new Money(elm.asMap(), true);
-				FSMM.CURRENCY.register(money);
-				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getRegistryName().getPath(), new MoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.getRegistryName().getPath()), elm.asMap(), true);
+				FSMM.CURRENCY.put(money.getID(), money);
+				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getID().path(), new MoneyItem(money), 1, null);
+				money.stackload(FCLRegistry.getItem("fsmm:" + money.getID().path()), elm.asMap(), true);
 			});
 			MoneyItem.sort();
 		}
@@ -272,35 +273,35 @@ public class Config {
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event){
 			if(event.getModID().equals("fsmm")){ refresh(); if(config.hasChanged()){ config.save(); }}
 		}
-		
-	    @SubscribeEvent
-	    public void onRegistry(RegistryEvent.Register<Money> event){
-			File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
-			if(!file.exists()) return;
-			JsonMap map = JsonHandler.parse(file);
-			if(map.has("ExternalItems")){
-				map.getArray("ExternalItems").value.forEach(elm -> {
-					JsonMap jsn = elm.asMap();
-					ResourceLocation rs = new ResourceLocation(jsn.get("id").string_value());
-					long worth = jsn.get("worth").long_value();
-					int meta = jsn.getInteger("meta", -1);
-					//
-					if(meta >= 0){
-						EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
-						if(!EXTERNAL_ITEMS.containsKey(rs)){
-							EXTERNAL_ITEMS.put(rs, 0l);
-						}
+
+	}
+
+	public static void regExternal(){
+		File file = new File(Config.CONFIG_PATH, "/fsmm/configuration.json");
+		if(!file.exists()) return;
+		JsonMap map = JsonHandler.parse(file);
+		if(map.has("ExternalItems")){
+			map.getArray("ExternalItems").value.forEach(elm -> {
+				JsonMap jsn = elm.asMap();
+				ResourceLocation rs = new ResourceLocation(jsn.get("id").string_value());
+				long worth = jsn.get("worth").long_value();
+				int meta = jsn.getInteger("meta", -1);
+				//
+				if(meta >= 0){
+					EXTERNAL_ITEMS_METAWORTH.put(rs.toString() + ":" + meta, worth);
+					if(!EXTERNAL_ITEMS.containsKey(rs)){
+						EXTERNAL_ITEMS.put(rs, 0l);
 					}
-					else{
-						EXTERNAL_ITEMS.put(rs, worth);
-					}
-					if(jsn.has("register") && jsn.get("register").bool()){
-						event.getRegistry().register(new Money(jsn, false));
-					}
-				});
-			}
-	    }
-	    
+				}
+				else{
+					EXTERNAL_ITEMS.put(rs, worth);
+				}
+				if(jsn.has("register") && jsn.get("register").bool()){
+					Money money = new Money(jsn, false);
+					FSMM.CURRENCY.put(money.getID(), money);
+				}
+			});
+		}
 	}
 
 	public static final Configuration getConfig(){
