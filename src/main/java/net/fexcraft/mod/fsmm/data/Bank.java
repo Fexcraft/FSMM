@@ -93,7 +93,7 @@ public class Bank implements Manageable {
 					Print.debug(getName(log) + " tried to withdraw a negative amount of money!");
 					return false;
 				}
-				player = (EntityPlayer)log;
+				player = (EntityPlayer)((MessageSenderI)log).sender;
 				if(fees != null){
 					String feestr = fees.get(sender.getType() + ":self");
 					fee = parseFee(feestr, amount);
