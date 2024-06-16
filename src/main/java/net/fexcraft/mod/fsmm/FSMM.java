@@ -1,6 +1,7 @@
 package net.fexcraft.mod.fsmm;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ import net.fexcraft.mod.fsmm.data.cap.PlayerCapStorage;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.uni.IDL;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -39,10 +41,10 @@ import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = FSMM.MODID, name = "Fex's Small Money Mod", version = FSMM.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*",
-		updateJSON = "http://fexcraft.net/minecraft/fcl/request?mode=getForgeUpdateJson&modid=fsmm", dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
+	dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
 public class FSMM {
 
-	public static IForgeRegistry<Money> CURRENCY;
+	public static LinkedHashMap<IDL, Money> CURRENCY = new LinkedHashMap<>();
 	public static final String MODID = "fsmm";
 	public static final String VERSION = "#VERSION#";
 
@@ -54,7 +56,6 @@ public class FSMM {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
     	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapStorage(), new PlayerCapCallable());
-		CURRENCY = new RegistryBuilder<Money>().setName(new ResourceLocation("fsmm:money")).setType(Money.class).create();
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
@@ -91,6 +92,7 @@ public class FSMM {
         	PacketHandler.registerListener(PacketHandlerType.NBT, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.NBT, Side.SERVER, new Processor());
+		Config.regExternal();
     }
     
     public static FSMM getInstance(){
@@ -98,7 +100,7 @@ public class FSMM {
     }
 	
 	public static List<Money> getSortedMoneyList(){
-		return CURRENCY.getValuesCollection().stream().sorted(new Comparator<Money>(){
+		return CURRENCY.values().stream().sorted(new Comparator<Money>(){
 			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
 		}).collect(Collectors.toList());
 	}
