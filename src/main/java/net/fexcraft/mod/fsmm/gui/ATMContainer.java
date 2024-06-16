@@ -23,6 +23,7 @@ import net.fexcraft.mod.fsmm.events.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.uni.tag.TagCW;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -84,7 +85,7 @@ public class ATMContainer extends GenericContainer {
 						accounts = new ArrayList<>();
 						NBTTagList list = (NBTTagList)packet.getTag("account_list");
 						for(int i = 0; i < list.tagCount(); i++){
-							accounts.add(new AccountPermission(list.getCompoundTagAt(i)));
+							accounts.add(new AccountPermission(TagCW.wrap(list.getCompoundTagAt(i))));
 						}
 					}
 					if(packet.hasKey("inventory")){
@@ -119,7 +120,7 @@ public class ATMContainer extends GenericContainer {
 						accounts = event.getAccountsList();
 						NBTTagList list = new NBTTagList();
 						accounts.forEach(account -> {
-							list.appendTag(account.toNBT());
+							list.appendTag(account.toNBT().local());
 						});
 						compound.setTag("account_list", list);
 					}
@@ -192,7 +193,7 @@ public class ATMContainer extends GenericContainer {
 					accounts.addAll(event.getAccountsMap().values());
 					NBTTagList list = new NBTTagList();
 					accounts.forEach(account -> {
-						list.appendTag(account.toNBT());
+						list.appendTag(account.toNBT().local());
 					});
 					compound.setTag("account_list", list);
 					compound.setString("cargo", "sync");
