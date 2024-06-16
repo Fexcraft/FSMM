@@ -23,7 +23,7 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.Bank;
-import net.minecraft.util.ResourceLocation;
+import net.fexcraft.mod.uni.IDL;
 
 public class DataManager extends TimerTask {
 	
@@ -110,8 +110,8 @@ public class DataManager extends TimerTask {
 		unloadAccount(account.getType(), account.getId());
 	}
 	
-	public static void unloadAccount(ResourceLocation loc){
-		unloadAccount(loc.getNamespace(), loc.getPath());
+	public static void unloadAccount(IDL loc){
+		unloadAccount(loc.space(), loc.path());
 	}
 
 	public static void unloadAccount(String type, String id){
