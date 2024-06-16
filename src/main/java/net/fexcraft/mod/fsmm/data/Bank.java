@@ -11,6 +11,8 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.uni.world.MessageSender;
+import net.fexcraft.mod.uni.world.MessageSenderI;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -77,18 +79,18 @@ public class Bank implements Manageable {
 		return fees;
 	}
 
-	public boolean processAction(Bank.Action action, ICommandSender log, Account sender, long amount, Account receiver, boolean included){
+	public boolean processAction(Bank.Action action, MessageSender log, Account sender, long amount, Account receiver, boolean included){
 		EntityPlayer player;
 		long fee = 0, total;
 		switch(action){
 			case WITHDRAW:{
 				if(sender == null){
-					Print.chat(log, "Withdraw failed! Account is null.");
+					log.send("Withdraw failed! Account is null.");
 					Print.debug(getName(log) + " -> player account is null.");
 					return false;
 				}
 				if(amount <= 0){
-					Print.chat(log, "Withdraw failed! Amount is null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
+					log.send("Withdraw failed! Amount is null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
 					Print.debug(getName(log) + " tried to withdraw a negative amount of money!");
 					return false;
 				}
@@ -99,7 +101,7 @@ public class Bank implements Manageable {
 				}
 				total = amount + (included ? 0 : fee);
 				if(sender.getBalance() - total >= 0){
-					sender.modifyBalance(Manageable.Action.SUB, total, player);
+					sender.modifyBalance(Manageable.Action.SUB, total, new MessageSenderI(player));
 					ItemManager.addToInventory(player, amount - (included ? fee : 0));
 					log(player, action, amount, fee, total, included, sender, receiver);
 					DataManager.save(sender);
@@ -111,22 +113,22 @@ public class Bank implements Manageable {
 			}
 			case DEPOSIT:{
 				if(receiver == null){
-					Print.chat(log, "Deposit failed! Account is null.");
+					log.send("Deposit failed! Account is null.");
 					Print.debug(getName(log) + " -> player account is null.");
 					return false;
 				}
 				if(amount <= 0){
-					Print.chat(log, "Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(log) + ");");
+					log.send("Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(((MessageSenderI)log).sender) + ");");
 					Print.debug(getName(log) + " tried to deposit a negative amount of money!");
 					return false;
 				}
-				player = (EntityPlayer)log;
+				player = (EntityPlayer)((MessageSenderI)log).sender;
 				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
 					fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
 					total = amount + (included ? 0 : fee);
 					if(ItemManager.countInInventory(player) - total >= 0){
 						ItemManager.removeFromInventory(player, total);
-						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), player);
+						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), new MessageSenderI(player));
 						log(player, action, amount, fee, total, included, sender, receiver);
 						DataManager.save(receiver);
 						return true;
@@ -143,17 +145,17 @@ public class Bank implements Manageable {
 			}
 			case TRANSFER:{
 				if(sender == null){
-					Print.chat(log, "Transfer failed! Sender is null.");
+					log.send("Transfer failed! Sender is null.");
 					Print.debug(getName(log) + " -> sender account is null.");
 					return false;
 				}
 				if(receiver == null){
-					Print.chat(log, "Transfer failed! Receiver is null.");
+					log.send("Transfer failed! Receiver is null.");
 					Print.debug(getName(log) + " -> receiver account is null.");
 					return false;
 				}
 				if(amount <= 0){
-					Print.chat(log, "Transfer failed! Amount is null or negative. (T:" + amount + ");");
+					log.send("Transfer failed! Amount is null or negative. (T:" + amount + ");");
 					Print.debug(getName(log) + " tried to transfer a negative amount of money to " + receiver.getAsResourceLocation().toString() + "!");
 					return false;
 				}
@@ -167,19 +169,19 @@ public class Bank implements Manageable {
 					DataManager.save(receiver);
 					return true;
 				}
-				Print.chat(log, "Transfer failed! Not enough money on sender Account.");
+				log.send("Transfer failed! Not enough money on sender Account.");
 				Print.debug(sender.getAsResourceLocation().toString() + " -> " + sender.getAsResourceLocation().toString() + " : Transfer failed! Sender doesn't have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
 			default:{
-				Print.chat(log, "Invalid Bank Action. " + action.name() + " || " + getName(log) + " || "
+				log.send("Invalid Bank Action. " + action.name() + " || " + getName(log) + " || "
 						+ (sender == null ? "null" : sender.getAsResourceLocation().toString()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getAsResourceLocation().toString()));
 				return false;
 			}
 		}
 	}
 	
-	public boolean processAction(Action action, ICommandSender log, Account sender, long amount, Account receiver){
+	public boolean processAction(Action action, MessageSender log, Account sender, long amount, Account receiver){
 		return processAction(action, log, sender, amount, receiver, true);
 	}
 
@@ -250,7 +252,7 @@ public class Bank implements Manageable {
 	}
 
 	@Override
-	public void modifyBalance(Manageable.Action action, long amount, ICommandSender log){
+	public void modifyBalance(Manageable.Action action, long amount, MessageSender log){
 		account.modifyBalance(action, amount, log);
 	}
 	
@@ -294,8 +296,8 @@ public class Bank implements Manageable {
 
 	}
 
-	public String getName(ICommandSender sender){
-		return sender == null ? "[NULL]" : sender.getName();
+	public String getName(MessageSender sender){
+		return sender == null ? "[NULL]" : ((MessageSenderI)sender).sender.getName();
 	}
 
 }
