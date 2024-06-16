@@ -8,15 +8,6 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
     }
 }
-allprojects {
-    repositories {
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
-}
-configurations.all {
-    resolutionStrategy.cacheDynamicVersionsFor 1, 'seconds'
-}
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
@@ -29,48 +20,28 @@ sourceSets {
     main {
         java {
             srcDirs += 'src/main/java'
-            srcDirs += new File(file('.'), 'common/java')
+            srcDirs += 'common/java'
         }
         resources {
             srcDirs += 'src/main/resources'
-            srcDirs += new File(file('.'), 'common/resources')
+            srcDirs += 'common/resources'
         }
     }
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    // The mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   Snapshot are built nightly.
-    // stable_#            Stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not always work.
-    // Simply re-run your setup task after changing the mappings to update your workspace.
-    //mappings channel: 'snapshot', version: '20171003-1.12'
     mappings channel: 'stable', version: '39-1.12'
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
             workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
         }
-
         server {
-
-            // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
         }
     }
@@ -78,41 +49,10 @@ minecraft {
 }
 
 dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
-
-    // You may put jars on which you depend on in ./libs or you may define them like so..
-    // compile "some.group:artifact:version:classifier"
-    // compile "some.group:artifact:version"
-
-    // Real examples
-    // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // The 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    // provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // These dependencies get remapped to your current MCP mappings
-    // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // For more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
-
-    def localrepos = new File(project.projectDir, '/localrepos');
-	if(localrepos.exists()){
-		print "LocalRepos marker exists, using local copies.\n"
-		implementation project(':FCL')
-	}
-	else{
-		implementation 'com.github.Fexcraft:FCL:1.12.2-SNAPSHOT'
-	}
+    implementation project(':FCL')
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
@@ -133,8 +73,8 @@ tasks.register('applyVersionOnSource', Copy){
     filter { line -> line.replaceAll('#VERSION#', version) }
     into 'build/sources/main'
 }
-compileJava.dependsOn('applyVersionOnSource');
-compileJava { source = applyVersionOnSource.outputs; }
+//compileJava.dependsOn('applyVersionOnSource');
+//compileJava { source = applyVersionOnSource.outputs; }
 
 tasks.register('applyVersionOnResources', Copy){
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -142,7 +82,7 @@ tasks.register('applyVersionOnResources', Copy){
     filter { line -> line.replaceAll('#VERSION#', version) }
     into 'build/resources/main'
 }
-processResources.finalizedBy('applyVersionOnResources');
+//processResources.finalizedBy('applyVersionOnResources');
 
 // Example configuration to allow publishing using the maven-publish task
 // This is the preferred method to reobfuscate your jar file
