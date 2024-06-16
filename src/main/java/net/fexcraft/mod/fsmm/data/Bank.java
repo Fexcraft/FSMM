@@ -13,7 +13,6 @@ import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.uni.world.MessageSender;
 import net.fexcraft.mod.uni.world.MessageSenderI;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
@@ -108,7 +107,7 @@ public class Bank implements Manageable {
 					return true;
 				}
 				Print.chat(player, "Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
-				Print.debug(sender.getAsResourceLocation().toString() + " : Withdraw failed! Player does not have enough money. (T:" + amount + " || F:" + fee + ");");
+				Print.debug(sender.getTypeAndId() + " : Withdraw failed! Player does not have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
 			case DEPOSIT:{
@@ -135,12 +134,12 @@ public class Bank implements Manageable {
 					}
 					else{
 						Print.chat(player, "Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
-						Print.log(receiver.getAsResourceLocation().toString() + ": Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+						Print.log(receiver.getTypeAndId() + ": Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 						return false;
 					}
 				}
 				Print.chat(player, "Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
-				Print.log(receiver.getAsResourceLocation().toString() + " : Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+				Print.log(receiver.getTypeAndId() + " : Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 				return false;
 			}
 			case TRANSFER:{
@@ -156,7 +155,7 @@ public class Bank implements Manageable {
 				}
 				if(amount <= 0){
 					log.send("Transfer failed! Amount is null or negative. (T:" + amount + ");");
-					Print.debug(getName(log) + " tried to transfer a negative amount of money to " + receiver.getAsResourceLocation().toString() + "!");
+					Print.debug(getName(log) + " tried to transfer a negative amount of money to " + receiver.getTypeAndId() + "!");
 					return false;
 				}
 				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
@@ -170,12 +169,12 @@ public class Bank implements Manageable {
 					return true;
 				}
 				log.send("Transfer failed! Not enough money on sender Account.");
-				Print.debug(sender.getAsResourceLocation().toString() + " -> " + sender.getAsResourceLocation().toString() + " : Transfer failed! Sender doesn't have enough money. (T:" + amount + " || F:" + fee + ");");
+				Print.debug(sender.getTypeAndId() + " -> " + sender.getTypeAndId() + " : Transfer failed! Sender doesn't have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
 			default:{
 				log.send("Invalid Bank Action. " + action.name() + " || " + getName(log) + " || "
-						+ (sender == null ? "null" : sender.getAsResourceLocation().toString()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getAsResourceLocation().toString()));
+						+ (sender == null ? "null" : sender.getTypeAndId()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getTypeAndId()));
 				return false;
 			}
 		}
