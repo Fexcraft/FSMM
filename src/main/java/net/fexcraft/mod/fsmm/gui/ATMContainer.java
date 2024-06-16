@@ -24,6 +24,8 @@ import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.uni.tag.TagCW;
+import net.fexcraft.mod.uni.world.MessageSender;
+import net.fexcraft.mod.uni.world.MessageSenderI;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,6 +42,7 @@ public class ATMContainer extends GenericContainer {
 	protected PlayerCapability cap;
 	protected AccountPermission perm;
 	protected Account account, receiver;
+	protected MessageSender sender;
 	protected long inventory;
 	protected Bank bank;
 	protected int[] pos;
@@ -52,6 +55,7 @@ public class ATMContainer extends GenericContainer {
 		receiver = cap.getSelectedReiver();
 		bank = cap.getSelectedBankInATM() == null ? account.getBank() : cap.getSelectedBankInATM();
 		cap.setSelectedBankInATM(null);
+		sender = new MessageSenderI(player);
 		this.pos = pos;
 	}
 
@@ -151,7 +155,7 @@ public class ATMContainer extends GenericContainer {
 						player.closeScreen();
 					}
 					else{
-						if(fee > 0) account.modifyBalance(Action.SUB, fee, player);
+						if(fee > 0) account.modifyBalance(Action.SUB, fee, sender);
 						account.setBank(bank);
 						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
 					}
@@ -224,7 +228,7 @@ public class ATMContainer extends GenericContainer {
 						Print.chat(player, "&cPlease select a receiver!");
 						return;
 					}
-					if(account.getBank().processAction(Bank.Action.TRANSFER, player, account, amount, receiver, false)){
+					if(account.getBank().processAction(Bank.Action.TRANSFER, sender, account, amount, receiver, false)){
 						Print.chat(player, "&bTransfer &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 						player.closeScreen();
 					}
@@ -240,7 +244,7 @@ public class ATMContainer extends GenericContainer {
 	private boolean processSelfAction(long amount, boolean deposit){
 		if(amount <= 0) return false;
 		String dep = deposit ? "&eDeposit" : "&aWithdraw";
-		if(account.getBank().processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player, account, amount, account, false)){
+		if(account.getBank().processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, sender, account, amount, account, false)){
 			Print.chat(player, dep + " &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
 			return true;
 		}
