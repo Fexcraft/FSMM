@@ -12,10 +12,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
 @fItem(modid = "fsmm", name = "mobile")
 public class MobileAtm extends Item{
 
@@ -28,10 +24,10 @@ public class MobileAtm extends Item{
 	@Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand){
         if(world.isRemote || player.isSneaking() || hand== EnumHand.OFF_HAND){
-			return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
+			return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
 		}
 		player.openGui(FSMM.getInstance(), GuiHandler.ATM_MAIN, world, (int)player.posX, (int)player.posY, (int)player.posZ);
-		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 	
 }
