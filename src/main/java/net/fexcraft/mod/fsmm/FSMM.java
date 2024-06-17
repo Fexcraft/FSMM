@@ -1,16 +1,20 @@
 package net.fexcraft.mod.fsmm;
 
+import java.io.File;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.mojang.authlib.GameProfile;
 import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.data.*;
+import net.fexcraft.mod.fsmm.event.ATMEvent;
 import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
@@ -20,9 +24,12 @@ import net.fexcraft.mod.fsmm.data.cap.PlayerCapStorage;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.util.FsmmUniUtils;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
+import net.fexcraft.mod.uni.world.EntityW;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -44,7 +51,7 @@ public class FSMM {
 
 	public static LinkedHashMap<IDL, Money> CURRENCY = new LinkedHashMap<>();
 	public static final String MODID = "fsmm";
-	public static final String VERSION = "#VERSION#";
+	public static final String VERSION = "3.0.0";
 
     @Mod.Instance(MODID)
     private static FSMM INSTANCE;
@@ -54,6 +61,15 @@ public class FSMM {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
     	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapStorage(), new PlayerCapCallable());
+		FsmmUniUtils.GET_PLAYER_ACCOUNT = obj -> {
+			if(obj instanceof EntityPlayer){
+				return ((EntityPlayer)obj).getCapability(FSMMCapabilities.PLAYER, null).getAccount();
+			}
+			if(obj instanceof EntityW){
+				return ((EntityPlayer)((EntityW)obj).direct()).getCapability(FSMMCapabilities.PLAYER, null).getAccount();
+			}
+			return null;
+		};
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
@@ -85,8 +101,8 @@ public class FSMM {
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-    	if(event.getSide().isClient()){
+    public void postInit(FMLPostInitializationEvent post) {
+    	if(post.getSide().isClient()){
         	PacketHandler.registerListener(PacketHandlerType.NBT, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.Receiver());
     	}
     	PacketHandler.registerListener(PacketHandlerType.NBT, Side.SERVER, new Processor());
@@ -94,7 +110,70 @@ public class FSMM {
 		if(EnvInfo.DEV){
 			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> Print.log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
 		}
+		FsmmEvent.addListener(ATMEvent.GatherAccounts.class, event -> {
+			event.getAccountsList().add(new AccountPermission(event.getAccount(), true, true, true, true));
+			if(Static.getServer().isSinglePlayer()){
+				event.getAccountsList().add(new AccountPermission(event.getBank().getAccount(), true, true, true, true));
+			}
+		});
+		FsmmEvent.addListener(ATMEvent.SearchAccounts.class, event -> {
+			if(!event.getSearchedType().equals("player")){
+				if(!conAccPerm(event.getAccountsMap(), event.getSearchedType()) && DataManager.exists(event.getSearchedType(), event.getSearchedId())){
+					putAccPerm(event.getAccountsMap(), event.getSearchedType() + ":" + event.getSearchedId());
+				}
+				return;
+			}
+			for(Account account : DataManager.getAccountsOfType("player").values()){
+				if(account.getId().contains(event.getSearchedId()) || account.getName().contains(event.getSearchedId())){
+					event.getAccountsMap().put(account.getTypeAndId(), new AccountPermission(account));
+				}
+			}
+			if(Config.PARTIAL_ACCOUNT_NAME_SEARCH){
+				for(String str : Static.getServer().getPlayerProfileCache().getUsernames()){
+					if(str.contains(event.getSearchedId()) && !event.getAccountsMap().containsKey("player:" + str)){
+						GameProfile gp = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(str);
+						if(gp == null) continue;
+						putAccPermIn(event.getAccountsMap(), "player:" + gp.getId().toString());
+					}
+				}
+				File folder = new File(DataManager.ACCOUNT_DIR, "player/");
+				if(!folder.exists()) return;
+				String str = null;
+				for(File file : folder.listFiles()){
+					if(file.isDirectory() || file.isHidden()) continue;
+					if(file.getName().endsWith(".json") && (str = file.getName().substring(0, file.getName().length() - 5)).toLowerCase().contains(event.getSearchedId())){
+						putAccPerm(event.getAccountsMap(), "player:" + str);
+					}
+				}
+			}
+			else{
+				GameProfile gp = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(event.getSearchedId());
+				if(gp != null && new File(DataManager.ACCOUNT_DIR, "player/" + gp.getId().toString() + ".json").exists()){
+					putAccPerm(event.getAccountsMap(), "player:" + gp.getId().toString());
+				}
+				else if(new File(DataManager.ACCOUNT_DIR, "player/" + event.getSearchedId() + ".json").exists()){
+					putAccPerm(event.getAccountsMap(), "player:" + event.getSearchedId());
+				}
+			}
+		});
     }
+
+	private static void putAccPerm(HashMap<String, AccountPermission> map, String id){
+		if(map.containsKey(id)) return;
+		map.put(id, new AccountPermission(id));
+	}
+
+	private static void putAccPermIn(HashMap<String, AccountPermission> map, String id){
+		map.put(id, new AccountPermission(id));
+	}
+
+	/** Checks if another mod has already returned anything for this type. */
+	private static boolean conAccPerm(HashMap<String, AccountPermission> map, String type){
+		for(AccountPermission perm : map.values()){
+			if(perm.getType().equals(type)) return true;
+		}
+		return false;
+	}
     
     public static FSMM getInstance(){
     	return INSTANCE;
