@@ -6,13 +6,13 @@ import java.util.List;
 import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.app.json.JsonValue;
-import net.fexcraft.mod.fsmm.events.AccountEvent;
+import net.fexcraft.mod.fsmm.event.AccountEvent;
+import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.IDLManager;
 import net.fexcraft.mod.uni.world.MessageSender;
-import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Universal Account Object.
@@ -65,7 +65,7 @@ public class Account extends Removable implements Manageable {
 	 * @param rpl new balance for this account
 	 * @return new balance */
 	public long setBalance(long rpl){
-		MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, rpl));
+		FsmmEvent.run(new AccountEvent.BalanceUpdated(this, balance, rpl));
 		updateLastAccess();
 		return balance = rpl;
 	}
@@ -141,13 +141,13 @@ public class Account extends Removable implements Manageable {
 	public void modifyBalance(Manageable.Action action, long amount, MessageSender log){
 		switch(action){
 			case SET :{
-				MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, amount));
+				FsmmEvent.run(new AccountEvent.BalanceUpdated(this, balance, amount));
 				balance = amount;
 				return;
 			}
 			case SUB :{
 				if(balance - amount >= 0){
-					MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance -= amount));
+					FsmmEvent.run(new AccountEvent.BalanceUpdated(this, balance, balance -= amount));
 				}
 				else{
 					log.send("Not enough money to subtract this amount! (B:" + (balance / 1000) + " - S:" + (amount / 1000) + ")");
@@ -159,7 +159,7 @@ public class Account extends Removable implements Manageable {
 					log.send("Max Value reached.");
 				}
 				else{
-					MinecraftForge.EVENT_BUS.post(new AccountEvent.BalanceUpdated(this, balance, balance += amount));
+					FsmmEvent.run(new AccountEvent.BalanceUpdated(this, balance, balance += amount));
 				}
 			}
 			default: return;
