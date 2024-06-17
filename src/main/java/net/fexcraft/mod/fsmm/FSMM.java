@@ -10,21 +10,21 @@ import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
-import net.fexcraft.mod.fsmm.data.Money;
-import net.fexcraft.mod.fsmm.data.PlayerCapability;
+import net.fexcraft.mod.fsmm.data.*;
+import net.fexcraft.mod.fsmm.event.AccountEvent;
+import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
-import net.fexcraft.mod.fsmm.data.MoneyItem;
 import net.fexcraft.mod.fsmm.data.cap.PlayerCapCallable;
 import net.fexcraft.mod.fsmm.data.cap.PlayerCapStorage;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -34,8 +34,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.Logger;
@@ -93,6 +91,9 @@ public class FSMM {
     	}
     	PacketHandler.registerListener(PacketHandlerType.NBT, Side.SERVER, new Processor());
 		Config.regExternal();
+		if(EnvInfo.DEV){
+			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> Print.log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
+		}
     }
     
     public static FSMM getInstance(){
