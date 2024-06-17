@@ -1,9 +1,11 @@
-package net.fexcraft.mod.fsmm.events;
+package net.fexcraft.mod.fsmm.event;
 
 import net.fexcraft.mod.fsmm.data.Account;
-import net.minecraftforge.fml.common.eventhandler.Event;
 
-public class AccountEvent extends Event {
+/**
+ * @author Ferdinand Calo' (FEX___96)
+ */
+public class AccountEvent extends FsmmEvent {
 	
 	private final Account account;
 	
