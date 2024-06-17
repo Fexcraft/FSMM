@@ -1,4 +1,4 @@
-package net.fexcraft.mod.fsmm.events;
+package net.fexcraft.mod.fsmm.event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,22 +6,20 @@ import java.util.HashMap;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Bank;
-import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
-import net.fexcraft.mod.fsmm.util.DataManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.fexcraft.mod.fsmm.util.FsmmUniUtils;
+import net.fexcraft.mod.uni.world.EntityW;
 
-public class ATMEvent extends Event {
+public class ATMEvent extends FsmmEvent {
 	
-	private final EntityPlayer player;
+	private final EntityW player;
 	private final Account account;
 	
-	private ATMEvent(EntityPlayer player){
+	private ATMEvent(EntityW player){
 		this.player = player;
-		this.account = player.getCapability(FSMMCapabilities.PLAYER, null).getAccount();
+		this.account = FsmmUniUtils.GET_PLAYER_ACCOUNT.apply(player);
 	}
 	
-	public EntityPlayer getPlayer(){
+	public EntityW getPlayer(){
 		return player;
 	}
 	
@@ -38,7 +36,7 @@ public class ATMEvent extends Event {
 		
 		private ArrayList<AccountPermission> accounts = new ArrayList<>();
 		
-		public GatherAccounts(EntityPlayer player){
+		public GatherAccounts(EntityW player){
 			super(player);
 		}
 		
@@ -54,7 +52,7 @@ public class ATMEvent extends Event {
 		private HashMap<String, AccountPermission> accounts = new HashMap<>();
 		private String type, id;
 		
-		public SearchAccounts(EntityPlayer player, String type, String id){
+		public SearchAccounts(EntityW player, String type, String id){
 			super(player);
 			this.type = type;
 			this.id = id;
