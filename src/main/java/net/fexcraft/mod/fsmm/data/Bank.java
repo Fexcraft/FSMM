@@ -9,8 +9,8 @@ import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.app.json.JsonValue;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.uni.world.MessageSender;
 import net.fexcraft.mod.uni.world.MessageSenderI;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,12 +54,12 @@ public class Bank implements Manageable {
 		return this.name.equals(name) ? false : (this.name = name).equals(name);
 	}
 	
-	/** Current balance of this Bank (1000 = 1 currency unit, usually) */
+	/** Current balance of this Bank (1000 = 1 currency unit). */
 	public long getBalance(){
 		return account.getBalance();
 	}
 	
-	/** Method to set the balance (1000 = 1 currency unit, usually)
+	/** Method to set the balance (1000 = 1 currency unit)
 	 * @param rpl new balance for this account
 	 * @return new balance */
 	public long setBalance(long rpl){
