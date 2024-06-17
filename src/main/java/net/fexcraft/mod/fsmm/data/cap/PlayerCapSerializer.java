@@ -1,18 +1,11 @@
 package net.fexcraft.mod.fsmm.data.cap;
 
-import net.fexcraft.mod.fsmm.data.Account;
-import net.fexcraft.mod.fsmm.data.AccountPermission;
-import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.data.PlayerCapability;
-import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 public class PlayerCapSerializer implements ICapabilitySerializable<NBTBase>{
