@@ -9,6 +9,6 @@ import java.util.function.Function;
  */
 public class FsmmUniUtils {
 
-	public static Function<Object, Account> GET_PLAYER_ACCOUNT = null;
+	//
 
 }
