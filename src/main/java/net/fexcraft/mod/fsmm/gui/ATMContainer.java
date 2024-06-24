@@ -14,15 +14,15 @@ import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Bank;
-import net.fexcraft.mod.fsmm.data.FSMMCapabilities;
 import net.fexcraft.mod.fsmm.data.Manageable.Action;
-import net.fexcraft.mod.fsmm.data.PlayerCapability;
+import net.fexcraft.mod.fsmm.data.PlayerAccData;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.event.ATMEvent.GatherAccounts;
 import net.fexcraft.mod.fsmm.event.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.uni.UniPlayer;
 import net.fexcraft.mod.uni.tag.TagCW;
 import net.fexcraft.mod.uni.world.MessageSender;
 import net.fexcraft.mod.uni.world.MessageSenderI;
@@ -38,7 +38,7 @@ public class ATMContainer extends GenericContainer {
 	
 	protected ArrayList<Entry<String, String>> banks;
 	protected ArrayList<AccountPermission> accounts;
-	protected PlayerCapability cap;
+	protected PlayerAccData accdata;
 	protected AccountPermission perm;
 	protected Account account, receiver;
 	protected MessageSender sender;
@@ -48,12 +48,12 @@ public class ATMContainer extends GenericContainer {
 
 	public ATMContainer(EntityPlayer player, int[] pos){
 		super(player);
-		cap = player.getCapability(FSMMCapabilities.PLAYER, null);
-		perm = cap.getSelectedAccount() == null ? AccountPermission.FULL : cap.getSelectedAccount();
-		account = cap.getSelectedAccount() == null ? cap.getAccount() : perm.getAccount();
-		receiver = cap.getSelectedReiver();
-		bank = cap.getSelectedBankInATM() == null ? account.getBank() : cap.getSelectedBankInATM();
-		cap.setSelectedBankInATM(null);
+		accdata = UniPlayer.get(player).get("fsmm");
+		perm = accdata.getSelectedAccount() == null ? AccountPermission.FULL : accdata.getSelectedAccount();
+		account = accdata.getSelectedAccount() == null ? accdata.getAccount() : perm.getAccount();
+		receiver = accdata.getSelectedReceiver();
+		bank = accdata.getSelectedBankInATM() == null ? account.getBank() : accdata.getSelectedBankInATM();
+		accdata.setSelectedBankInATM(null);
 		sender = new MessageSenderI(player);
 		this.pos = pos;
 	}
@@ -119,7 +119,7 @@ public class ATMContainer extends GenericContainer {
 						compound.setTag("bank_list", getBankList());
 					}
 					if(packet.getBoolean("account_list")){
-						GatherAccounts event = new GatherAccounts(WrapperHolder.getEntity(player));
+						GatherAccounts event = new GatherAccounts(UniPlayer.get(player));
 						FsmmEvent.run(event);
 						accounts = event.getAccountsList();
 						NBTTagList list = new NBTTagList();
@@ -136,8 +136,8 @@ public class ATMContainer extends GenericContainer {
 					break;
 				}
 				case "bank_info":{
-					cap.setSelectedBankInATM(DataManager.getBank(packet.getString("bank")));
-					cap.getEntityPlayer().openGui(FSMM.getInstance(), BANK_INFO, player.world, pos[0], pos[1], pos[2]);
+					accdata.setSelectedBankInATM(DataManager.getBank(packet.getString("bank")));
+					((EntityPlayer)accdata.getPlayer()).openGui(FSMM.getInstance(), BANK_INFO, player.world, pos[0], pos[1], pos[2]);
 					break;
 				}
 				case "bank_select":{
@@ -172,11 +172,11 @@ public class ATMContainer extends GenericContainer {
 					}
 					if(acc != null){
 						if(mode){
-							cap.setSelectedAccount(acc);
+							accdata.setSelectedAccount(acc);
 							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
 						}
 						else{
-							cap.setSelectedReceiver(acc.getAccount());
+							accdata.setSelectedReceiver(acc.getAccount());
 							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, pos[0], pos[1], pos[2]);
 						}
 					}
@@ -191,7 +191,7 @@ public class ATMContainer extends GenericContainer {
 					String id = packet.getString("id").toLowerCase();
 					if(type.trim().length() == 0 || id.trim().length() == 0 || id.length() < Config.MIN_SEARCH_CHARS) break;
 					NBTTagCompound compound = new NBTTagCompound();
-					SearchAccounts event = new SearchAccounts(WrapperHolder.getEntity(player), type, id);
+					SearchAccounts event = new SearchAccounts(UniPlayer.get(player), type, id);
 					FsmmEvent.run(event);
 					accounts = new ArrayList<>();
 					accounts.addAll(event.getAccountsMap().values());
