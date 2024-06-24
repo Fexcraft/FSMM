@@ -6,21 +6,22 @@ import java.util.HashMap;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Bank;
-import net.fexcraft.mod.fsmm.util.FsmmUniUtils;
+import net.fexcraft.mod.fsmm.data.PlayerAccData;
+import net.fexcraft.mod.uni.UniPlayer;
 import net.fexcraft.mod.uni.world.EntityW;
 
 public class ATMEvent extends FsmmEvent {
 	
-	private final EntityW player;
+	private final UniPlayer player;
 	private final Account account;
 	
-	private ATMEvent(EntityW player){
+	private ATMEvent(UniPlayer player){
 		this.player = player;
-		this.account = FsmmUniUtils.GET_PLAYER_ACCOUNT.apply(player);
+		this.account = player.get(PlayerAccData.class).getAccount();
 	}
 	
 	public EntityW getPlayer(){
-		return player;
+		return player.entity;
 	}
 	
 	public Account getAccount(){
@@ -36,7 +37,7 @@ public class ATMEvent extends FsmmEvent {
 		
 		private ArrayList<AccountPermission> accounts = new ArrayList<>();
 		
-		public GatherAccounts(EntityW player){
+		public GatherAccounts(UniPlayer player){
 			super(player);
 		}
 		
@@ -52,7 +53,7 @@ public class ATMEvent extends FsmmEvent {
 		private HashMap<String, AccountPermission> accounts = new HashMap<>();
 		private String type, id;
 		
-		public SearchAccounts(EntityW player, String type, String id){
+		public SearchAccounts(UniPlayer player, String type, String id){
 			super(player);
 			this.type = type;
 			this.id = id;
