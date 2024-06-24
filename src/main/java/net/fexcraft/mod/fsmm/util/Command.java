@@ -15,6 +15,7 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.*;
+import net.fexcraft.mod.uni.UniPlayer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
@@ -71,15 +72,15 @@ public class Command extends CommandBase{
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender, "&bInventory&0: &a" + Config.getWorthAsString(value));
 				//
-				PlayerCapability cap = sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null);
+				PlayerAccData cap = UniPlayer.get(sender.getCommandSenderEntity()).get("fsmm");
 				if(cap.getSelectedAccount() != null && !cap.getSelectedAccount().getTypeAndId().equals(cap.getAccount().getTypeAndId())){
 					AccountPermission perm = cap.getSelectedAccount();
-					Print.chat(sender, "&bPersonal Balance&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
+					Print.chat(sender, "&bPersonal Balance&0: &a" + Config.getWorthAsString(cap.getAccount().getBalance()));
     				Print.chat(sender, "&bSelected Account&0: &a" + cap.getSelectedAccount().getTypeAndId());
 					Print.chat(sender, "&bSelected Balance&0: &a" + Config.getWorthAsString(cap.getSelectedAccount().getAccount().getBalance()));
 				}
 				else{
-					Print.chat(sender, "&bAccount Balance&0: &a" + Config.getWorthAsString(sender.getCommandSenderEntity().getCapability(FSMMCapabilities.PLAYER, null).getAccount().getBalance()));
+					Print.chat(sender, "&bAccount Balance&0: &a" + Config.getWorthAsString(cap.getAccount().getBalance()));
 				}
     		}
     		else{
