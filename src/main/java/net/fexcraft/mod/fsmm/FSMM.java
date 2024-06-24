@@ -19,20 +19,15 @@ import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
-import net.fexcraft.mod.fsmm.data.cap.PlayerCapCallable;
-import net.fexcraft.mod.fsmm.data.cap.PlayerCapStorage;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.FsmmUniUtils;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
-import net.fexcraft.mod.uni.world.EntityW;
+import net.fexcraft.mod.uni.UniPlayer;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -60,16 +55,7 @@ public class FSMM {
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
-    	CapabilityManager.INSTANCE.register(PlayerCapability.class, new PlayerCapStorage(), new PlayerCapCallable());
-		FsmmUniUtils.GET_PLAYER_ACCOUNT = obj -> {
-			if(obj instanceof EntityPlayer){
-				return ((EntityPlayer)obj).getCapability(FSMMCapabilities.PLAYER, null).getAccount();
-			}
-			if(obj instanceof EntityW){
-				return ((EntityPlayer)((EntityW)obj).direct()).getCapability(FSMMCapabilities.PLAYER, null).getAccount();
-			}
-			return null;
-		};
+		UniPlayer.register(PlayerAccData.class);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
