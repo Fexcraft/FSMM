@@ -15,17 +15,14 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.*;
-import net.fexcraft.mod.uni.UniPlayer;
+import net.fexcraft.mod.uni.UniEntity;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 import net.minecraftforge.server.permission.PermissionAPI;
-
-import javax.annotation.Nullable;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
@@ -72,7 +69,7 @@ public class Command extends CommandBase{
             	long value = ItemManager.countInInventory((EntityPlayer)sender);
     			Print.chat(sender, "&bInventory&0: &a" + Config.getWorthAsString(value));
 				//
-				PlayerAccData cap = UniPlayer.get(sender.getCommandSenderEntity()).get("fsmm");
+				PlayerAccData cap = UniEntity.get(sender.getCommandSenderEntity()).get("fsmm");
 				if(cap.getSelectedAccount() != null && !cap.getSelectedAccount().getTypeAndId().equals(cap.getAccount().getTypeAndId())){
 					AccountPermission perm = cap.getSelectedAccount();
 					Print.chat(sender, "&bPersonal Balance&0: &a" + Config.getWorthAsString(cap.getAccount().getBalance()));

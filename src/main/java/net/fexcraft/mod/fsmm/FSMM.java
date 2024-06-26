@@ -24,7 +24,7 @@ import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
-import net.fexcraft.mod.uni.UniPlayer;
+import net.fexcraft.mod.uni.UniEntity;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -55,7 +55,7 @@ public class FSMM {
     
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
-		UniPlayer.register(PlayerAccData.class);
+		UniEntity.register(PlayerAccData.class, true);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);

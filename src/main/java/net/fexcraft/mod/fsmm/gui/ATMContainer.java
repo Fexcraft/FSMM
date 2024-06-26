@@ -22,11 +22,10 @@ import net.fexcraft.mod.fsmm.event.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
-import net.fexcraft.mod.uni.UniPlayer;
+import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.tag.TagCW;
 import net.fexcraft.mod.uni.world.MessageSender;
 import net.fexcraft.mod.uni.world.MessageSenderI;
-import net.fexcraft.mod.uni.world.WrapperHolder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,7 +47,7 @@ public class ATMContainer extends GenericContainer {
 
 	public ATMContainer(EntityPlayer player, int[] pos){
 		super(player);
-		accdata = UniPlayer.get(player).get("fsmm");
+		accdata = UniEntity.get(player).get("fsmm");
 		perm = accdata.getSelectedAccount() == null ? AccountPermission.FULL : accdata.getSelectedAccount();
 		account = accdata.getSelectedAccount() == null ? accdata.getAccount() : perm.getAccount();
 		receiver = accdata.getSelectedReceiver();
@@ -119,7 +118,7 @@ public class ATMContainer extends GenericContainer {
 						compound.setTag("bank_list", getBankList());
 					}
 					if(packet.getBoolean("account_list")){
-						GatherAccounts event = new GatherAccounts(UniPlayer.get(player));
+						GatherAccounts event = new GatherAccounts(UniEntity.get(player));
 						FsmmEvent.run(event);
 						accounts = event.getAccountsList();
 						NBTTagList list = new NBTTagList();
@@ -191,7 +190,7 @@ public class ATMContainer extends GenericContainer {
 					String id = packet.getString("id").toLowerCase();
 					if(type.trim().length() == 0 || id.trim().length() == 0 || id.length() < Config.MIN_SEARCH_CHARS) break;
 					NBTTagCompound compound = new NBTTagCompound();
-					SearchAccounts event = new SearchAccounts(UniPlayer.get(player), type, id);
+					SearchAccounts event = new SearchAccounts(UniEntity.get(player), type, id);
 					FsmmEvent.run(event);
 					accounts = new ArrayList<>();
 					accounts.addAll(event.getAccountsMap().values());

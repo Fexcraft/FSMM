@@ -2,17 +2,15 @@ package net.fexcraft.mod.fsmm.data;
 
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
-import net.fexcraft.mod.uni.UniPlayer;
+import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.tag.TagCW;
-
-import java.util.UUID;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
  */
-public class PlayerAccData implements UniPlayer.AppData {
+public class PlayerAccData implements UniEntity.AppData {
 
-	private UniPlayer player;
+	private UniEntity player;
 	private Account account;
 	private AccountPermission atmacc;
 	private Account selected;
@@ -85,17 +83,17 @@ public class PlayerAccData implements UniPlayer.AppData {
 	}
 
 	@Override
-	public void save(UniPlayer player, TagCW com){
+	public void save(UniEntity player, TagCW com){
 		//
 	}
 
 	@Override
-	public void load(UniPlayer player, TagCW com){
+	public void load(UniEntity player, TagCW com){
 		//
 	}
 
 	@Override
-	public void set(UniPlayer player){
+	public void init(UniEntity player){
 		this.player = player;
 	}
 
