@@ -8,7 +8,7 @@ import net.fexcraft.mod.fsmm.event.ATMEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.FsmmUtils;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.tag.TagCW;
@@ -44,8 +44,8 @@ public class ATMContainer extends ContainerInterface {
 	}
 
 	public void init(){
-		if(uiid.equals(FsmmUtils.UI_ATM_ACC_DEPOSIT) || uiid.equals(FsmmUtils.UI_ATM_ACC_WITHDRAW)){
-			if(!FsmmUtils.IS_ATM.apply(player, pos)){
+		if(uiid.equals(FsmmUIKeys.UI_ATM_ACC_DEPOSIT) || uiid.equals(FsmmUIKeys.UI_ATM_ACC_WITHDRAW)){
+			if(!FsmmUIKeys.IS_ATM.apply(player, pos)){
 				player.entity.closeUI();
 				if(!player.entity.isOnClient()) player.entity.send("ui.fsmm.atm_only");
 			}
@@ -99,36 +99,36 @@ public class ATMContainer extends ContainerInterface {
 		}
 		switch(com.getString("cargo")){
 			case "bank":{
-				player.entity.openUI(FsmmUtils.UI_ATM_BANK_SELECT, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_BANK_SELECT, pos);
 				break;
 			}
 			case "transfers":{
-				player.entity.openUI(FsmmUtils.UI_ATM_TRANSFERS, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_TRANSFERS, pos);
 				break;
 			}
 			case "select":{
-				player.entity.openUI(FsmmUtils.UI_ATM_ACC_SELECT, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_SELECT, pos);
 				break;
 			}
 			case "receiver":{
-				player.entity.openUI(FsmmUtils.UI_ATM_ACC_RECEIVER, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_RECEIVER, pos);
 				break;
 			}
 			case "withdraw":{
-				player.entity.openUI(FsmmUtils.UI_ATM_ACC_WITHDRAW, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_WITHDRAW, pos);
 				break;
 			}
 			case "deposit":{
-				player.entity.openUI(FsmmUtils.UI_ATM_ACC_DEPOSIT, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_DEPOSIT, pos);
 				break;
 			}
 			case "transfer":{
-				player.entity.openUI(FsmmUtils.UI_ATM_ACC_TRANSFER, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_TRANSFER, pos);
 				break;
 			}
 			case "bank_info":{
 				pass.setSelectedBankInATM(DataManager.getBank(com.getString("bank")));
-				player.entity.openUI(FsmmUtils.UI_ATM_BANK_INFO, pos);
+				player.entity.openUI(FsmmUIKeys.UI_ATM_BANK_INFO, pos);
 				break;
 			}
 			case "bank_select":{
@@ -147,7 +147,7 @@ public class ATMContainer extends ContainerInterface {
 				else{
 					if(fee > 0) account.modifyBalance(Manageable.Action.SUB, fee, player.entity);
 					account.setBank(bank);
-					player.entity.openUI(FsmmUtils.UI_ATM_MAIN, pos);
+					player.entity.openUI(FsmmUIKeys.UI_ATM_MAIN, pos);
 				}
 				break;
 			}
@@ -248,11 +248,11 @@ public class ATMContainer extends ContainerInterface {
 				if(acc != null){
 					if(mode){
 						pass.setSelectedAccount(acc);
-						player.entity.openUI(FsmmUtils.UI_ATM_MAIN, pos);
+						player.entity.openUI(FsmmUIKeys.UI_ATM_MAIN, pos);
 					}
 					else{
 						pass.setSelectedReceiver(acc.getAccount());
-						player.entity.openUI(FsmmUtils.UI_ATM_ACC_TRANSFER, pos);
+						player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_TRANSFER, pos);
 					}
 				}
 				else{
