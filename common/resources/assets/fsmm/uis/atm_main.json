@@ -1,0 +1,110 @@
+{
+	"_info_": "FSMM ATM Main",
+	"background": true,
+	"size": [ 256, 88 ],
+	"tabs": {
+		"main": {
+			"texture": "fsmm:textures/gui/main.png",
+			"size": [ 256, 88 ],
+			"pos": [ 0, 0 ],
+			"buttons": [
+				"bank",
+				"transfers",
+				"select",
+				"withdraw",
+				"deposit",
+				"transfer"
+			],
+			"texts": [
+				"bank_line_0",
+				"bank_line_1",
+				"bank_line_2",
+				"bank_line_3",
+				"account_name",
+				"account_balance"
+			]
+		}
+	},
+	"buttons": {
+		"bank": {
+			"size": [ 8, 8 ],
+			"pos": [ 242, 42 ],
+			"uv": [ 242, 42 ],
+			"tooltip": "ui.fsmm.atm_main.bank"
+		},
+		"transfers": {
+			"size": [ 8, 8 ],
+			"pos": [ 231, 58 ],
+			"uv": [ 231, 58 ],
+			"tooltip": "ui.fsmm.atm_main.transfers"
+		},
+		"select": {
+			"size": [ 8, 8 ],
+			"pos": [ 242, 58 ],
+			"uv": [ 242, 58 ],
+			"tooltip": "ui.fsmm.atm_main.select"
+		},
+		"withdraw": {
+			"size": [ 10, 10 ],
+			"pos": [ 219, 69 ],
+			"uv": [ 219, 69 ],
+			"tooltip": "ui.fsmm.atm_main.withdraw"
+		},
+		"deposit": {
+			"size": [ 10, 10 ],
+			"pos": [ 230, 69 ],
+			"uv": [ 230, 69 ],
+			"tooltip": "ui.fsmm.atm_main.deposit"
+		},
+		"transfer": {
+			"size": [ 10, 10 ],
+			"pos": [ 241, 69 ],
+			"uv": [ 241, 69 ],
+			"tooltip": "ui.fsmm.atm_main.transfer"
+		}
+	},
+	"texts": {
+		"bank_line_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 7 ],
+			"autoscale": true,
+			"color": "#4d4d4d",
+			"value": "..."
+		},
+		"bank_line_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 19 ],
+			"autoscale": true,
+			"color": "#4d4d4d",
+			"value": "..."
+		},
+		"bank_line_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 31 ],
+			"autoscale": true,
+			"color": "#4d4d4d",
+			"value": "..."
+		},
+		"bank_line_3": {
+			"size": [ 233, 7 ],
+			"pos": [ 7, 43 ],
+			"autoscale": true,
+			"color": "#4d4d4d",
+			"value": "..."
+		},
+		"account_name": {
+			"size": [ 222, 7 ],
+			"pos": [ 7, 59 ],
+			"autoscale": true,
+			"color": "#4d4d4d",
+			"value": "..."
+		},
+		"account_balance": {
+			"size": [ 209, 7 ],
+			"pos": [ 7, 71 ],
+			"autoscale": true,
+			"color": "#4d4d4d",
+			"value": "..."
+		}
+	}
+}

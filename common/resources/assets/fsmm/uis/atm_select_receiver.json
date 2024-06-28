@@ -1,0 +1,158 @@
+{
+	"_info_": "FSMM ATM Select Receiver",
+	"return": "fsmm:atm_acc_transfer",
+	"background": false,
+	"size": [ 256, 152 ],
+	"tabs": {
+		"main": {
+			"texture": "fsmm:textures/gui/account_select.png",
+			"size": [ 256, 152 ],
+			"pos": [ 0, 0 ],
+			"buttons": [
+				"up", "down",
+				"info_type",
+				"info_id",
+				"search",
+				"result_0",
+				"result_1",
+				"result_2",
+				"result_3"
+			],
+			"texts": [
+				"account_name",
+				"account_id",
+				"result_name_0",
+				"result_id_0",
+				"result_name_1",
+				"result_id_1",
+				"result_name_2",
+				"result_id_2",
+				"result_name_3",
+				"result_id_3"
+			],
+			"fields": [
+				"type",
+				"id"
+			]
+		}
+	},
+	"buttons": {
+		"up": {
+			"size": [ 7, 7 ],
+			"pos": [ 228, 144 ],
+			"tooltip": "ui.fsmm.atm_scroll_up"
+		},
+		"down": {
+			"size": [ 7, 7 ],
+			"pos": [ 237, 144 ],
+			"tooltip": "ui.fsmm.atm_scroll_down"
+		},
+		"info_type": {
+			"size": [ 8, 8 ],
+			"pos": [ 242, 32 ]
+		},
+		"info_id": {
+			"size": [ 8, 8 ],
+			"pos": [ 242, 42 ]
+		},
+		"search": {
+			"size": [ 8, 8 ],
+			"pos": [ 233, 42 ],
+			"tooltip": "ui.fsmm.atm_search"
+		},
+		"result_0": {
+			"size": [ 246, 20 ],
+			"pos": [ 5, 57 ],
+			"tooltip": "ui.fsmm.atm_select_rec_click"
+		},
+		"result_1": {
+			"size": [ 246, 20 ],
+			"pos": [ 5, 79 ],
+			"tooltip": "ui.fsmm.atm_select_rec_click"
+		},
+		"result_2": {
+			"size": [ 246, 20 ],
+			"pos": [ 5, 101 ],
+			"tooltip": "ui.fsmm.atm_select_rec_click"
+		},
+		"result_3": {
+			"size": [ 246, 20 ],
+			"pos": [ 5, 123 ],
+			"tooltip": "ui.fsmm.atm_select_rec_click"
+		}
+	},
+	"texts": {
+		"account_name": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 7 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"account_id": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 16 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_name_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 59 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_id_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 68 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_name_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 81 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_id_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 90 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_name_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 103 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_id_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 112 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_name_3": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 125 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"result_id_3": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 134 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		}
+	},
+	"fields": {
+		"type": {
+			"size": [ 233, 7 ],
+			"pos": [ 7, 33 ],
+			"background": false
+		},
+		"id": {
+			"size": [ 224, 7 ],
+			"pos": [ 7, 43 ],
+			"background": false
+		}
+	}
+}
