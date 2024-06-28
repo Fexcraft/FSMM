@@ -25,7 +25,7 @@ import net.fexcraft.mod.fsmm.ui.ATMMain;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.FsmmUtils;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.UniEntity;
@@ -47,7 +47,7 @@ import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.Logger;
 
-import static net.fexcraft.mod.fsmm.util.FsmmUtils.UI_ATM_MAIN;
+import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.UI_ATM_MAIN;
 
 @Mod(modid = FSMM.MODID, name = "Fex's Small Money Mod", version = FSMM.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*",
 	dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
@@ -66,7 +66,8 @@ public class FSMM {
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		UniEntity.register(PlayerAccData.class, true);
 		//
-		FsmmUtils.IS_ATM = (ply, pos) -> ((Entity)ply.entity.direct()).world.getBlockState(new BlockPos(pos.x, pos.y, pos.z)).getBlock() instanceof ATM;
+		FsmmUIKeys.IS_ATM = (ply, pos) -> ((Entity)ply.entity.direct()).world.getBlockState(new BlockPos(pos.x, pos.y, pos.z)).getBlock() instanceof ATM;
+		UniReg.registerMod(MODID, INSTANCE);
 		UniReg.registerUI(UI_ATM_MAIN, ATMMain.class);
 		UniReg.registerMenu(UI_ATM_MAIN, "assets/fsmm/uis/atm_main", ATMContainer.class);
 		//
