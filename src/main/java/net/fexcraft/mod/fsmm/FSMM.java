@@ -13,21 +13,28 @@ import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
+import net.fexcraft.mod.fsmm.blocks.ATM;
 import net.fexcraft.mod.fsmm.data.*;
 import net.fexcraft.mod.fsmm.event.ATMEvent;
 import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.gui.Processor;
+import net.fexcraft.mod.fsmm.ui.ATMContainer;
+import net.fexcraft.mod.fsmm.ui.ATMMain;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.util.FsmmUtils;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.UniEntity;
+import net.fexcraft.mod.uni.UniReg;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -39,6 +46,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.Logger;
+
+import static net.fexcraft.mod.fsmm.util.FsmmUtils.UI_ATM_MAIN;
 
 @Mod(modid = FSMM.MODID, name = "Fex's Small Money Mod", version = FSMM.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*",
 	dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
@@ -56,6 +65,10 @@ public class FSMM {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		UniEntity.register(PlayerAccData.class, true);
+		//
+		FsmmUtils.IS_ATM = (ply, pos) -> ((Entity)ply.entity.direct()).world.getBlockState(new BlockPos(pos.x, pos.y, pos.z)).getBlock() instanceof ATM;
+		UniReg.registerUI(UI_ATM_MAIN, ATMMain.class);
+		UniReg.registerMenu(UI_ATM_MAIN, "assets/fsmm/uis/atm_main", ATMContainer.class);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
