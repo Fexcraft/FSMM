@@ -7,21 +7,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
-public class GuiHandler implements IGuiHandler {
+import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.*;
 
-	public static final int ATM_MAIN = 0;
-	public static final int BANK_INFO = 10;
-	public static final int BANK_SELECT = 11;
-	public static final int VIEW_TRANSFERS = 19;
-	public static final int ACCOUNT_SELECT_ACTIVE = 200;
-	public static final int ACCOUNT_SELECT_RECEIVER = 201;
-	public static final int ACCOUNT_WITHDRAW = 21;
-	public static final int ACCOUNT_DEPOSIT= 22;
-	public static final int ACCOUNT_TRANSFER = 23;
+public class GuiHandler implements IGuiHandler {
 	
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		if(ID == ACCOUNT_DEPOSIT || ID == ACCOUNT_WITHDRAW){
+		if(ID == ID12_ATM_ACC_DEPOSIT || ID == ID12_ATM_ACC_WITHDRAW){
 			if(player.world.getBlockState(new BlockPos(x, y, z)).getBlock() instanceof ATM == false){
 				Print.chat(player, "Action not available via Mobile Banking.");
 				return null;
@@ -33,25 +25,25 @@ public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		switch(ID){
-			case ATM_MAIN:
+			case ID12_ATM_MAIN:
 				return new ATMMain(player, new int[]{ x, y, z });
-			case BANK_INFO:
+			case ID12_ATM_BANK_INFO:
 				return new ATMBankInfo(player, new int[]{ x, y, z });
-			case BANK_SELECT:
+			case ID12_ATM_BANK_SELECT:
 				return new ATMBankSelect(player, new int[]{ x, y, z });
-			case VIEW_TRANSFERS:
+			case ID12_ATM_TRANSFERS:
 				return new ATMViewTransfers(player, new int[]{ x, y, z });
-			case ACCOUNT_SELECT_ACTIVE:
-			case ACCOUNT_SELECT_RECEIVER:
-				return new ATMAccountSelect(player, ID == ACCOUNT_SELECT_ACTIVE, new int[]{ x, y, z });
-			case ACCOUNT_WITHDRAW:
-			case ACCOUNT_DEPOSIT:
+			case ID12_ATM_ACC_SELECT:
+			case ID12_ATM_ACC_RECEIVER:
+				return new ATMAccountSelect(player, ID == ID12_ATM_ACC_SELECT, new int[]{ x, y, z });
+			case ID12_ATM_ACC_WITHDRAW:
+			case ID12_ATM_ACC_DEPOSIT:
 				if(player.world.getBlockState(new BlockPos(x, y, z)).getBlock() instanceof ATM == false){
 					Print.chat(player, "Action not available via Mobile Banking.");
 					return null;
 				}
-				return new ATMAccountSelf(player, ID == ACCOUNT_DEPOSIT, new int[]{ x, y, z });
-			case ACCOUNT_TRANSFER:
+				return new ATMAccountSelf(player, ID == ID12_ATM_ACC_DEPOSIT, new int[]{ x, y, z });
+			case ID12_ATM_ACC_TRANSFER:
 				return new ATMAccountTransfer(player, new int[]{ x, y, z });
 			default:
 				return null;
