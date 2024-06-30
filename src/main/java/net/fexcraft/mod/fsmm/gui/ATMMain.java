@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -75,27 +76,27 @@ public class ATMMain extends GenericGui<ATMContainer> {
 	protected boolean buttonClicked(int mouseX, int mouseY, int mouseButton, String key, BasicButton button){
 		switch(button.name){
 			case "bi":{
-				openGui(GuiHandler.BANK_SELECT, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_BANK_SELECT, container.pos, LISTENERID);
 				return true;
 			}
 			case "vt":{
-				openGui(GuiHandler.VIEW_TRANSFERS, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_TRANSFERS, container.pos, LISTENERID);
 				return true;
 			}
 			case "ca":{
-				openGui(GuiHandler.ACCOUNT_SELECT_ACTIVE, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_ACC_SELECT, container.pos, LISTENERID);
 				return true;
 			}
 			case "wd":{
-				openGui(GuiHandler.ACCOUNT_WITHDRAW, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_ACC_WITHDRAW, container.pos, LISTENERID);
 				return true;
 			}
 			case "dp":{
-				openGui(GuiHandler.ACCOUNT_DEPOSIT, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_ACC_DEPOSIT, container.pos, LISTENERID);
 				return true;
 			}
 			case "tr":{
-				openGui(GuiHandler.ACCOUNT_TRANSFER, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_ACC_TRANSFER, container.pos, LISTENERID);
 				return true;
 			}
 		}
