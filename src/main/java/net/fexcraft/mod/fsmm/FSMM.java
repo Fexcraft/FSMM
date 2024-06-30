@@ -19,9 +19,7 @@ import net.fexcraft.mod.fsmm.event.ATMEvent;
 import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
-import net.fexcraft.mod.fsmm.gui.Processor;
-import net.fexcraft.mod.fsmm.ui.ATMContainer;
-import net.fexcraft.mod.fsmm.ui.ATMMain;
+import net.fexcraft.mod.fsmm.ui.*;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
@@ -47,7 +45,7 @@ import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.Logger;
 
-import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.UI_ATM_MAIN;
+import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.*;
 
 @Mod(modid = FSMM.MODID, name = "Fex's Small Money Mod", version = FSMM.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*",
 	dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
@@ -70,6 +68,22 @@ public class FSMM {
 		UniReg.registerMod(MODID, INSTANCE);
 		UniReg.registerUI(UI_ATM_MAIN, ATMMain.class);
 		UniReg.registerMenu(UI_ATM_MAIN, "assets/fsmm/uis/atm_main", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_BANK_INFO, ATMBankInfo.class);
+		UniReg.registerMenu(UI_ATM_BANK_INFO, "assets/fsmm/uis/atm_bank_info", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_BANK_SELECT, ATMBankSelect.class);
+		UniReg.registerMenu(UI_ATM_BANK_SELECT, "assets/fsmm/uis/atm_bank_select", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_ACC_WITHDRAW, ATMWithdraw.class);
+		UniReg.registerMenu(UI_ATM_ACC_WITHDRAW, "assets/fsmm/uis/atm_acc_withdraw", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_ACC_DEPOSIT, ATMDeposit.class);
+		UniReg.registerMenu(UI_ATM_ACC_DEPOSIT, "assets/fsmm/uis/atm_acc_deposit", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_TRANSFERS, ATMViewTransfers.class);
+		UniReg.registerMenu(UI_ATM_TRANSFERS, "assets/fsmm/uis/atm_transfers", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_ACC_TRANSFER, ATMTransfer.class);
+		UniReg.registerMenu(UI_ATM_ACC_TRANSFER, "assets/fsmm/uis/atm_acc_transfer", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_ACC_RECEIVER, ATMSelectReceiver.class);
+		UniReg.registerMenu(UI_ATM_ACC_RECEIVER, "assets/fsmm/uis/atm_select_receiver", ATMContainer.class);
+		UniReg.registerUI(UI_ATM_ACC_SELECT, ATMSelectAccount.class);
+		UniReg.registerMenu(UI_ATM_ACC_SELECT, "assets/fsmm/uis/atm_select_account", ATMContainer.class);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
 		Config.initialize(event);
@@ -105,7 +119,6 @@ public class FSMM {
     	if(post.getSide().isClient()){
         	PacketHandler.registerListener(PacketHandlerType.NBT, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.Receiver());
     	}
-    	PacketHandler.registerListener(PacketHandlerType.NBT, Side.SERVER, new Processor());
 		Config.regExternal();
 		if(EnvInfo.DEV){
 			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> Print.log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
