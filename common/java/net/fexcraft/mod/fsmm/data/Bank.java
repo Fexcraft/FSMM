@@ -11,9 +11,8 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.uni.world.EntityW;
 import net.fexcraft.mod.uni.world.MessageSender;
-import net.fexcraft.mod.uni.world.MessageSenderI;
-import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
@@ -79,7 +78,7 @@ public class Bank implements Manageable {
 	}
 
 	public boolean processAction(Bank.Action action, MessageSender log, Account sender, long amount, Account receiver, boolean included){
-		EntityPlayer player;
+		EntityW player;
 		long fee = 0, total;
 		switch(action){
 			case WITHDRAW:{
@@ -93,20 +92,20 @@ public class Bank implements Manageable {
 					Print.debug(getName(log) + " tried to withdraw a negative amount of money!");
 					return false;
 				}
-				player = (EntityPlayer)((MessageSenderI)log).sender;
+				player = (EntityW)log;
 				if(fees != null){
 					String feestr = fees.get(sender.getType() + ":self");
 					fee = parseFee(feestr, amount);
 				}
 				total = amount + (included ? 0 : fee);
 				if(sender.getBalance() - total >= 0){
-					sender.modifyBalance(Manageable.Action.SUB, total, new MessageSenderI(player));
-					ItemManager.addToInventory(player, amount - (included ? fee : 0));
+					sender.modifyBalance(Manageable.Action.SUB, total, log);
+					ItemManager.addToInventory(player.local(), amount - (included ? fee : 0));
 					log(player, action, amount, fee, total, included, sender, receiver);
 					DataManager.save(sender);
 					return true;
 				}
-				Print.chat(player, "Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
+				player.send("Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
 				Print.debug(sender.getTypeAndId() + " : Withdraw failed! Player does not have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
@@ -117,28 +116,28 @@ public class Bank implements Manageable {
 					return false;
 				}
 				if(amount <= 0){
-					log.send("Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(((MessageSenderI)log).sender) + ");");
+					log.send("Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(((EntityW)log).local()) + ");");
 					Print.debug(getName(log) + " tried to deposit a negative amount of money!");
 					return false;
 				}
-				player = (EntityPlayer)((MessageSenderI)log).sender;
+				player = ((EntityW)log).local();
 				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
 					fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
 					total = amount + (included ? 0 : fee);
-					if(ItemManager.countInInventory(player) - total >= 0){
-						ItemManager.removeFromInventory(player, total);
-						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), new MessageSenderI(player));
+					if(ItemManager.countInInventory(player.local()) - total >= 0){
+						ItemManager.removeFromInventory(player.local(), total);
+						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), log);
 						log(player, action, amount, fee, total, included, sender, receiver);
 						DataManager.save(receiver);
 						return true;
 					}
 					else{
-						Print.chat(player, "Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+						player.send("Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 						Print.log(receiver.getTypeAndId() + ": Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 						return false;
 					}
 				}
-				Print.chat(player, "Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+				player.send("Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 				Print.log(receiver.getTypeAndId() + " : Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
 				return false;
 			}
@@ -265,7 +264,7 @@ public class Bank implements Manageable {
 
 	//
 
-	private void log(EntityPlayer player, Action action, long amount, long fee, long total, boolean included, Account sender, Account receiver){
+	private void log(MessageSender player, Action action, long amount, long fee, long total, boolean included, Account sender, Account receiver){
 		String s, r;
 		switch(action){
 			case DEPOSIT:
@@ -296,7 +295,7 @@ public class Bank implements Manageable {
 	}
 
 	public String getName(MessageSender sender){
-		return sender == null ? "[NULL]" : ((MessageSenderI)sender).sender.getName();
+		return sender == null ? "[NULL]" : sender.getName();
 	}
 
 }
