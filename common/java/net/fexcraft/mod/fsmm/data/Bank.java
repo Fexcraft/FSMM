@@ -120,7 +120,7 @@ public class Bank implements Manageable {
 					Print.debug(getName(log) + " tried to deposit a negative amount of money!");
 					return false;
 				}
-				player = ((EntityW)log).local();
+				player = (EntityW)log;
 				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
 					fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
 					total = amount + (included ? 0 : fee);
