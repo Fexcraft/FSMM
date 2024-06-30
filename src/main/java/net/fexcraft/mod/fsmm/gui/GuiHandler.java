@@ -2,6 +2,7 @@ package net.fexcraft.mod.fsmm.gui;
 
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.blocks.ATM;
+import net.fexcraft.mod.uni.ui.UIUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,14 +20,15 @@ public class GuiHandler implements IGuiHandler {
 				return null;
 			}
 		}
-		return new ATMContainer(player, new int[]{ x, y, z });
+		//return new ATMContainer(player, new int[]{ x, y, z });
+		return UIUtils.getServer("fsmm", ID, player, x, y, z);
 	}
 
 	@Override
-	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z){
 		switch(ID){
 			case ID12_ATM_MAIN:
-				return new ATMMain(player, new int[]{ x, y, z });
+				return UIUtils.getClient("fsmm", ID, player, x, y, z);
 			case ID12_ATM_BANK_INFO:
 				return new ATMBankInfo(player, new int[]{ x, y, z });
 			case ID12_ATM_BANK_SELECT:
