@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -108,7 +109,7 @@ public class ATMBankInfo extends GenericGui<ATMContainer> {
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
         if(keyCode == 1){
-			openGui(GuiHandler.BANK_SELECT, container.pos, LISTENERID);
+			openGui(FsmmUIKeys.ID12_ATM_BANK_SELECT, container.pos, LISTENERID);
             return;
         }
         else super.keyTyped(typedChar, keyCode);
