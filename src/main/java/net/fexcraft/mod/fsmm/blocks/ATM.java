@@ -3,6 +3,7 @@ package net.fexcraft.mod.fsmm.blocks;
 import net.fexcraft.lib.mc.api.registry.fBlock;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -35,7 +36,7 @@ public class ATM extends Block {
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ){
 		if(hand != EnumHand.MAIN_HAND || player.isSneaking()) return false;
 		if(side == world.getBlockState(pos).getValue(FACING) && hitY > 0.5f){
-			if(!world.isRemote) player.openGui(FSMM.getInstance(), GuiHandler.ATM_MAIN, world, pos.getX(), pos.getY(), pos.getZ());
+			if(!world.isRemote) player.openGui(FSMM.getInstance(), FsmmUIKeys.ID12_ATM_MAIN, world, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 		return false;
