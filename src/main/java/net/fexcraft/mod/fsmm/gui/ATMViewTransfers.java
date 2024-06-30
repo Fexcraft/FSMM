@@ -12,6 +12,7 @@ import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Transfer;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -130,7 +131,7 @@ public class ATMViewTransfers extends GenericGui<ATMContainer> {
 
 	@Override
     public void keyTyped(char cher, int key) throws IOException{
-        if(key == 1) openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
+        if(key == 1) openGui(FsmmUIKeys.ID12_ATM_MAIN, container.pos, LISTENERID);
         else super.keyTyped(cher, key);
     }
 
