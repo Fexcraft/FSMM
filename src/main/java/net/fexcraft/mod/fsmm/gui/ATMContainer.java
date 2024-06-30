@@ -1,8 +1,5 @@
 package net.fexcraft.mod.fsmm.gui;
 
-import static net.fexcraft.mod.fsmm.gui.GuiHandler.ATM_MAIN;
-import static net.fexcraft.mod.fsmm.gui.GuiHandler.BANK_INFO;
-
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -21,6 +18,7 @@ import net.fexcraft.mod.fsmm.event.ATMEvent.GatherAccounts;
 import net.fexcraft.mod.fsmm.event.ATMEvent.SearchAccounts;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.tag.TagCW;
@@ -47,6 +45,7 @@ public class ATMContainer extends GenericContainer {
 
 	public ATMContainer(EntityPlayer player, int[] pos){
 		super(player);
+		Print.debug(player);
 		accdata = UniEntity.get(player).get("fsmm");
 		perm = accdata.getSelectedAccount() == null ? AccountPermission.FULL : accdata.getSelectedAccount();
 		account = accdata.getSelectedAccount() == null ? accdata.getAccount() : perm.getAccount();
@@ -136,7 +135,7 @@ public class ATMContainer extends GenericContainer {
 				}
 				case "bank_info":{
 					accdata.setSelectedBankInATM(DataManager.getBank(packet.getString("bank")));
-					((EntityPlayer)accdata.getPlayer()).openGui(FSMM.getInstance(), BANK_INFO, player.world, pos[0], pos[1], pos[2]);
+					((EntityPlayer)accdata.getPlayer()).openGui(FSMM.getInstance(), FsmmUIKeys.ID12_ATM_BANK_INFO, player.world, pos[0], pos[1], pos[2]);
 					break;
 				}
 				case "bank_select":{
@@ -155,7 +154,7 @@ public class ATMContainer extends GenericContainer {
 					else{
 						if(fee > 0) account.modifyBalance(Action.SUB, fee, sender);
 						account.setBank(bank);
-						player.openGui(FSMM.getInstance(), ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
+						player.openGui(FSMM.getInstance(), FsmmUIKeys.ID12_ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
 					}
 					break;
 				}
@@ -172,11 +171,11 @@ public class ATMContainer extends GenericContainer {
 					if(acc != null){
 						if(mode){
 							accdata.setSelectedAccount(acc);
-							player.openGui(FSMM.MODID, GuiHandler.ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
+							player.openGui(FSMM.MODID, FsmmUIKeys.ID12_ATM_MAIN, player.world, pos[0], pos[1], pos[2]);
 						}
 						else{
 							accdata.setSelectedReceiver(acc.getAccount());
-							player.openGui(FSMM.MODID, GuiHandler.ACCOUNT_TRANSFER, player.world, pos[0], pos[1], pos[2]);
+							player.openGui(FSMM.MODID, FsmmUIKeys.ID12_ATM_ACC_TRANSFER, player.world, pos[0], pos[1], pos[2]);
 						}
 					}
 					else{
