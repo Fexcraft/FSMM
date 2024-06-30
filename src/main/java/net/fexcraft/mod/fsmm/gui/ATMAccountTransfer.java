@@ -16,6 +16,7 @@ import net.fexcraft.lib.mc.gui.GenericGui;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -134,7 +135,7 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 				return true;
 			}
 			case "select":{
-				openGui(GuiHandler.ACCOUNT_SELECT_RECEIVER, container.pos, LISTENERID);
+				openGui(FsmmUIKeys.ID12_ATM_ACC_RECEIVER, container.pos, LISTENERID);
 				return true;
 			}
 			case "cancel":{
@@ -193,7 +194,7 @@ public class ATMAccountTransfer extends GenericGui<ATMContainer> {
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
         if(keyCode == 1){
-			openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
+			openGui(FsmmUIKeys.ID12_ATM_MAIN, container.pos, LISTENERID);
             return;
         }
         super.keyTyped(typedChar, keyCode);
