@@ -13,6 +13,7 @@ import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.util.Config;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -199,8 +200,8 @@ public class ATMAccountSelect extends GenericGui<ATMContainer> {
 	@Override
     public void keyTyped(char typedChar, int keyCode) throws IOException{
         if(keyCode == 1){
-    		if(mode) openGui(GuiHandler.ATM_MAIN, container.pos, LISTENERID);
-    		else openGui(GuiHandler.ACCOUNT_TRANSFER, container.pos, LISTENERID);
+    		if(mode) openGui(FsmmUIKeys.ID12_ATM_MAIN, container.pos, LISTENERID);
+    		else openGui(FsmmUIKeys.ID12_ATM_ACC_TRANSFER, container.pos, LISTENERID);
             return;
         }
         else super.keyTyped(typedChar, keyCode);
