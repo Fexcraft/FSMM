@@ -4,6 +4,7 @@ import net.fexcraft.lib.mc.api.registry.fItem;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.gui.GuiHandler;
+import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,7 +27,7 @@ public class MobileAtm extends Item{
         if(world.isRemote || player.isSneaking() || hand== EnumHand.OFF_HAND){
 			return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
 		}
-		player.openGui(FSMM.getInstance(), GuiHandler.ATM_MAIN, world, (int)player.posX, (int)player.posY, (int)player.posZ);
+		player.openGui(FSMM.getInstance(), FsmmUIKeys.ID12_ATM_MAIN, world, (int)player.posX, (int)player.posY, (int)player.posZ);
 		return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 	
