@@ -21,7 +21,7 @@ public class ItemManager {
 		for(ItemStack stack : player.inventory.mainInventory){
 			if(stack.isEmpty()) continue;
 			long worth = Config.getItemStackWorth(stack);
-			Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
+			//Print.debug(stack.toString(), stack.getItem() instanceof Money.Item ? ((Money.Item)stack.getItem()).getType().toString() : "not internal money item");
 			value += worth * stack.getCount();
 		}
 		return value;
