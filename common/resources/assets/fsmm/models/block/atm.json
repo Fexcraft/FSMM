@@ -2,8 +2,8 @@
     "__comment": "Designed by Ferdinand (FEX___96) with BDcraft Cubik PRO 0.96 Beta",
     "parent": "block/cube_all",
     "textures": {
-        "particle": "block/iron_block",
-        "texture": "block/iron_block",
+        "particle": "fsmm:block/atm",
+        "texture": "fsmm:block/atm",
         "atm_overlay": "fsmm:block/atm_overlay"
     },
     "elements": [
