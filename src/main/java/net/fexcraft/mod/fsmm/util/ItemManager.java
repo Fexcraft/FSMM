@@ -71,7 +71,7 @@ public class ItemManager {
 		List<Money> list = FSMM.getSortedMoneyList();
 		Money money = null;
 		for(int i = 0; i < list.size(); i++){
-			Print.debug(list.get(i).getWorth(), list.get(i).getID());
+			//Print.debug(list.get(i).getWorth(), list.get(i).getID());
 			while(amount - (money = list.get(i)).getWorth() >= 0){
 				ItemStack stack = money.getItemStack().copy();
 				if(hasSpace(player, false)){
