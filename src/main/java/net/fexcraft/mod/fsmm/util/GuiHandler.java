@@ -1,7 +1,7 @@
-package net.fexcraft.mod.fsmm.gui;
+package net.fexcraft.mod.fsmm.util;
 
 import net.fexcraft.lib.mc.utils.Print;
-import net.fexcraft.mod.fsmm.blocks.ATM;
+import net.fexcraft.mod.fsmm.local.ATM;
 import net.fexcraft.mod.uni.ui.UIUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
