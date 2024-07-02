@@ -1,0 +1,82 @@
+package net.fexcraft.mod.fsmm.data;
+
+import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.lib.common.math.Time;
+import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.uni.IDL;
+import net.fexcraft.mod.uni.IDLManager;
+import net.fexcraft.mod.uni.item.ItemWrapper;
+import net.fexcraft.mod.uni.item.StackWrapper;
+import net.fexcraft.mod.uni.tag.TagCW;
+
+/**
+ * @author Ferdinand Calo' (FEX___96)
+ */
+public class Money {
+
+	private IDL regname;
+	private StackWrapper stack;
+	private long worth;
+
+	public Money(JsonMap map, boolean internal){
+		regname = IDLManager.getIDLCached((internal ? FSMM.MODID + ":" : "") + map.getString("id", "invalid_" + map + "_" + Time.getDate()));
+		worth = map.getLong("worth", -1);
+		int meta = map.getInteger("meta", -1);
+		if(meta >= 0 && !internal) regname = IDLManager.getIDLCached(regname.colon() + "_" + meta);
+		if(!internal){
+			loadstack(null, map, internal);
+		}
+	}
+
+	public void loadstack(ItemWrapper item, JsonMap map, boolean internal){
+		if(item == null || !internal){
+			String id = map.getString("id", "invalid_" + map.toString() + "_" + Time.getDate());
+			item = ItemWrapper.get(internal ? FSMM.MODID + ":" + id : id);
+			if(item == null){
+				FSMM.LOGGER.info("[FSMM] ERROR - External Item with ID '" + regname.toString() + "' couldn't be found! This is bad!");
+			}
+		}
+		TagCW com = null;
+		if(map.has("nbt")){
+			try{
+				//TODO json to nbt // map.get("nbt");
+			}
+			catch(Exception e){
+				FSMM.LOGGER.info("[FSMM] ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
+			}
+		}
+		//
+		stack = StackWrapper.wrap(item);
+		stack.damage(map.getInteger("meta", -1));
+		if(com != null) stack.setTag(com);
+	}
+
+	public IDL getID(){
+		return regname;
+	}
+
+	@Override
+	public String toString(){
+		return super.toString() + "#" + this.getWorth();
+	}
+
+	public long getWorth(){
+		return worth;
+	}
+
+	public StackWrapper getStack(){
+		return stack;
+	}
+	
+	//
+	
+	public static interface Item {
+		
+		public Money getType();
+		
+		/** Singular worth, do not multiply by count! **/
+		public long getWorth();
+		
+	}
+
+}
