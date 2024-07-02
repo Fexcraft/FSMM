@@ -12,19 +12,19 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.app.json.JsonHandler.PrintOption;
 import net.fexcraft.lib.common.math.Time;
-import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.uni.IDL;
 
+/**
+ * @author Ferdinand Calo' (FEX___96)
+ */
 public class DataManager extends TimerTask {
 	
 	private static final Map<String, Map<String, Account>> ACCOUNTS = new ConcurrentHashMap<>();
@@ -53,7 +53,7 @@ public class DataManager extends TimerTask {
 		ImmutableSet<String> set = ImmutableSet.copyOf(ACCOUNTS.keySet());
 		LAST_TIMERTASK = Time.getDate();
 		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY - 5000);
-		Print.debug("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
+		//Print.debug("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
 		for(String type : set){
 			ImmutableMap<String, Account> map = ImmutableMap.copyOf(ACCOUNTS.get(type));
 			for(Entry<String, Account> entry : map.entrySet()){
@@ -130,12 +130,10 @@ public class DataManager extends TimerTask {
 		return FSMM.CACHE;
 	}
 
-	@Nullable
 	public static final Account getAccount(String accid, boolean tempload){
 		return getAccount(accid, tempload, true);
 	}
-	
-	@Nullable
+
 	public static final Account getAccount(String accid, boolean tempload, boolean create){
 		String[] arr = accid.split(":");
 		if(arr.length < 2){ return null; }
@@ -152,7 +150,7 @@ public class DataManager extends TimerTask {
 			try{
 				Account account = new Account(JsonHandler.parse(file));
 				if(!account.getType().equals(arr[0]) || !account.getId().equals(arr[1])){
-					Print.log(arr[0] + ":" + arr[1] + " != " + account.getType() + ":" + account.getId());
+					FSMM.LOGGER.info(arr[0] + ":" + arr[1] + " != " + account.getType() + ":" + account.getId());
 					throw new RuntimeException("Account data from file doesn't match request! This is a file error which should get controlled.\n" + file.getPath());
 				}
 				addAccount(arr[0], account);
@@ -190,8 +188,7 @@ public class DataManager extends TimerTask {
 	public static boolean addAccount(Account account){
 		return addAccount(account.getType(), account);
 	}
-	
-	@Nullable
+
 	public static final Map<String, Account> getAccountsOfType(String type){
 		return ACCOUNTS.get(type);
 	}
@@ -218,8 +215,7 @@ public class DataManager extends TimerTask {
 	public static boolean addBank(Bank bank){
 		return BANKS.put(bank.id, bank) == null;
 	}
-	
-	@Nullable
+
 	public static final Map<String, Bank> getBanks(){
 		return BANKS;
 	}
