@@ -73,7 +73,7 @@ public class ItemManager {
 		for(int i = 0; i < list.size(); i++){
 			//Print.debug(list.get(i).getWorth(), list.get(i).getID());
 			while(amount - (money = list.get(i)).getWorth() >= 0){
-				ItemStack stack = money.getItemStack().copy();
+				ItemStack stack = money.getStack().copy().local();
 				if(hasSpace(player, false)){
 					player.inventory.addItemStackToInventory(stack);
 				}
