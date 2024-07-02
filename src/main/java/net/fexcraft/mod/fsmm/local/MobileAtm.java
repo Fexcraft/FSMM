@@ -1,9 +1,7 @@
-package net.fexcraft.mod.fsmm.data;
+package net.fexcraft.mod.fsmm.local;
 
 import net.fexcraft.lib.mc.api.registry.fItem;
-import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
