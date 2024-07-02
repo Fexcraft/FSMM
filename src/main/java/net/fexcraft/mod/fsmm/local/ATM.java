@@ -1,8 +1,7 @@
-package net.fexcraft.mod.fsmm.blocks;
+package net.fexcraft.mod.fsmm.local;
 
 import net.fexcraft.lib.mc.api.registry.fBlock;
 import net.fexcraft.mod.fsmm.FSMM;
-import net.fexcraft.mod.fsmm.gui.GuiHandler;
 import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
