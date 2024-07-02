@@ -13,12 +13,13 @@ import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
-import net.fexcraft.mod.fsmm.blocks.ATM;
+import net.fexcraft.mod.fsmm.local.ATM;
 import net.fexcraft.mod.fsmm.data.*;
 import net.fexcraft.mod.fsmm.event.ATMEvent;
 import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
-import net.fexcraft.mod.fsmm.gui.GuiHandler;
+import net.fexcraft.mod.fsmm.util.GuiHandler;
+import net.fexcraft.mod.fsmm.local.MoneyItem;
 import net.fexcraft.mod.fsmm.ui.*;
 import net.fexcraft.mod.fsmm.util.Command;
 import net.fexcraft.mod.fsmm.util.Config;
@@ -115,10 +116,7 @@ public class FSMM {
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent post) {
-    	if(post.getSide().isClient()){
-        	PacketHandler.registerListener(PacketHandlerType.NBT, Side.CLIENT, new net.fexcraft.mod.fsmm.gui.Receiver());
-    	}
+    public void postInit(FMLPostInitializationEvent post){
 		Config.regExternal();
 		if(EnvInfo.DEV){
 			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> Print.log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
