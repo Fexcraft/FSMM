@@ -14,7 +14,8 @@ import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Money;
-import net.fexcraft.mod.fsmm.data.MoneyItem;
+import net.fexcraft.mod.fsmm.local.MoneyItem;
+import net.fexcraft.mod.uni.item.ItemWrapper;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -181,7 +182,7 @@ public class Config {
 				Money money = new Money(elm.asMap(), true);
 				FSMM.CURRENCY.put(money.getID(), money);
 				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getID().path(), new MoneyItem(money), 1, null);
-				money.stackload(FCLRegistry.getItem("fsmm:" + money.getID().path()), elm.asMap(), true);
+				money.loadstack(ItemWrapper.wrap(FCLRegistry.getItem("fsmm:" + money.getID().path())), elm.asMap(), true);
 			});
 			MoneyItem.sort();
 		}
@@ -202,13 +203,7 @@ public class Config {
 		});
 		map.add("Items", items);
 		//
-		JsonArray banks = new JsonArray();
-		JsonMap def = new JsonMap();
-		def.add("uuid", DEFAULT_BANK);
-		def.add("name", "Default Server Bank");
-		def.add("data", new JsonMap());
-		banks.add(def);
-		map.add("Banks", banks);
+		map.add("DefaultBanks", new JsonArray(DEFAULT_BANK));
 		//
 		JsonMap extexp = new JsonMap();
 		JsonArray ext = new JsonArray();
@@ -349,7 +344,7 @@ public class Config {
 
 	public static final long getItemStackWorth(ItemStack stack){
 		if(stack.getItem() instanceof Money.Item){
-			return ((Money.Item)stack.getItem()).getWorth(stack);
+			return ((Money.Item)stack.getItem()).getWorth();
 		}
 		if(EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getItem().getRegistryName() + ":" + stack.getItemDamage())){
 			return EXTERNAL_ITEMS_METAWORTH.get(stack.getItem().getRegistryName() + ":" + stack.getItemDamage());
