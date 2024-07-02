@@ -1,12 +1,12 @@
-package net.fexcraft.mod.fsmm.data;
+package net.fexcraft.mod.fsmm.local;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.data.Money;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
 public class MoneyItem extends Item implements Money.Item {
 	
@@ -37,7 +37,7 @@ public class MoneyItem extends Item implements Money.Item {
 	}
 
 	@Override
-	public long getWorth(ItemStack stack){
+	public long getWorth(){
 		return type.getWorth();
 	}
 	
