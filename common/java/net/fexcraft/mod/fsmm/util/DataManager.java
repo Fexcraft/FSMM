@@ -5,12 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -20,13 +18,15 @@ import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.Bank;
+import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.uni.IDL;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
  */
 public class DataManager extends TimerTask {
-	
+
+	public static LinkedHashMap<IDL, Money> CURRENCY = new LinkedHashMap<>();
 	private static final Map<String, Map<String, Account>> ACCOUNTS = new ConcurrentHashMap<>();
 	private static final Map<String, Bank> BANKS = new ConcurrentHashMap<>();
 	public static File ACCOUNT_DIR, BANK_DIR;
@@ -244,6 +244,10 @@ public class DataManager extends TimerTask {
 			if(file.getName().endsWith(".json") && file.getName().substring(0, file.getName().length() - 5).equals(id)) return true;
 		}
 		return false;
+	}
+
+	public static List<Money> getSortedMoneyList(){
+		return CURRENCY.values().stream().sorted((o1, o2) -> o1.getWorth() < o2.getWorth() ? 1 : -1).collect(Collectors.toList());
 	}
 	
 }
