@@ -100,7 +100,7 @@ public class Bank implements Manageable {
 				total = amount + (included ? 0 : fee);
 				if(sender.getBalance() - total >= 0){
 					sender.modifyBalance(Manageable.Action.SUB, total, log);
-					ItemManager.addToInventory(player.local(), amount - (included ? fee : 0));
+					ItemManager.addToInventory(player, amount - (included ? fee : 0));
 					log(player, action, amount, fee, total, included, sender, receiver);
 					DataManager.save(sender);
 					return true;
@@ -116,7 +116,7 @@ public class Bank implements Manageable {
 					return false;
 				}
 				if(amount <= 0){
-					log.send("Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(((EntityW)log).local()) + ");");
+					log.send("Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(((EntityW)log)) + ");");
 					Print.debug(getName(log) + " tried to deposit a negative amount of money!");
 					return false;
 				}
@@ -124,8 +124,8 @@ public class Bank implements Manageable {
 				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
 					fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
 					total = amount + (included ? 0 : fee);
-					if(ItemManager.countInInventory(player.local()) - total >= 0){
-						ItemManager.removeFromInventory(player.local(), total);
+					if(ItemManager.countInInventory(player) - total >= 0){
+						ItemManager.removeFromInventory(player, total);
 						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), log);
 						log(player, action, amount, fee, total, included, sender, receiver);
 						DataManager.save(receiver);
