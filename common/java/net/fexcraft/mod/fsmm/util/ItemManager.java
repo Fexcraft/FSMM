@@ -45,7 +45,7 @@ public class ItemManager {
 	}
 
 	public static long removeFromInventory(EntityW player, long amount){
-		long old = countInInventory(UniEntity.getEntity(player));
+		long old = countInInventory(player);
 		old -= amount;
 		if(old < 0){
 			amount += old;
@@ -72,7 +72,7 @@ public class ItemManager {
 				wrapper.count(0);
 			}
 		}
-		List<Money> list = FSMM.getSortedMoneyList();
+		List<Money> list = DataManager.getSortedMoneyList();
 		Money money = null;
 		for(int i = 0; i < list.size(); i++){
 			while(amount - (money = list.get(i)).getWorth() >= 0){
