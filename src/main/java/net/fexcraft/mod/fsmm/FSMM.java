@@ -52,7 +52,6 @@ import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.*;
 	dependencies = "required-after:fcl;before:votifier", guiFactory = "net.fexcraft.mod.fsmm.util.GuiFactory")
 public class FSMM {
 
-	public static LinkedHashMap<IDL, Money> CURRENCY = new LinkedHashMap<>();
 	public static final String MODID = "fsmm";
 	public static final String VERSION = "3.0.0";
 
@@ -189,12 +188,6 @@ public class FSMM {
     public static FSMM getInstance(){
     	return INSTANCE;
     }
-	
-	public static List<Money> getSortedMoneyList(){
-		return CURRENCY.values().stream().sorted(new Comparator<Money>(){
-			@Override public int compare(Money o1, Money o2){ return o1.getWorth() < o2.getWorth() ? 1 : -1; }
-		}).collect(Collectors.toList());
-	}
 
 	public static void loadDataManager(){
 		if(isDataManagerLoaded()){
