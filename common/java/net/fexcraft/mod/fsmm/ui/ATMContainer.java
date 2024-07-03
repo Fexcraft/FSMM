@@ -179,7 +179,7 @@ public class ATMContainer extends ContainerInterface {
 					compound.set("account_list", list);
 				}
 				if(com.getBoolean("inventory")){
-					compound.set("inventory", ItemManager.countInInventory(player.entity.local()));
+					compound.set("inventory", ItemManager.countInInventory(player.entity));
 				}
 				compound.set("cargo", "sync");
 				SEND_TO_CLIENT.accept(compound, player);
