@@ -30,22 +30,22 @@ public class PlayerAccData implements UniEntity.AppData {
 
 	/** Returns the worth of all (as money defined) Items in Inventory. **/
 	public long getMoneyInInventory(){
-		return ItemManager.countInInventory(player.entity.local());
+		return ItemManager.countInInventory(player.entity);
 	}
 
 	/** Tries to subtract the defined amount from Inventory, <s>returns the amount which couldn't be subtracted. **/
 	public long subMoneyFromInventory(long expected_amount){
-		return ItemManager.removeFromInventory(player.entity.local(), expected_amount);
+		return ItemManager.removeFromInventory(player.entity, expected_amount);
 	}
 
 	/** Tries to add the defined amount to Inventory, <s>returns the amount which couldn't be added.</s> **/
 	public long addMoneyToInventory(long expected_amount){
-		return ItemManager.addToInventory(player.entity.local(), expected_amount);
+		return ItemManager.addToInventory(player.entity, expected_amount);
 	}
 
 	/** Tries to add the defined amount to Inventory, <s>returns the amount which couldn't be processed.</s> **/
 	public long setMoneyInInventory(long expected_amount){
-		return ItemManager.setInInventory(player.entity.local(), expected_amount);
+		return ItemManager.setInInventory(player.entity, expected_amount);
 	}
 
 	/** Returns the currently/last selected Account in the ATM. */
