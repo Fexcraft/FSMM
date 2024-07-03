@@ -180,7 +180,7 @@ public class Config {
 		if(map.has("Items")){
 			map.getArray("Items").value.forEach((elm) -> {
 				Money money = new Money(elm.asMap(), true);
-				FSMM.CURRENCY.put(money.getID(), money);
+				DataManager.CURRENCY.put(money.getID(), money);
 				FCLRegistry.getAutoRegistry("fsmm").addItem(money.getID().path(), new MoneyItem(money), 1, null);
 				money.loadstack(ItemWrapper.wrap(FCLRegistry.getItem("fsmm:" + money.getID().path())), elm.asMap(), true);
 			});
@@ -291,7 +291,7 @@ public class Config {
 				}
 				if(jsn.has("register") && jsn.get("register").bool()){
 					Money money = new Money(jsn, false);
-					FSMM.CURRENCY.put(money.getID(), money);
+					DataManager.CURRENCY.put(money.getID(), money);
 				}
 			});
 		}
