@@ -62,7 +62,7 @@ public class ATMDeposit extends UserInterface {
 		}
 		String pref = "";
 		if(menu.account != null){
-			long inv = ItemManager.countInInventory(container.player.entity.local());
+			long inv = ItemManager.countInInventory(container.player.entity);
 			texts.get("account_name").value(menu.account.getName());
 			texts.get("account_id").value(menu.account.getType() + ":" + menu.account.getId());
 			texts.get("balance").value(Config.getWorthAsString(inv) + " (inventory)");
