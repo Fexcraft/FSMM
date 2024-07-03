@@ -66,7 +66,7 @@ public class Command extends CommandBase{
     	boolean isp = sender instanceof EntityPlayer;
     	if(args.length <= 0){
     		if(isp){
-            	long value = ItemManager.countInInventory((EntityPlayer)sender);
+            	long value = ItemManager.countInInventory(UniEntity.getEntity(sender));
     			Print.chat(sender, "&bInventory&0: &a" + Config.getWorthAsString(value));
 				//
 				PlayerAccData cap = UniEntity.get(sender.getCommandSenderEntity()).get("fsmm");
