@@ -83,8 +83,8 @@ public class ATMSelectReceiver extends UserInterface {
 			container.player.entity.send("&cYou need to enter the searched account type.");
 			return;
 		}
-		if((noid || id.length() < Config.LOCAL.min_search_chars)){
-			container.player.entity.send("&cYou need to enter at least " + Config.LOCAL.min_search_chars + " characters of the searched id.");
+		if((noid || id.length() < Config.MIN_SEARCH_CHARS)){
+			container.player.entity.send("&cYou need to enter at least " + Config.MIN_SEARCH_CHARS + " characters of the searched id.");
 			return;
 		}
 		if(notype && noid) return;
@@ -141,7 +141,7 @@ public class ATMSelectReceiver extends UserInterface {
 		}
 		if(buttons.get("info_id").hovered()){
 			list.add(Formatter.format("&7ID/Name of &9Account &7to be &6searched&7."));
-			list.add(Formatter.format(Config.LOCAL.partial_account_name_search ? "&7(you can just write bits of the name/id)" : "&7(enter the full account name/id)"));
+			list.add(Formatter.format(Config.PARTIAL_ACCOUNT_NAME_SEARCH ? "&7(you can just write bits of the name/id)" : "&7(enter the full account name/id)"));
 			list.add(Formatter.format("&c&o*required"));
 		}
 	}

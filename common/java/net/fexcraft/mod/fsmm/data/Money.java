@@ -18,6 +18,11 @@ public class Money {
 	private StackWrapper stack;
 	private long worth;
 
+	public Money(String id, long iworth){
+		regname = IDLManager.getIDLCached("fsmm:" + id);
+		worth = iworth;
+	}
+
 	public Money(JsonMap map, boolean internal){
 		regname = IDLManager.getIDLCached((internal ? FSMM.MODID + ":" : "") + map.getString("id", "invalid_" + map + "_" + Time.getDate()));
 		worth = map.getLong("worth", -1);

@@ -1,15 +1,11 @@
 package net.fexcraft.mod.fsmm;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.mojang.authlib.GameProfile;
-import net.fexcraft.lib.mc.network.PacketHandler;
-import net.fexcraft.lib.mc.network.PacketHandler.PacketHandlerType;
+import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.lib.mc.crafting.RecipeRegistry;
 import net.fexcraft.lib.mc.registry.FCLRegistry;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
@@ -18,20 +14,19 @@ import net.fexcraft.mod.fsmm.data.*;
 import net.fexcraft.mod.fsmm.event.ATMEvent;
 import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
-import net.fexcraft.mod.fsmm.util.GuiHandler;
+import net.fexcraft.mod.fsmm.util.*;
 import net.fexcraft.mod.fsmm.local.MoneyItem;
 import net.fexcraft.mod.fsmm.ui.*;
-import net.fexcraft.mod.fsmm.util.Command;
-import net.fexcraft.mod.fsmm.util.Config;
-import net.fexcraft.mod.fsmm.util.DataManager;
-import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.uni.EnvInfo;
-import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.UniReg;
+import net.fexcraft.mod.uni.item.ItemWrapper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Mod;
@@ -59,7 +54,8 @@ public class FSMM {
     private static FSMM INSTANCE;
     public static DataManager CACHE;
     public static final Logger LOGGER = Print.getCustomLogger("fsmm", "transfers", "FSMM", null);
-    
+	public static Config CONFIG;
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		UniEntity.register(PlayerAccData.class, true);
@@ -86,7 +82,35 @@ public class FSMM {
 		UniReg.registerMenu(UI_ATM_ACC_SELECT, "assets/fsmm/uis/atm_select_account", ATMContainer.class);
 		//
 		FCLRegistry.newAutoRegistry("fsmm");
-		Config.initialize(event);
+		CONFIG = new Config(new File(event.getModConfigurationDirectory(), "fsmm.json"));
+		if(Config.ENABLE_ATM_RECIPE){
+			RecipeRegistry.addShapelessRecipe("fsmm:atm", "atm_recipe",
+				new ItemStack(FCLRegistry.getItem("fsmm:atm")),
+				Ingredient.fromStacks(new ItemStack(Items.REDSTONE)),
+				Ingredient.fromStacks(new ItemStack(Items.GOLD_INGOT)),
+				Ingredient.fromStacks(new ItemStack(Blocks.IRON_BLOCK)),
+				Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+				Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+				Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON))
+			);
+		}
+		if(Config.ENABLE_MOBILE_RECIPE){
+			RecipeRegistry.addShapelessRecipe("fsmm:mobile", "mobile_recipe",
+				new ItemStack(FCLRegistry.getItem("fsmm:mobile")),
+				Ingredient.fromStacks(new ItemStack(Items.IRON_INGOT)),
+				Ingredient.fromStacks(new ItemStack(Items.REDSTONE)),
+				Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+				Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON)),
+				Ingredient.fromStacks(new ItemStack(Blocks.STONE_BUTTON))
+			);
+		}
+		MoneyItem.sort();
+	}
+
+	public static void registerItem(Money money){
+		FCLRegistry.getAutoRegistry("fsmm").addItem(money.getID().path(), new MoneyItem(money), 1, null);
+		JsonMap map = new JsonMap("id", money.getID().path(), "worth", money.getWorth());
+		money.loadstack(ItemWrapper.wrap(FCLRegistry.getItem("fsmm:" + money.getID().path())), map, true);
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -116,7 +140,6 @@ public class FSMM {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent post){
-		Config.regExternal();
 		if(EnvInfo.DEV){
 			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> Print.log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
 		}

@@ -143,7 +143,7 @@ public class ATMSelectAccount extends UserInterface {
 		}
 		if(buttons.get("info_id").hovered()){
 			list.add(Formatter.format("&7ID/Name of &9Account &7to be &6searched&7."));
-			list.add(Formatter.format(Config.LOCAL.partial_account_name_search ? "&7(you can just write bits of the name/id)" : "&7(enter the full account name/id)"));
+			list.add(Formatter.format(Config.PARTIAL_ACCOUNT_NAME_SEARCH ? "&7(you can just write bits of the name/id)" : "&7(enter the full account name/id)"));
 		}
 	}
 

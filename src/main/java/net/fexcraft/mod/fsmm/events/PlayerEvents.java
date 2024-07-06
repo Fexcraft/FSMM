@@ -30,11 +30,6 @@ public class PlayerEvents {
     		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));
     	}
     	if(account.lastAccessed() >= 0){ account.setTemporary(false); }
-    	//
-    	NBTTagCompound compound = Config.LOCAL.toNBT();
-    	compound.setString("payload", "config_sync");
-		compound.setString("target_listener", "fsmm:atm_gui");
-		PacketHandler.getInstance().sendTo(new PacketNBTTagCompound(compound), (EntityPlayerMP)event.player);
     }
     
     @SubscribeEvent
@@ -45,8 +40,8 @@ public class PlayerEvents {
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event){
-    	if(!Config.SHOW_ITEM_WORTH_IN_TOOLTIP) return;
-		long worth = Config.getItemStackWorth(event.getItemStack());
+    	if(!Config.SHOW_ITEM_WORTH) return;
+		long worth = Config.getStackWorth(event.getItemStack());
 		if(worth <= 0) return;
 		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
 		if(event.getItemStack().getCount() > 1){

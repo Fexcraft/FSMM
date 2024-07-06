@@ -25,7 +25,7 @@ public class ItemManager {
 		for(int i = 0; i < player.getInventorySize(); i++){
 			wrapper = player.getStackAt(i);
 			if(wrapper.empty()) continue;
-			long worth = Config.getItemStackWorth(wrapper.local());
+			long worth = Config.getStackWorth(wrapper);
 			value += worth * wrapper.count();
 		}
 		return value;
@@ -35,7 +35,7 @@ public class ItemManager {
 		StackWrapper wrapper = null;
 		for(int idx = 0; idx < player.getInventorySize(); idx++){
 			wrapper = player.getStackAt(idx);
-			if(wrapper.empty() || (countMoneyItemAsSpace && Config.getItemStackWorth(wrapper.local()) > 0)) return true;
+			if(wrapper.empty() || (countMoneyItemAsSpace && Config.getStackWorth(wrapper) > 0)) return true;
 		}
 		return false;
 	}
@@ -55,7 +55,7 @@ public class ItemManager {
 		for(int idx = 0; idx < player.getInventorySize(); idx++){
 			wrapper = player.getStackAt(idx);
 			if(wrapper.empty()) continue;
-			if(Config.getItemStackWorth(wrapper.local()) > 0){
+			if(Config.getStackWorth(wrapper) > 0){
 				wrapper.count(0);
 			}
 		}
@@ -68,7 +68,7 @@ public class ItemManager {
 		for(int idx = 0; idx < player.getInventorySize(); idx++){
 			wrapper = player.getStackAt(idx);
 			if(wrapper.empty()) continue;
-			if(Config.getItemStackWorth(wrapper.local()) > 0){
+			if(Config.getStackWorth(wrapper) > 0){
 				wrapper.count(0);
 			}
 		}
