@@ -115,10 +115,18 @@ public class ATMContainer extends ContainerInterface {
 				break;
 			}
 			case "withdraw":{
+				if(!FsmmUIKeys.IS_ATM.apply(player, pos)){
+					player.entity.send("Action not available via Mobile Banking.");
+					return;
+				}
 				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_WITHDRAW, pos);
 				break;
 			}
 			case "deposit":{
+				if(!FsmmUIKeys.IS_ATM.apply(player, pos)){
+					player.entity.send("Action not available via Mobile Banking.");
+					return;
+				}
 				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_DEPOSIT, pos);
 				break;
 			}
