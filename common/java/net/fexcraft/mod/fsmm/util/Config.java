@@ -6,6 +6,7 @@ import net.fexcraft.app.json.JsonValue;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.uni.ConfigBase;
+import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.IDLManager;
 import net.fexcraft.mod.uni.item.StackWrapper;
@@ -163,6 +164,7 @@ public class Config extends ConfigBase {
 					}
 					if(jsn.has("register") && jsn.get("register").bool()){
 						Money money = new Money(jsn, false);
+						if(EnvInfo.is112()) money.loadstack(null, jsn, false);
 						DataManager.CURRENCY.put(money.getID(), money);
 					}
 				});
@@ -259,8 +261,8 @@ public class Config extends ConfigBase {
 	}
 
 	public static final long getStackWorth(StackWrapper stack){
-		if(stack.getItem() instanceof Money.Item){
-			return ((Money.Item)stack.getItem()).getWorth();
+		if(stack.getItem().direct() instanceof Money.Item){
+			return ((Money.Item)stack.getItem().direct()).getWorth();
 		}
 		if(EXTERNAL_ITEMS_METAWORTH.containsKey(stack.getID() + ":" + stack.damage())){
 			return EXTERNAL_ITEMS_METAWORTH.get(stack.getID() + ":" + stack.damage());
