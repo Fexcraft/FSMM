@@ -237,5 +237,9 @@ public class FSMM {
 	public static boolean isDataManagerLoaded(){
 		return CACHE != null;
 	}
+
+	public static void log(Object obj){
+		LOGGER.info(obj + "");
+	}
 	
 }
