@@ -20,8 +20,6 @@ build
 # other
 eclipse
 run
-.nb-gradle
-other
-localrepos
-!gradle-wrapper.jar
-forge20/gradle/wrapper/gradle-wrapper.jar
+
+# Files from Forge MDK
+forge*changelog.txt
