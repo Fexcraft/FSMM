@@ -28,17 +28,14 @@ public class Money {
 		worth = map.getLong("worth", -1);
 		int meta = map.getInteger("meta", -1);
 		if(meta >= 0 && !internal) regname = IDLManager.getIDLCached(regname.colon() + "_" + meta);
-		if(!internal){
-			loadstack(null, map, internal);
-		}
 	}
 
 	public void loadstack(ItemWrapper item, JsonMap map, boolean internal){
 		if(item == null || !internal){
-			String id = map.getString("id", "invalid_" + map.toString() + "_" + Time.getDate());
+			String id = map.getString("id", "invalid_" + map + "_" + Time.getDate());
 			item = ItemWrapper.get(internal ? FSMM.MODID + ":" + id : id);
 			if(item == null){
-				FSMM.LOGGER.info("[FSMM] ERROR - External Item with ID '" + regname.toString() + "' couldn't be found! This is bad!");
+				FSMM.LOGGER.info("ERROR - External Item with ID '" + regname.toString() + "' couldn't be found! This is bad!");
 			}
 		}
 		TagCW com = null;
@@ -47,7 +44,7 @@ public class Money {
 				//TODO json to nbt // map.get("nbt");
 			}
 			catch(Exception e){
-				FSMM.LOGGER.info("[FSMM] ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
+				FSMM.LOGGER.info("ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
 			}
 		}
 		//
