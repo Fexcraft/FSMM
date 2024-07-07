@@ -2,6 +2,7 @@ package net.fexcraft.mod.fsmm;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
+import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Money;
@@ -20,9 +21,12 @@ import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.UniReg;
+import net.fexcraft.mod.uni.item.ItemWrapper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
@@ -76,6 +80,7 @@ public class FSMM {
 		.displayItems((parameters, output) -> {
 			output.accept(ATM_ITEM.get());
 			output.accept(MOBILE_ATM.get());
+			for(MoneyItem item : MoneyItem.sorted) output.accept(item);
 		}).build());
 
 	public FSMM(){
@@ -120,7 +125,8 @@ public class FSMM {
 	private void commonSetup(final FMLCommonSetupEvent setup){
 		MoneyItem.sort();
 		DataManager.CURRENCY.values().forEach(val -> {
-			//loadstack
+			ItemWrapper item = ItemWrapper.get(val.getID().colon());
+			val.loadstack(item, new JsonMap("id", val.getID().colon(), "worth", val.getWorth()), false);
 		});
 		//
 		if(EnvInfo.DEV){
