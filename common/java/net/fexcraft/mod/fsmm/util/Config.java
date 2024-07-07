@@ -99,7 +99,7 @@ public class Config extends ConfigBase {
 			.cons((con, map) -> UNLOAD_FREQUENCY = con.getInteger(map))
 		);
 		entries.add(new ConfigEntry(this, cgen, "partial_account_name_search", false)
-			.info("If true, accounts can be searched by inputting only part of the name, otherwise on false, the full ID/Name is required. Please note that partial search may use more server resources.")
+			.info("(1.12 only) If true, accounts can be searched by inputting only part of the name, otherwise on false, the full ID/Name is required. Please note that partial search may use more server resources.")
 			.cons((con, map) -> PARTIAL_ACCOUNT_NAME_SEARCH = con.getBoolean(map))
 		);
 		entries.add(new ConfigEntry(this, cgen, "min_search_chars", 3).rang(1, 128)
