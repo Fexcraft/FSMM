@@ -2,19 +2,24 @@ package net.fexcraft.mod.fsmm.data;
 
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.uni.Appendable;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.tag.TagCW;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
  */
-public class PlayerAccData implements UniEntity.AppData {
+public class PlayerAccData implements Appendable<UniEntity> {
 
 	private UniEntity player;
 	private Account account;
 	private AccountPermission atmacc;
 	private Account selected;
 	private Bank atmbank;
+
+	public PlayerAccData(UniEntity unient){
+		player = unient;
+	}
 
 	public Account getAccount(){
 		if(account == null){
@@ -93,8 +98,8 @@ public class PlayerAccData implements UniEntity.AppData {
 	}
 
 	@Override
-	public void init(UniEntity player){
-		this.player = player;
+	public PlayerAccData create(UniEntity player){
+		return new PlayerAccData(player);
 	}
 
 	@Override
