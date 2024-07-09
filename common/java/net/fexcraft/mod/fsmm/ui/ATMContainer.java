@@ -35,7 +35,7 @@ public class ATMContainer extends ContainerInterface {
 
 	public ATMContainer(JsonMap map, UniEntity ply, V3I pos){
 		super(map, ply, pos);
-		pass = ply.get("fsmm");
+		pass = ply.getApp(PlayerAccData.class);
 		perm = pass.getSelectedAccount() == null ? AccountPermission.FULL : pass.getSelectedAccount();
 		account = pass.getSelectedAccount() == null ? pass.getAccount() : perm.getAccount();
 		receiver = pass.getSelectedReceiver();
