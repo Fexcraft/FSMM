@@ -17,7 +17,7 @@ public class ATMEvent extends FsmmEvent {
 	
 	private ATMEvent(UniEntity player){
 		this.player = player;
-		this.account = player.get(PlayerAccData.class).getAccount();
+		this.account = player.getApp(PlayerAccData.class).getAccount();
 	}
 	
 	public EntityW getPlayer(){
