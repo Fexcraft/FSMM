@@ -34,6 +34,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -64,6 +65,7 @@ public class FSMM {
 	public static final Logger LOGGER = LogUtils.getLogger();
 	public static DataManager CACHE;
 	public static Config CONFIG;
+	private static boolean loaded;
 	//
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -85,7 +87,7 @@ public class FSMM {
 
 	public FSMM(){
 		CONFIG = new Config(new File(FMLPaths.CONFIGDIR.get().toFile(), "fsmm.json"));
-		UniEntity.register(PlayerAccData.class, true);
+		UniEntity.register(new PlayerAccData(null));
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		bus.addListener(this::commonSetup);
@@ -122,12 +124,18 @@ public class FSMM {
 		FSMM.ITEMS.register(money.getID().path(), () -> new MoneyItem(money));
 	}
 
-	private void commonSetup(final FMLCommonSetupEvent setup){
-		MoneyItem.sort();
+	@SubscribeEvent
+	public void onServerStarting(ServerStartingEvent event){
+		if(loaded) return;
 		DataManager.CURRENCY.values().forEach(val -> {
 			ItemWrapper item = ItemWrapper.get(val.getID().colon());
 			val.loadstack(item, new JsonMap("id", val.getID().colon(), "worth", val.getWorth()), false);
 		});
+		loaded = true;
+	}
+
+	private void commonSetup(final FMLCommonSetupEvent setup){
+		MoneyItem.sort();
 		//
 		if(EnvInfo.DEV){
 			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
