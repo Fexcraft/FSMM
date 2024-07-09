@@ -48,7 +48,7 @@ public class FsmmCmd {
 				if(cmd.getSource().isPlayer()){
 					long value = ItemManager.countInInventory(cmd.getSource().getPlayer());
 					chat(cmd, "&bInventory&0: &a" + Config.getWorthAsString(value));
-					PlayerAccData data = UniEntity.get(cmd.getSource().getPlayer()).get("fsmm");
+					PlayerAccData data = UniEntity.get(cmd.getSource().getPlayer()).getApp("fsmm");
 					if(data.getSelectedAccount() != null && !data.getSelectedAccount().getTypeAndId().equals(data.getAccount().getTypeAndId())){
 						AccountPermission perm = data.getSelectedAccount();
 						chat(cmd, "&bPersonal Balance&0: &a" + Config.getWorthAsString(data.getAccount().getBalance()));
