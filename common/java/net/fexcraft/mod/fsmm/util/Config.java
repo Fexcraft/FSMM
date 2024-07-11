@@ -166,7 +166,7 @@ public class Config extends ConfigBase {
 						EXTERNAL_ITEMS.put(idl, worth);
 					}
 					if(jsn.has("register") && jsn.get("register").bool()){
-						Money money = new Money(jsn, false);
+						Money money = new Money(jsn);
 						DataManager.CURRENCY.put(money.getID(), money);
 						MONEY_INIT_CACHE.put(money, jsn);
 					}
