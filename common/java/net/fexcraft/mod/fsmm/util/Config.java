@@ -13,6 +13,7 @@ import net.fexcraft.mod.uni.item.StackWrapper;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -43,6 +44,7 @@ public class Config extends ConfigBase {
 	//
 	protected static TreeMap<IDL, Long> EXTERNAL_ITEMS = new TreeMap<>();
 	protected static TreeMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new TreeMap<>();
+	public static HashMap<Money, JsonMap> MONEY_INIT_CACHE = new HashMap<>();
 	public static ArrayList<String> DEFAULT_BANKS;
 	protected static final TreeMap<String, Long> DEFAULT_ITEMS = new TreeMap<String, Long>();
 	static {
@@ -139,6 +141,7 @@ public class Config extends ConfigBase {
 				for(Map.Entry<String, JsonValue<?>> entry : items.entries()){
 					Money money = new Money(entry.getKey(), entry.getValue().long_value());
 					DataManager.CURRENCY.put(money.getID(), money);
+					MONEY_INIT_CACHE.put(money, new JsonMap("id", money.getID().colon(), "worth", money.getWorth()));
 					FSMM.registerItem(money);
 				}
 			})
@@ -164,8 +167,8 @@ public class Config extends ConfigBase {
 					}
 					if(jsn.has("register") && jsn.get("register").bool()){
 						Money money = new Money(jsn, false);
-						if(EnvInfo.is112()) money.loadstack(null, jsn, false);
 						DataManager.CURRENCY.put(money.getID(), money);
+						MONEY_INIT_CACHE.put(money, jsn);
 					}
 				});
 			})
