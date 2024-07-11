@@ -98,8 +98,9 @@ public class PlayerAccData implements Appendable<UniEntity> {
 	}
 
 	@Override
-	public PlayerAccData create(UniEntity player){
-		return new PlayerAccData(player);
+	public PlayerAccData create(UniEntity unient){
+		if(!unient.entity.isPlayer()) return null;
+		return new PlayerAccData(unient);
 	}
 
 	@Override
