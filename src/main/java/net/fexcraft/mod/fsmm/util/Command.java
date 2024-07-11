@@ -69,7 +69,7 @@ public class Command extends CommandBase{
             	long value = ItemManager.countInInventory(UniEntity.getEntity(sender));
     			Print.chat(sender, "&bInventory&0: &a" + Config.getWorthAsString(value));
 				//
-				PlayerAccData cap = UniEntity.get(sender.getCommandSenderEntity()).get("fsmm");
+				PlayerAccData cap = UniEntity.get(sender.getCommandSenderEntity()).getApp("fsmm");
 				if(cap.getSelectedAccount() != null && !cap.getSelectedAccount().getTypeAndId().equals(cap.getAccount().getTypeAndId())){
 					AccountPermission perm = cap.getSelectedAccount();
 					Print.chat(sender, "&bPersonal Balance&0: &a" + Config.getWorthAsString(cap.getAccount().getBalance()));
