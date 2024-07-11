@@ -22,6 +22,7 @@ import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.UniReg;
 import net.fexcraft.mod.uni.item.ItemWrapper;
+import net.fexcraft.mod.uni.tag.TagCW;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -124,13 +125,21 @@ public class FSMM {
 		FSMM.ITEMS.register(money.getID().path(), () -> new MoneyItem(money));
 	}
 
+	public static TagCW getTagfromJson(JsonMap map){
+		return null;
+	}
+
 	@SubscribeEvent
 	public void onServerStarting(ServerStartingEvent event){
 		if(loaded) return;
 		DataManager.CURRENCY.values().forEach(val -> {
-			ItemWrapper item = ItemWrapper.get(val.getID().colon());
-			val.loadstack(item, new JsonMap("id", val.getID().colon(), "worth", val.getWorth()), false);
+			JsonMap map = Config.MONEY_INIT_CACHE.get(val);
+			if(map != null){
+				ItemWrapper item = ItemWrapper.get(val.getID().colon());
+				val.loadstack(item, map);
+			}
 		});
+		Config.MONEY_INIT_CACHE.clear();
 		loaded = true;
 	}
 
