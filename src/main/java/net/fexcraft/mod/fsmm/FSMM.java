@@ -21,12 +21,16 @@ import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.UniReg;
 import net.fexcraft.mod.uni.item.ItemWrapper;
+import net.fexcraft.mod.uni.tag.TagCW;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Mod;
@@ -58,7 +62,7 @@ public class FSMM {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
-		UniEntity.register(PlayerAccData.class, true);
+		UniEntity.register(new PlayerAccData(null));
 		//
 		FsmmUIKeys.IS_ATM = (ply, pos) -> ((Entity)ply.entity.direct()).world.getBlockState(new BlockPos(pos.x, pos.y, pos.z)).getBlock() instanceof ATM;
 		UniReg.registerMod(MODID, INSTANCE);
@@ -109,8 +113,6 @@ public class FSMM {
 
 	public static void registerItem(Money money){
 		FCLRegistry.getAutoRegistry("fsmm").addItem(money.getID().path(), new MoneyItem(money), 1, null);
-		JsonMap map = new JsonMap("id", money.getID().path(), "worth", money.getWorth());
-		money.loadstack(ItemWrapper.wrap(FCLRegistry.getItem("fsmm:" + money.getID().path())), map, true);
 	}
 	
 	public static CreativeTabs tabFSMM = new CreativeTabs("tabFSMM") {
@@ -140,6 +142,14 @@ public class FSMM {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent post){
+		DataManager.CURRENCY.values().forEach(val -> {
+			JsonMap map = Config.MONEY_INIT_CACHE.get(val);
+			if(map != null){
+				ItemWrapper item = ItemWrapper.get(map.get("id").string_value());
+				val.loadstack(item, map);
+			}
+		});
+		Config.MONEY_INIT_CACHE.clear();
 		if(EnvInfo.DEV){
 			FsmmEvent.addListener(AccountEvent.BalanceUpdated.class, fe -> Print.log("bal-upd: " + fe.getOldBalance() + " -> " + fe.getNewBalance()));
 		}
@@ -240,6 +250,17 @@ public class FSMM {
 
 	public static void log(Object obj){
 		LOGGER.info(obj + "");
+	}
+
+	public static TagCW getTagfromJson(JsonMap map){
+		try{
+			NBTTagCompound com = JsonToNBT.getTagFromJson(map.toString());
+			return com == null ? null : TagCW.wrap(com);
+		}
+		catch(NBTException e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 }
