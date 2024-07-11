@@ -135,7 +135,7 @@ public class FSMM {
 		DataManager.CURRENCY.values().forEach(val -> {
 			JsonMap map = Config.MONEY_INIT_CACHE.get(val);
 			if(map != null){
-				ItemWrapper item = ItemWrapper.get(val.getID().colon());
+				ItemWrapper item = ItemWrapper.get(map.get("id").string_value());
 				val.loadstack(item, map);
 			}
 		});
