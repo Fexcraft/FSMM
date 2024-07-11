@@ -23,11 +23,11 @@ public class Money {
 		worth = iworth;
 	}
 
-	public Money(JsonMap map, boolean internal){
-		regname = IDLManager.getIDLCached((internal ? FSMM.MODID + ":" : "") + map.getString("id", "invalid_" + map + "_" + Time.getDate()));
+	public Money(JsonMap map){
+		regname = IDLManager.getIDLCached(map.getString("id", "invalid_" + map + "_" + Time.getDate()));
 		worth = map.getLong("worth", -1);
 		int meta = map.getInteger("meta", -1);
-		if(meta >= 0 && !internal) regname = IDLManager.getIDLCached(regname.colon() + "_" + meta);
+		if(meta >= 0) regname = IDLManager.getIDLCached(regname.colon() + "_" + meta);
 	}
 
 	public void loadstack(ItemWrapper item, JsonMap map){
