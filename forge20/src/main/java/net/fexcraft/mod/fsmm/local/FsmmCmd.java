@@ -175,7 +175,7 @@ public class FsmmCmd {
 		);
 	}
 
-	private static boolean isOp(CommandSourceStack css){
+	public static boolean isOp(CommandSourceStack css){
 		if(css == null || !css.isPlayer()) return false;
 		if(ServerLifecycleHooks.getCurrentServer().isSingleplayer()) return true;
 		return ServerLifecycleHooks.getCurrentServer().getPlayerList().isOp(css.getPlayer().getGameProfile());
