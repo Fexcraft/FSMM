@@ -2,6 +2,7 @@ package net.fexcraft.mod.fsmm.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonMap;
@@ -26,7 +27,7 @@ public class Account extends Removable implements Manageable {
 	private Bank bank;
 	private long balance;
 	private JsonMap additionaldata;
-	private ArrayList<Transfer> transfers = new ArrayList<Transfer>();
+	private CopyOnWriteArrayList<Transfer> transfers = new CopyOnWriteArrayList<Transfer>();
 	
 	/** From JSON Constructor */
 	public Account(JsonMap map){
