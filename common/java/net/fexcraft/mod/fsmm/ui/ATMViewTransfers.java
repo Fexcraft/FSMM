@@ -23,6 +23,10 @@ public class ATMViewTransfers extends UserInterface {
 	public ATMViewTransfers(JsonMap map, ContainerInterface container) throws Exception {
 		super(map, container);
 		menu = (ATMContainer)container;
+	}
+
+	@Override
+	public void init(){
 		menu.sync("account_transfers");
 	}
 
