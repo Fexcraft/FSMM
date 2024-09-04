@@ -228,7 +228,7 @@ public class ATMContainer extends ContainerInterface {
 			case "account_search":{
 				String type = com.getString("type").toLowerCase();
 				String id = com.getString("id").toLowerCase();
-				if(type.trim().length() == 0 || id.trim().length() == 0 || id.length() < Config.MIN_SEARCH_CHARS) break;
+				if(type.trim().length() == 0 || id.trim().length() == 0) break;
 				TagCW compound = TagCW.create();
 				ATMEvent.SearchAccounts event = new ATMEvent.SearchAccounts(player, type, id);
 				FsmmEvent.run(event);
