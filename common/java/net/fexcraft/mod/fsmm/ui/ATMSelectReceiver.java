@@ -87,7 +87,7 @@ public class ATMSelectReceiver extends UserInterface {
 			container.player.entity.send("&cYou need to enter the searched account type.");
 			return;
 		}
-		if((noid || id.length() < Config.MIN_SEARCH_CHARS)){
+		if((noid || id.trim().length() < 1)){
 			container.player.entity.send("&cYou need to enter at least " + Config.MIN_SEARCH_CHARS + " characters of the searched id.");
 			return;
 		}
