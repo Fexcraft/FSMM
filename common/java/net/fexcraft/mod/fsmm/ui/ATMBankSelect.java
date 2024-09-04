@@ -17,6 +17,10 @@ public class ATMBankSelect extends UserInterface {
 	public ATMBankSelect(JsonMap map, ContainerInterface container) throws Exception {
 		super(map, container);
 		menu = (ATMContainer)container;
+	}
+
+	@Override
+	public void init(){
 		menu.sync("bank", "bank_list");
 	}
 
