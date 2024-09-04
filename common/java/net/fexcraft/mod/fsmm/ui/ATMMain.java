@@ -18,6 +18,10 @@ public class ATMMain extends UserInterface {
 	public ATMMain(JsonMap map, ContainerInterface container) throws Exception {
 		super(map, container);
 		menu = (ATMContainer)container;
+	}
+
+	@Override
+	public void init(){
 		menu.sync("account", "bank");
 	}
 
