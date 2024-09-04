@@ -23,9 +23,13 @@ public class ATMSelectAccount extends UserInterface {
 	private List<AccountPermission> accounts;
 	private int scroll;
 
-	public ATMSelectAccount(JsonMap map, ContainerInterface container) throws Exception {
+	public ATMSelectAccount(JsonMap map, ContainerInterface container) throws Exception{
 		super(map, container);
 		menu = (ATMContainer)container;
+	}
+
+	@Override
+	public void init(){
 		menu.sync("account", "account_list");
 	}
 
