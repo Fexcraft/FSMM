@@ -19,7 +19,14 @@ public class FsmmEvent {
 	public static void run(FsmmEvent event){
 		ArrayList<Consumer<FsmmEvent>> list = listeners.get(event.getClass());
 		if(list == null) return;
-		for(Consumer<FsmmEvent> cons : list) cons.accept(event);
+		for(Consumer<FsmmEvent> cons : list){
+			try{
+				cons.accept(event);
+			}
+			catch(Throwable e){
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
