@@ -28,6 +28,10 @@ public class ATMWithdraw extends UserInterface {
 	public ATMWithdraw(JsonMap map, ContainerInterface container) throws Exception {
 		super(map, container);
 		menu = (ATMContainer)container;
+	}
+
+	@Override
+	public void init(){
 		menu.sync("account", "bank", "inventory");
 	}
 
