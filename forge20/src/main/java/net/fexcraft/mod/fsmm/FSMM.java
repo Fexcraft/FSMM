@@ -156,6 +156,7 @@ public class FSMM {
 			}
 		});
 		FsmmEvent.addListener(ATMEvent.SearchAccounts.class, event -> {
+			if(event.getSearchedId().length() < Config.MIN_SEARCH_CHARS) return;
 			if(!event.getSearchedType().equals("player")){
 				if(!conAccPerm(event.getAccountsMap(), event.getSearchedType()) && DataManager.exists(event.getSearchedType(), event.getSearchedId())){
 					putAccPerm(event.getAccountsMap(), event.getSearchedType() + ":" + event.getSearchedId());
