@@ -25,6 +25,10 @@ public class ATMSelectReceiver extends UserInterface {
 	public ATMSelectReceiver(JsonMap map, ContainerInterface container) throws Exception {
 		super(map, container);
 		menu = (ATMContainer)container;
+	}
+
+	@Override
+	public void init(){
 		menu.sync("account");
 	}
 
