@@ -7,6 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.app.json.JsonValue;
+import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.event.AccountEvent;
 import net.fexcraft.mod.fsmm.event.FsmmEvent;
 import net.fexcraft.mod.fsmm.util.Config;
@@ -118,7 +119,8 @@ public class Account extends Removable implements Manageable {
 		JsonMap obj = new JsonMap();
 		obj.add("id", idtype.id());
 		obj.add("type", idtype.space());
-		obj.add("bank", bank.id);
+		if(bank != null) obj.add("bank", bank.id);
+		else FSMM.log("Account '" + idtype + "' has no bank assigned.");
 		obj.add("balance", balance);
 		if(additionaldata != null){
 			obj.add("data", additionaldata);
