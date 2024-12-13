@@ -148,7 +148,7 @@ public class DataManager extends TimerTask {
 		File file = new File(ACCOUNT_DIR, arr[0] + "/" + arr[1] + ".json");
 		if(file.exists()){
 			try{
-				Account account = new Account(JsonHandler.parse(file));
+				Account account = new Account(JsonHandler.parse(file), arr[0], arr[1]);
 				if(!account.getType().equals(arr[0]) || !account.getId().equals(arr[1])){
 					FSMM.LOGGER.info(arr[0] + ":" + arr[1] + " != " + account.getType() + ":" + account.getId());
 					throw new RuntimeException("Account data from file doesn't match request! This is a file error which should get controlled.\n" + file.getPath());
