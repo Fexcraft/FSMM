@@ -40,7 +40,7 @@ public class AccountPermission {
 	}
 	
 	public AccountPermission(TagCW compound){
-		account = new Account(JsonHandler.parse(compound.getString("a"), true).asMap());
+		account = new Account(JsonHandler.parse(compound.getString("a"), true).asMap(), null, null);
 		accid = account.getId();
 		withdraw = compound.getBoolean("w");
 		deposit = compound.getBoolean("d");
