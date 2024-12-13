@@ -31,10 +31,10 @@ public class Account extends Removable implements Manageable {
 	private CopyOnWriteArrayList<Transfer> transfers = new CopyOnWriteArrayList<Transfer>();
 	
 	/** From JSON Constructor */
-	public Account(JsonMap map){
-		idtype = IDLManager.getIDLCached(map.get("type").string_value() + ":" + map.get("id").string_value());
+	public Account(JsonMap map, String def_type, String def_id){
+		idtype = IDLManager.getIDLCached(map.getString("type", def_type) + ":" + map.getString("id", def_id));
 		bank = DataManager.getBank(map.getString("bank", Config.DEFAULT_BANK));
-		balance = map.get("balance").long_value();
+		balance = map.getLong("balance", 0l);
 		additionaldata = map.has("data") ? map.getMap("data") : null;
 		name = map.has("name") ? map.get("name").string_value() : null;
 		if(map.has("transfers")){
