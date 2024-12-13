@@ -63,10 +63,10 @@ public class ATMContainer extends ContainerInterface {
 			switch(com.getString("cargo")){
 				case "sync":{
 					if(com.has("account")){
-						account = new Account(JsonHandler.parse(com.getString("account"), true).asMap());
+						account = new Account(JsonHandler.parse(com.getString("account"), true).asMap(), null, null);
 					}
 					if(com.has("receiver")){
-						receiver = new Account(JsonHandler.parse(com.getString("receiver"), true).asMap());
+						receiver = new Account(JsonHandler.parse(com.getString("receiver"), true).asMap(), null, null);
 					}
 					if(com.has("bank")){
 						bank = new Bank(JsonHandler.parse(com.getString("bank"), true).asMap());
