@@ -75,7 +75,7 @@ public class Config extends ConfigBase {
 	}
 
 	public Config(File fl){
-		super(fl);
+		super(fl, "Fex's Small Money Mod");
 	}
 
 	@Override
@@ -92,47 +92,58 @@ public class Config extends ConfigBase {
 		entries.add(new ConfigEntry(this, cgen, "starting_balance", 100000).rang(0, 1000000)
 			.info("Starting balance for a new player. (1000 units == 1 F$)")
 			.cons((con, map) -> STARTING_BALANCE = con.getInteger(map))
+			.req(false, true)
 		);
 		entries.add(new ConfigEntry(this, cgen, "notify_balance_on_join", true)
 			.info("Should the player be notified about his current balance when joining?")
 			.cons((con, map) -> NOTIFY_BALANCE_ON_JOIN = con.getBoolean(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cgen, "unload_frequency", 5).rang(3, 60)
 			.info("Frequency of how often it should be checked if (temporarily loaded) accounts and banks should be unloaded. Time in minutes.")
 			.cons((con, map) -> UNLOAD_FREQUENCY = con.getInteger(map))
+			.req(true, true)
 		);
 		entries.add(new ConfigEntry(this, cgen, "partial_account_name_search", false)
 			.info("(1.12 only) If true, accounts can be searched by inputting only part of the name, otherwise on false, the full ID/Name is required. Please note that partial search may use more server resources.")
 			.cons((con, map) -> PARTIAL_ACCOUNT_NAME_SEARCH = con.getBoolean(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cgen, "min_search_chars", 3).rang(1, 128)
 			.info("Minimum characters to enter in the 'Name/ID' search bar for search to work.")
 			.cons((con, map) -> MIN_SEARCH_CHARS = con.getInteger(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cgen, "transfer_cache", 50).rang(10, 1000)
 			.info("Amount of executed transfer's data to be cached per account.")
 			.cons((con, map) -> TRANSFER_CACHE = con.getInteger(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cgen, "enable_cards", true)
 			.info("Should (Debit) Cards be enabled?")
 			.cons((con, map) -> ENABLE_CARDS = con.getBoolean(map))
+			.req(false, true)
 		);
 		entries.add(new ConfigEntry(this, cgen, "enable_atm_recipe", true)
 			.info("Should the default ATM recipe be enabled?")
 			.cons((con, map) -> ENABLE_ATM_RECIPE = con.getBoolean(map))
+			.req(false, true)
 		);
 		entries.add(new ConfigEntry(this, cgen, "enable_mobile_recipe", true)
 			.info("Should the default Mobile Banking Item recipe be enabled?")
 			.cons((con, map) -> ENABLE_MOBILE_RECIPE = con.getBoolean(map))
+			.req(false, true)
 		);
 		//
 		entries.add(new ConfigEntry(this, creg, "default_bank", "default")
 			.info("Default Bank of the Server. New accounts get this Bank assigned. Fallback Bank if a specific Bank was not found.")
 			.cons((con, map) -> DEFAULT_BANK = con.getString(map))
+			.req(false, true)
 		);
 		entries.add(new ConfigEntry(this, creg, "default_banks", new JsonArray("default"))
 			.info("List of Banks which get loaded into memory each server launch.")
 			.cons((con, map) -> DEFAULT_BANKS = con.getJson(map).asArray().toStringList())
+			.req(false, true)
 		);
 		entries.add(new ConfigEntry(this, creg, "internal_items", genDefaultItems())
 			.info("List of default FSMM Items. Remove entries from this list if you want to remove FSMM items. If you add new entries, you have to provide assets for them, e.g. via another mod or resourcepack.")
@@ -145,6 +156,7 @@ public class Config extends ConfigBase {
 					FSMM.registerItem(money);
 				}
 			})
+			.req(false, true)
 		);
 		entries.add(new ConfigEntry(this, creg, "external_items", genExternalItems())
 			.info("List of non-FSMM items to be regarded as money. Both Vanilla and Modded items are supported. If 'register' is true, the specific item can be withdrawn using the ATM.")
@@ -172,27 +184,33 @@ public class Config extends ConfigBase {
 					}
 				});
 			})
+			.req(false, true)
 		);
 		//
 		entries.add(new ConfigEntry(this, cdis, "currency_sign", "F$")
 			.info("Custom Currency Sign")
 			.cons((con, map) -> CURRENCY_SIGN = con.getString(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cdis, "invert_comma_dot", false)
 			.info("Invert ',' (comma) and '.' (dot) display.")
 			.cons((con, map) -> INVERT_COMMA_DOT = con.getBoolean(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cdis, "show_decimals", true)
 			.info("Should decimals be shown when zero? E.g. '234.00'")
 			.cons((con, map) -> SHOW_DECIMALS = con.getBoolean(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cdis, "show_centesimals", false)
 			.info("Should centesimals be shown? E.g. '29.503' instead of '29.50'.")
 			.cons((con, map) -> SHOW_CENTESIMALS = con.getBoolean(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cdis, "show_item_worth", true)
 			.info("Should the Item's Worth be shown in the tooltip?")
 			.cons((con, map) -> SHOW_ITEM_WORTH = con.getBoolean(map))
+			.req(false, false)
 		);
 		entries.add(new ConfigEntry(this, cdis, "thousand_separator", "null")
 			.info("Custom thousand separator sign, leave as 'null' for default behaviour.")
@@ -200,6 +218,7 @@ public class Config extends ConfigBase {
 				String str = con.getString(map);
 				THOUSAND_SEPARATOR = str.equals("null") ? null : str;
 			})
+			.req(false, false)
 		);
 	}
 
