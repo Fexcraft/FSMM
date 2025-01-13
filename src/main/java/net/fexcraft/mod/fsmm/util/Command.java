@@ -10,7 +10,6 @@ import java.util.function.BiConsumer;
 
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.common.utils.Formatter;
-import net.fexcraft.lib.mc.registry.UCResourceLocation;
 import net.fexcraft.lib.mc.utils.Print;
 import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.FSMM;
@@ -201,7 +200,7 @@ public class Command extends CommandBase{
 	private void process(ICommandSender sender, String[] args, BiConsumer<Account, Boolean> cons){
 		ResourceLocation rs;
 		if(args[1].contains(":")){
-			rs = new UCResourceLocation(args[1].split(":"));
+			rs = new ResourceLocation(args[1]);
 			if(rs.getNamespace().equals("player")){
 				try{
 					UUID.fromString(rs.getPath());
@@ -210,13 +209,13 @@ public class Command extends CommandBase{
 				catch(Exception e){
 					//not an UUID, let's convert
 					UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(rs.getPath()).getId();
-					rs = new UCResourceLocation(rs.getNamespace(), uuid.toString());
+					rs = new ResourceLocation(rs.getNamespace(), uuid.toString());
 				}
 			}
 		}
 		else{
 			UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(args[1]).getId();
-			rs = new UCResourceLocation("player", uuid.toString());
+			rs = new ResourceLocation("player", uuid.toString());
 		}
 		Account account = DataManager.getAccount(rs.toString(), false, false);
 		boolean online = account != null;
