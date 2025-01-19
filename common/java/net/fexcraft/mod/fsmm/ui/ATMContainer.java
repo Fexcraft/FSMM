@@ -302,9 +302,4 @@ public class ATMContainer extends ContainerInterface {
 		SEND_TO_SERVER.accept(compound);
 	}
 
-	@Override
-	public void onClosed(){
-		//
-	}
-
 }
