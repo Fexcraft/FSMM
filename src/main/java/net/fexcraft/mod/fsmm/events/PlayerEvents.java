@@ -4,6 +4,7 @@ import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.lib.mc.network.PacketHandler;
 import net.fexcraft.lib.mc.network.packet.PacketNBTTagCompound;
 import net.fexcraft.lib.mc.utils.Print;
+import net.fexcraft.lib.mc.utils.Static;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
@@ -40,7 +41,7 @@ public class PlayerEvents {
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event){
-    	if(!Config.SHOW_ITEM_WORTH) return;
+    	if(!Config.SHOW_ITEM_WORTH || Static.getServer() == null) return;
 		long worth = Config.getStackWorth(event.getItemStack());
 		if(worth <= 0) return;
 		String str = "&9" + Config.getWorthAsString(worth, true, worth < 10);
