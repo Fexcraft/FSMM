@@ -7,6 +7,7 @@ import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.IDLManager;
 import net.fexcraft.mod.uni.item.ItemWrapper;
 import net.fexcraft.mod.uni.item.StackWrapper;
+import net.fexcraft.mod.uni.item.UniStack;
 import net.fexcraft.mod.uni.tag.TagCW;
 
 /**
@@ -40,7 +41,7 @@ public class Money {
 				FSMM.LOGGER.info("ERROR - Could not load NBT from config of '" + regname.toString() + "'! This is bad!");
 			}
 		}
-		stack = StackWrapper.wrap(item);
+		stack = UniStack.createStack(item);
 		stack.damage(map.getInteger("meta", -1));
 		if(com != null) stack.setTag(com);
 	}
