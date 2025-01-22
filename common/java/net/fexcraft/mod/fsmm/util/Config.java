@@ -10,6 +10,7 @@ import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
 import net.fexcraft.mod.uni.IDLManager;
 import net.fexcraft.mod.uni.item.StackWrapper;
+import net.fexcraft.mod.uni.item.UniStack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -279,7 +280,7 @@ public class Config extends ConfigBase {
 	}
 
 	public static final long getStackWorth(Object stack){
-		return getStackWorth(StackWrapper.wrap(stack));
+		return getStackWorth(UniStack.getStack(stack));
 	}
 
 	public static final long getStackWorth(StackWrapper stack){
