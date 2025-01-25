@@ -20,7 +20,7 @@ import net.fexcraft.mod.fsmm.ui.*;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.UniReg;
-import net.fexcraft.mod.uni.item.ItemWrapper;
+import net.fexcraft.mod.uni.inv.ItemWrapper;
 import net.fexcraft.mod.uni.tag.TagCW;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
