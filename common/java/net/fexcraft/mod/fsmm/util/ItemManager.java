@@ -2,10 +2,9 @@ package net.fexcraft.mod.fsmm.util;
 
 import java.util.List;
 
-import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Money;
 import net.fexcraft.mod.uni.UniEntity;
-import net.fexcraft.mod.uni.item.StackWrapper;
+import net.fexcraft.mod.uni.inv.StackWrapper;
 import net.fexcraft.mod.uni.world.EntityW;
 
 /**
