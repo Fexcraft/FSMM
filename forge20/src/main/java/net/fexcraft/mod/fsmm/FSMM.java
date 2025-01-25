@@ -21,7 +21,7 @@ import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.UniReg;
-import net.fexcraft.mod.uni.item.ItemWrapper;
+import net.fexcraft.mod.uni.inv.ItemWrapper;
 import net.fexcraft.mod.uni.tag.TagCW;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
