@@ -43,7 +43,7 @@ public class Money {
 		}
 		stack = UniStack.createStack(item);
 		stack.damage(map.getInteger("meta", -1));
-		if(com != null) stack.setTag(com);
+		if(com != null) stack.updateTag(com);
 	}
 
 	public IDL getID(){
