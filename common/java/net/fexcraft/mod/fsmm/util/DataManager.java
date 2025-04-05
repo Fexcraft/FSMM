@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableSet;
 import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.app.json.JsonHandler.PrintOption;
 import net.fexcraft.lib.common.math.Time;
+import net.fexcraft.lib.common.utils.CallbackContainer;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.Bank;
@@ -29,6 +30,7 @@ public class DataManager extends TimerTask {
 	public static LinkedHashMap<IDL, Money> CURRENCY = new LinkedHashMap<>();
 	private static final Map<String, Map<String, Account>> ACCOUNTS = new ConcurrentHashMap<>();
 	private static final Map<String, Bank> BANKS = new ConcurrentHashMap<>();
+	public static CallbackContainer AFTER_INIT = new CallbackContainer();
 	public static File ACCOUNT_DIR, BANK_DIR;
 	public static long LAST_TIMERTASK;
 	protected static Timer timer;
@@ -46,6 +48,7 @@ public class DataManager extends TimerTask {
 			BANKS.put(Config.DEFAULT_BANK, new Bank(Config.DEFAULT_BANK));
 		}
 		for(Bank bank : BANKS.values()) loadBank(bank);
+		AFTER_INIT.complete();
 	}
 
 	@Override
