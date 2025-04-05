@@ -165,7 +165,7 @@ public class DataManager extends TimerTask {
 			try{
 				Account account = new Account(arr[1], arr[0], arr[0].equals("player") ? Config.STARTING_BALANCE : 0, getDefaultBank(), null);
 				addAccount(arr[0], account);
-				FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + "!");
+				FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + " at Bank '" + account.getBank().id +"'!");
 				return account.setTemporary(tempload);
 			}
 			catch(RuntimeException e){
