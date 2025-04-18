@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import net.fexcraft.app.json.JsonArray;
 import net.fexcraft.app.json.JsonMap;
 import net.fexcraft.app.json.JsonValue;
+import net.fexcraft.mod.fcl.UniFCL;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.util.ItemManager;
 import net.fexcraft.mod.fsmm.util.DataManager;
@@ -78,6 +79,7 @@ public class Bank implements Manageable {
 
 	public boolean processAction(Bank.Action action, MessageSender log, Account sender, long amount, Account receiver, boolean included){
 		EntityW player;
+		if(log == null) log = UniFCL.LOG;
 		long fee = 0, total;
 		switch(action){
 			case WITHDRAW:{
