@@ -10,11 +10,11 @@ sourceSets {
 	main {
 		java {
 			srcDirs += 'src/main/java'
-			srcDirs += '../neutral/src'
+			srcDirs += '../common/src'
 		}
 		resources {
 			srcDirs += 'src/main/resources'
-			srcDirs += '../neutral/res'
+			srcDirs += '../common/res'
 		}
 	}
 }
