@@ -96,25 +96,7 @@ public class FSMM {
 		MinecraftForge.EVENT_BUS.register(this);
 
 		FsmmUIKeys.IS_ATM = (ply, pos) -> ((Entity)ply.entity.direct()).level().getBlockState(new BlockPos(pos.x, pos.y, pos.z)).getBlock() instanceof AtmBlock;
-		UniReg.registerMod(MODID, this);
-		UniReg.registerUI(UI_ATM_MAIN, ATMMain.class);
-		UniReg.registerMenu(UI_ATM_MAIN, "fsmm:uis/atm_main", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_BANK_INFO, ATMBankInfo.class);
-		UniReg.registerMenu(UI_ATM_BANK_INFO, "fsmm:uis/atm_bank_info", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_BANK_SELECT, ATMBankSelect.class);
-		UniReg.registerMenu(UI_ATM_BANK_SELECT, "fsmm:uis/atm_bank_select", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_ACC_WITHDRAW, ATMWithdraw.class);
-		UniReg.registerMenu(UI_ATM_ACC_WITHDRAW, "fsmm:uis/atm_acc_withdraw", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_ACC_DEPOSIT, ATMDeposit.class);
-		UniReg.registerMenu(UI_ATM_ACC_DEPOSIT, "fsmm:uis/atm_acc_deposit", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_TRANSFERS, ATMViewTransfers.class);
-		UniReg.registerMenu(UI_ATM_TRANSFERS, "fsmm:uis/atm_transfers", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_ACC_TRANSFER, ATMTransfer.class);
-		UniReg.registerMenu(UI_ATM_ACC_TRANSFER, "fsmm:uis/atm_acc_transfer", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_ACC_RECEIVER, ATMSelectReceiver.class);
-		UniReg.registerMenu(UI_ATM_ACC_RECEIVER, "fsmm:uis/atm_select_receiver", ATMContainer.class);
-		UniReg.registerUI(UI_ATM_ACC_SELECT, ATMSelectAccount.class);
-		UniReg.registerMenu(UI_ATM_ACC_SELECT, "fsmm:uis/atm_select_account", ATMContainer.class);
+		FsmmUIKeys.register(this);
 
 		//TODO ATM Recipe
 	}
