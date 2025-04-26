@@ -12,10 +12,7 @@ import net.fexcraft.mod.uni.inv.StackWrapper;
 import net.fexcraft.mod.uni.inv.UniStack;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
@@ -42,8 +39,8 @@ public class Config extends ConfigBase {
 	public static String COMMA = ",";
 	public static String DOT = ".";
 	//
-	protected static TreeMap<IDL, Long> EXTERNAL_ITEMS = new TreeMap<>();
-	protected static TreeMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new TreeMap<>();
+	protected static LinkedHashMap<IDL, Long> EXTERNAL_ITEMS = new LinkedHashMap<>();
+	protected static LinkedHashMap<String, Long> EXTERNAL_ITEMS_METAWORTH = new LinkedHashMap<>();
 	public static HashMap<Money, JsonMap> MONEY_INIT_CACHE = new HashMap<>();
 	public static ArrayList<String> DEFAULT_BANKS;
 	protected static final TreeMap<String, Long> DEFAULT_ITEMS = new TreeMap<String, Long>();
