@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"net.fexcraft.mod.fsmm.FSMM"
+		],
+		"client": [
+			"net.fexcraft.mod.fsmm.FSMMC"
 		]
 	},
 	"mixins": [
