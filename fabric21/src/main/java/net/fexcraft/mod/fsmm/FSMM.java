@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static net.fexcraft.lib.common.utils.Formatter.format;
 import static net.fexcraft.mod.fsmm.local.FsmmCmd.getFormatted;
 
 /**
@@ -66,8 +67,8 @@ public class FSMM implements ModInitializer {
 			Account account = DataManager.getAccount("player:" + handler.player.getGameProfile().getId().toString(), false, true);
 			if(Config.NOTIFY_BALANCE_ON_JOIN){
 				UniEntity ent = UniEntity.get(handler.player);
-				ent.entity.send(getFormatted("&m&3Balance &r&7(in bank)&0: &a") + Config.getWorthAsString(account.getBalance()));
-				ent.entity.send(getFormatted("&m&3Balance &r&7(in Inv0)&0: &a") + Config.getWorthAsString(ItemManager.countInInventory(handler.player)));
+				ent.entity.send(format("&m&3Balance &r&7(in bank)&0: &a") + Config.getWorthAsString(account.getBalance()));
+				ent.entity.send(format("&m&3Balance &r&7(in Inv0)&0: &a") + Config.getWorthAsString(ItemManager.countInInventory(handler.player)));
 			}
 			if(account.lastAccessed() >= 0) account.setTemporary(false);
 		});
