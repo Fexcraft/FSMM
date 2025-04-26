@@ -16,15 +16,18 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 
+import static net.fexcraft.mod.fcl.local.CraftingBlock.FACING;
+
 /**
  * @author Ferdinand Calo' (FEX___96)
  */
 public class AtmBlock extends Block {
 
-	//public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+	public static AtmBlock INST;
 
 	public AtmBlock(Properties prop){
 		super(prop.noOcclusion().mapColor(MapColor.STONE));
+		INST = this;
 	}
 
 	@Override
@@ -37,11 +40,11 @@ public class AtmBlock extends Block {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> sd){
-		//sd.add(FACING);
+		sd.add(FACING);
 	}
 
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		return defaultBlockState();//.setValue(FACING, context.getPlayer().getDirection().getOpposite());
+		return defaultBlockState().setValue(FACING, context.getPlayer().getDirection().getOpposite());
 	}
 
 }
