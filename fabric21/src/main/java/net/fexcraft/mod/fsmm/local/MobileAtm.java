@@ -14,8 +14,11 @@ import net.minecraft.world.level.Level;
  */
 public class MobileAtm extends Item {
 
+	public static MobileAtm INST;
+
 	public MobileAtm(Properties prop){
 		super(prop.stacksTo(1));
+		INST = this;
 	}
 
 	@Override
