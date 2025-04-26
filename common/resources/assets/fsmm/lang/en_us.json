@@ -1,6 +1,6 @@
 {
 	"itemGroup.fsmm": "FSMM - Fex's Small Money Mod",
-	"block.fsmm.atm": "Automated Teller Machine",
+	"block.fsmm.atm": "ATM | Automated Teller Machine",
 	"item.fsmm.mobile": "FSMM Mobile Banking",
 
 	"item.fsmm.1cent": "1 Cent",
@@ -28,20 +28,20 @@
 	"item.fsmm.200kfoney": "200k Foney",
 	"item.fsmm.500kfoney": "500k Foney",
 
-	"ui.fsmm.atm_only": "&eAction only available via Block ATM.",
-	"ui.fsmm.atm_scroll_up": "&7Scroll Up",
-	"ui.fsmm.atm_scroll_down": "&7Scroll Down",
-	"ui.fsmm.atm_main.bank": "&7Bank Info &8/ &9 Change Bank",
-	"ui.fsmm.atm_main.transfers": "&bView Account Activity",
-	"ui.fsmm.atm_main.select": "&aChange &7managed &9Account",
-	"ui.fsmm.atm_main.withdraw": "&eWidthdraw &7from &9Account",
-	"ui.fsmm.atm_main.deposit": "&6Deposit &7to &9Account",
-	"ui.fsmm.atm_main.transfer": "&bTransfer &7to another &9Account",
-	"ui.fsmm.atm_withdraw": "&9Confirm &eWidthdraw",
-	"ui.fsmm.atm_deposit": "&9Confirm &6Deposit",
-	"ui.fsmm.atm_transfer": "&9Confirm &bTransfer",
-	"ui.fsmm.atm_select_receiver": "&7Open Account Selection",
+	"ui.fsmm.atm_only": "\u00A7eAction only available via Block ATM.",
+	"ui.fsmm.atm_scroll_up": "\u00A77Scroll Up",
+	"ui.fsmm.atm_scroll_down": "\u00A77Scroll Down",
+	"ui.fsmm.atm_main.bank": "\u00A77Bank Info \u00A78/ \u00A79 Change Bank",
+	"ui.fsmm.atm_main.transfers": "\u00A7bView Account Activity",
+	"ui.fsmm.atm_main.select": "\u00A7aChange \u00A77managed \u00A79Account",
+	"ui.fsmm.atm_main.withdraw": "\u00A7eWidthdraw \u00A77from \u00A79Account",
+	"ui.fsmm.atm_main.deposit": "\u00A76Deposit \u00A77to \u00A79Account",
+	"ui.fsmm.atm_main.transfer": "\u00A7bTransfer \u00A77to another \u00A79Account",
+	"ui.fsmm.atm_withdraw": "\u00A79Confirm \u00A7eWidthdraw",
+	"ui.fsmm.atm_deposit": "\u00A79Confirm \u00A76Deposit",
+	"ui.fsmm.atm_transfer": "\u00A79Confirm \u00A7bTransfer",
+	"ui.fsmm.atm_select_receiver": "\u00A77Open Account Selection",
 	"ui.fsmm.atm_select_rec_info": "Please select a receiver.",
-	"ui.fsmm.atm_select_rec_click": "&7Click to select this account.",
-	"ui.fsmm.atm_search": "&7Search/Filter"
+	"ui.fsmm.atm_select_rec_click": "\u00A77Click to select this account.",
+	"ui.fsmm.atm_search": "\u00A77Search/Filter"
 }
