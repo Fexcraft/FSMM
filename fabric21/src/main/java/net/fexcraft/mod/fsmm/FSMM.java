@@ -148,7 +148,7 @@ public class FSMM implements ModInitializer {
 		if(FSMM.CACHE != null){
 			FSMM.CACHE.saveAll(); FSMM.CACHE.clearAll();
 		}
-		FSMM.CACHE = new DataManager(FCL.SERVER.get().getServerDirectory().toFile());
+		FSMM.CACHE = new DataManager(FCL.SERVER.get().getServerDirectory().toAbsolutePath().toFile());
 		FSMM.CACHE.schedule();
 	}
 
