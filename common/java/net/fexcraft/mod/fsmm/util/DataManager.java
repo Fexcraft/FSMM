@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.app.json.JsonHandler.PrintOption;
+import net.fexcraft.lib.common.Static;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.common.utils.CallbackContainer;
 import net.fexcraft.mod.fsmm.FSMM;
@@ -55,7 +56,7 @@ public class DataManager extends TimerTask {
 	public void run(){
 		ImmutableSet<String> set = ImmutableSet.copyOf(ACCOUNTS.keySet());
 		LAST_TIMERTASK = Time.getDate();
-		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY - 5000);
+		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY * Time.MIN_MS - 5000);
 		//Print.debug("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
 		for(String type : set){
 			ImmutableMap<String, Account> map = ImmutableMap.copyOf(ACCOUNTS.get(type));
@@ -226,8 +227,8 @@ public class DataManager extends TimerTask {
 	public void schedule(){
 		LocalDateTime midnight = LocalDateTime.of(LocalDate.now(ZoneOffset.systemDefault()), LocalTime.MIDNIGHT);
 		long mid = midnight.toInstant(ZoneOffset.UTC).toEpochMilli(); long date = Time.getDate();
-		while((mid += Config.UNLOAD_FREQUENCY) < date);
-        timer.schedule(this, new Date(mid), Config.UNLOAD_FREQUENCY);
+		while((mid += Config.UNLOAD_FREQUENCY * Time.MIN_MS) < date);
+        timer.schedule(this, new Date(mid), Config.UNLOAD_FREQUENCY * Time.MIN_MS);
 	}
 
 	/** @param offline show all account types or only loaded ones */
