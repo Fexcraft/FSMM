@@ -53,7 +53,7 @@ public class FSMM implements ModInitializer {
 
 	@Override
 	public void onInitialize(){
-		CONFIG = new Config(new File(FabricLoader.getInstance().getConfigDir().toFile(), "fsmm.json"));
+		CONFIG = new Config(new File(FabricLoader.getInstance().getConfigDir().toAbsolutePath().toFile(), "fsmm.json"));
 		UniEntity.register(new PlayerAccData(null));
 
 		FCL.registerItem("fsmm:mobile", prop -> new MobileAtm(prop));
