@@ -3,6 +3,7 @@ package net.fexcraft.mod.fsmm;
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.mod.fcl.FCL;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
 import net.fexcraft.mod.fsmm.data.Money;
@@ -14,15 +15,14 @@ import net.fexcraft.mod.fsmm.local.AtmBlock;
 import net.fexcraft.mod.fsmm.local.FsmmCmd;
 import net.fexcraft.mod.fsmm.local.MobileAtm;
 import net.fexcraft.mod.fsmm.local.MoneyItem;
-import net.fexcraft.mod.fsmm.ui.*;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.FsmmUIKeys;
 import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
-import net.fexcraft.mod.uni.UniReg;
 import net.fexcraft.mod.uni.inv.ItemWrapper;
 import net.fexcraft.mod.uni.tag.TagCW;
+import net.fexcraft.mod.uni.world.WrapperHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -43,7 +43,6 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -51,8 +50,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 import static net.fexcraft.mod.fsmm.local.FsmmCmd.getFormatted;
-import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.*;
-import static net.fexcraft.mod.fsmm.util.FsmmUIKeys.UI_ATM_ACC_SELECT;
 
 /**
  * @author Ferdinand Calo' (FEX___96)
@@ -131,7 +128,7 @@ public class FSMM {
 		}
 		FsmmEvent.addListener(ATMEvent.GatherAccounts.class, event -> {
 			event.getAccountsList().add(new AccountPermission(event.getAccount(), true, true, true, true));
-			if(ServerLifecycleHooks.getCurrentServer().isSingleplayer()){
+			if(WrapperHolder.isSinglePlayer()){
 				event.getAccountsList().add(new AccountPermission(event.getBank().getAccount(), true, true, true, true));
 			}
 		});
@@ -148,7 +145,7 @@ public class FSMM {
 					event.getAccountsMap().put(account.getTypeAndId(), new AccountPermission(account));
 				}
 			}
-			Optional<GameProfile> gp = ServerLifecycleHooks.getCurrentServer().getProfileCache().get(event.getSearchedId());
+			Optional<GameProfile> gp = FCL.SERVER.get().getProfileCache().get(event.getSearchedId());
 			if(gp.isPresent() && new File(DataManager.ACCOUNT_DIR, "player/" + gp.get().getId().toString() + ".json").exists()){
 				putAccPerm(event.getAccountsMap(), "player:" + gp.get().getId().toString());
 			}
@@ -183,7 +180,7 @@ public class FSMM {
 		if(FSMM.CACHE != null){
 			FSMM.CACHE.saveAll(); FSMM.CACHE.clearAll();
 		}
-		FSMM.CACHE = new DataManager(ServerLifecycleHooks.getCurrentServer().getServerDirectory());
+		FSMM.CACHE = new DataManager(FCL.SERVER.get().getServerDirectory());
 		FSMM.CACHE.schedule();
 	}
 
