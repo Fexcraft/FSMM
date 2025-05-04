@@ -1,5 +1,6 @@
 package net.fexcraft.mod.fsmm.event;
 
+import net.fexcraft.mod.fcl.FCL;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -16,14 +17,14 @@ public class WorldEvents {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public static void onWorldLoad(LevelEvent.Load event){
 		if(event.getLevel().isClientSide()) return;
-		if(event.getLevel() != ServerLifecycleHooks.getCurrentServer().overworld()) return;
+		if(event.getLevel() != FCL.SERVER.get().overworld()) return;
 		FSMM.loadDataManager();
 	}
 	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void onWorldUnload(LevelEvent.Unload event){
 		if(event.getLevel().isClientSide()) return;
-		if(event.getLevel() != ServerLifecycleHooks.getCurrentServer().overworld()) return;
+		if(event.getLevel() != FCL.SERVER.get().overworld()) return;
 		FSMM.unloadDataManager();
 	}
 	
