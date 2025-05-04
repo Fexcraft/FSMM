@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.common.utils.Formatter;
+import net.fexcraft.mod.fcl.FCL;
 import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.AccountPermission;
@@ -15,8 +16,10 @@ import net.fexcraft.mod.fsmm.data.PlayerAccData;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.UniEntity;
 import net.fexcraft.mod.uni.world.EntityW;
+import net.fexcraft.mod.uni.world.WrapperHolder;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -25,7 +28,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Map;
 import java.util.Optional;
@@ -177,8 +179,8 @@ public class FsmmCmd {
 
 	public static boolean isOp(CommandSourceStack css){
 		if(css == null || !css.isPlayer()) return false;
-		if(ServerLifecycleHooks.getCurrentServer().isSingleplayer()) return true;
-		return ServerLifecycleHooks.getCurrentServer().getPlayerList().isOp(css.getPlayer().getGameProfile());
+		if(WrapperHolder.isSinglePlayer()) return true;
+		return FCL.SERVER.get().getPlayerList().isOp(css.getPlayer().getGameProfile());
 	}
 
 	private static void process(Player sender, String type, String acc, BiConsumer<Account, Boolean> cons){
@@ -188,7 +190,7 @@ public class FsmmCmd {
 				UUID.fromString(rs.getPath());
 			}
 			catch(Exception e){
-				Optional<GameProfile> gp = ServerLifecycleHooks.getCurrentServer().getProfileCache().get(rs.getPath());
+				Optional<GameProfile> gp = FCL.SERVER.get().getProfileCache().get(rs.getPath());
 				rs = new ResourceLocation(type, gp.get().getId().toString());
 			}
 		}
