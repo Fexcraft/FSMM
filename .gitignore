@@ -1,4 +1,14 @@
 
 /fabric21/gradle
-fabric21/gradlew.bat
-fabric21/gradlew
+/fabric21/gradlew.bat
+/fabric21/gradlew
+/spigot/.gradle
+/spigot/.idea
+/spigot/gradle/wrapper/gradle-wrapper.jar
+/spigot/gradle/wrapper/gradle-wrapper.properties
+/spigot/gradlew.bat
+/spigot/build
+spigot/src/main/java/net/fexcraft/mod/fcl
+spigot/src/main/java/net/fexcraft/mod/fsmm
+spigot/src/main/java/net/fexcraft/mod/uni
+spigot/src/main/java/org

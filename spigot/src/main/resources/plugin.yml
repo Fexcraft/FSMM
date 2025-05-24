@@ -1,0 +1,8 @@
+name: FSMMSpigotBridge
+version: '${version}'
+main: net.fexcraft.mod.spigot.FSMMSpigotBridge
+description: Makes FSMM Accounts work with Vault API
+author: FEX___96
+website: https://fexcraft.net
+depend:
+  - Vault
