@@ -32,12 +32,21 @@ public final class FSMMSpigotBridge extends JavaPlugin {
 
     public static class EconImpl implements Economy {
 
+        public UUID uuidFromString(String name){
+            try{
+                return UUID.fromString(name);
+            }
+            catch(Exception e){
+                return WrapperHolder.getUUIDFor(name);
+            }
+        }
+
         public Account getAcc(String name){
-            return getAcc(WrapperHolder.getUUIDFor(name));
+            return getAcc(uuidFromString(name));
         }
 
         public Account getAcc(UUID uuid){
-            return DataManager.getAccount("player:" + uuid.toString(), true, true);
+            return DataManager.getAccount("player:" + uuid, true, true);
         }
 
         @Override
@@ -77,7 +86,7 @@ public final class FSMMSpigotBridge extends JavaPlugin {
 
         @Override
         public boolean hasAccount(String playerName){
-            return DataManager.exists("player", WrapperHolder.getUUIDFor(playerName).toString());
+            return DataManager.exists("player", uuidFromString(playerName).toString());
         }
 
         @Override
