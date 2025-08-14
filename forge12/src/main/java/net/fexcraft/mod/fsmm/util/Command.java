@@ -163,7 +163,7 @@ public class Command extends CommandBase{
     		case "status":{
     			Print.chat(sender, "&bAccounts loaded (by type): &7");
     			long temp = 0;
-    			for(String str : DataManager.getAccountTypes(false)){
+    			for(String str : DataManager.getAccountTypes()){
     				Map<String, Account> map = DataManager.getAccountsOfType(str);
     				temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
     				Print.chat(sender, "&2> &b" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
