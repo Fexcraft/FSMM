@@ -147,12 +147,14 @@
 		"type": {
 			"size": [ 233, 7 ],
 			"pos": [ 7, 33 ],
-			"background": false
+			"background": false,
+			"max-length": 64
 		},
 		"id": {
 			"size": [ 224, 7 ],
 			"pos": [ 7, 43 ],
-			"background": false
+			"background": false,
+			"max-length": 64
 		}
 	}
 }
