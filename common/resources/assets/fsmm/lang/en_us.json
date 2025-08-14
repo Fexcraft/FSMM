@@ -45,5 +45,6 @@
 	"ui.fsmm.atm_select_receiver": "\u00A77Open Account Selection",
 	"ui.fsmm.atm_select_rec_info": "Please select a receiver.",
 	"ui.fsmm.atm_select_rec_click": "\u00A77Click to select this account.",
-	"ui.fsmm.atm_search": "\u00A77Search/Filter"
+	"ui.fsmm.atm_search": "\u00A77Search/Filter",
+	"ui.fsmm.atm_info_id": "\u00A77Name/ID of the \u00A79Account \u00A77to be \u00A76searched\u00A77."
 }
