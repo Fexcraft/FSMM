@@ -149,7 +149,7 @@ public class FsmmCmd {
 			.then(literal("status").requires(pre -> isOp(pre)).executes(cmd -> {
 				chat(cmd, "&bAccounts loaded (by type): &7");
 				long temp = 0;
-				for(String str : DataManager.getAccountTypes(false)){
+				for(String str : DataManager.getAccountTypes()){
 					Map<String, Account> map = DataManager.getAccountsOfType(str);
 					temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
 					chat(cmd, "&2> &b" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
