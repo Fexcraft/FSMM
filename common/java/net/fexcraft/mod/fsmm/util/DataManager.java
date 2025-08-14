@@ -39,7 +39,13 @@ public class DataManager extends TimerTask {
 	public DataManager(File file){
 		timer = new Timer();
 		ACCOUNT_DIR = new File(file, "/fsmm/accounts/");
-		if(!ACCOUNT_DIR.exists()){ ACCOUNT_DIR.mkdirs(); }
+		if(!ACCOUNT_DIR.exists()) ACCOUNT_DIR.mkdirs();
+		for(File dir : ACCOUNT_DIR.listFiles()){
+			if(!dir.isDirectory()) continue;
+			String[] fls = dir.list();
+			if(fls == null || fls.length == 0) continue;
+			ACCOUNTS.put(dir.getName(), new ConcurrentHashMap<>());
+		}
 		BANK_DIR = new File(file, "/fsmm/banks/");
 		if(!BANK_DIR.exists()){ BANK_DIR.mkdirs(); }
 		if(Config.DEFAULT_BANKS != null){
@@ -231,11 +237,9 @@ public class DataManager extends TimerTask {
         timer.schedule(this, new Date(mid), Config.UNLOAD_FREQUENCY * Time.MIN_MS);
 	}
 
-	/** @param offline show all account types or only loaded ones */
-	public static String[] getAccountTypes(boolean offline){
-		if(offline){
-			return ACCOUNT_DIR.list();
-		}
+	///** @param offline show all account types or only loaded ones */
+	public static String[] getAccountTypes(/*boolean offline*/){
+		//if(offline) return ACCOUNT_DIR.list();
 		return ACCOUNTS.keySet().toArray(new String[0]);
 	}
 
