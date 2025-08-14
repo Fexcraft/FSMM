@@ -27,6 +27,7 @@ public class ATMContainer extends ContainerInterface {
 
 	protected ArrayList<Map.Entry<String, String>> banks;
 	protected ArrayList<AccountPermission> accounts;
+	protected ArrayList<String> types;
 	protected PlayerAccData pass;
 	protected AccountPermission perm;
 	protected Account account, receiver;
@@ -71,6 +72,11 @@ public class ATMContainer extends ContainerInterface {
 					}
 					if(com.has("bank")){
 						bank = new Bank(JsonHandler.parse(com.getString("bank"), true).asMap());
+					}
+					if(com.has("account_types")){
+						types = new ArrayList<>();
+						TagLW list = com.getList("account_types");
+						for(int i = 0; i < list.size(); i++) types.add(list.getString(i));
 					}
 					if(com.has("bank_list")){
 						TreeMap<String, String> banks = new TreeMap<>();
@@ -176,6 +182,11 @@ public class ATMContainer extends ContainerInterface {
 				}
 				if(com.getBoolean("bank_list")){
 					compound.set("bank_list", getBankList());
+				}
+				if(com.getBoolean("account_types")){
+					TagLW list = TagLW.create();
+					for(String type : DataManager.getAccountTypes()) list.add(type);
+					compound.set("account_types", list);
 				}
 				if(com.getBoolean("account_list")){
 					ATMEvent.GatherAccounts event = new ATMEvent.GatherAccounts(player);
