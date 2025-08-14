@@ -27,10 +27,10 @@
 				"result_name_2",
 				"result_id_2",
 				"result_name_3",
-				"result_id_3"
+				"result_id_3",
+				"type"
 			],
 			"fields": [
-				"type",
 				"id"
 			]
 		}
@@ -48,11 +48,13 @@
 		},
 		"prev": {
 			"size": [ 8, 8 ],
-			"pos": [ 233, 32 ]
+			"pos": [ 233, 32 ],
+			"tooltip": "ui.fsmm.atm_prev_type"
 		},
 		"next": {
 			"size": [ 8, 8 ],
-			"pos": [ 242, 32 ]
+			"pos": [ 242, 32 ],
+			"tooltip": "ui.fsmm.atm_next_type"
 		},
 		"search": {
 			"size": [ 8, 8 ],
@@ -144,15 +146,15 @@
 			"pos": [ 7, 134 ],
 			"autoscale": true,
 			"color": "#4d4d4d"
-		}
-	},
-	"fields": {
+		},
 		"type": {
 			"size": [ 224, 7 ],
 			"pos": [ 7, 33 ],
-			"background": false,
-			"max-length": 64
-		},
+			"autoscale": true,
+			"color": "#4d4d4d"
+		}
+	},
+	"fields": {
 		"id": {
 			"size": [ 224, 7 ],
 			"pos": [ 7, 43 ],
