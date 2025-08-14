@@ -31,6 +31,8 @@
 	"ui.fsmm.atm_only": "\u00A7eAction only available via Block ATM.",
 	"ui.fsmm.atm_scroll_up": "\u00A77Scroll Up",
 	"ui.fsmm.atm_scroll_down": "\u00A77Scroll Down",
+	"ui.fsmm.atm_next_type": "\u00A77Next Account Type",
+	"ui.fsmm.atm_prev_type": "\u00A77Previous Account Type",
 	"ui.fsmm.atm_main.bank": "\u00A77Bank Info \u00A78/ \u00A79 Change Bank",
 	"ui.fsmm.atm_main.transfers": "\u00A7bView Account Activity",
 	"ui.fsmm.atm_main.select": "\u00A7aChange \u00A77managed \u00A79Account",
