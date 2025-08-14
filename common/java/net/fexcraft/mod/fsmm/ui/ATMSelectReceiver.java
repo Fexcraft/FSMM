@@ -20,6 +20,7 @@ public class ATMSelectReceiver extends UserInterface {
 
 	private ATMContainer menu;
 	private List<AccountPermission> accounts;
+	private int seltype = -1;
 	private int scroll;
 
 	public ATMSelectReceiver(JsonMap map, ContainerInterface container) throws Exception {
@@ -29,7 +30,7 @@ public class ATMSelectReceiver extends UserInterface {
 
 	@Override
 	public void init(){
-		menu.sync("account");
+		menu.sync("account_types", "account");
 	}
 
 	@Override
@@ -64,6 +65,14 @@ public class ATMSelectReceiver extends UserInterface {
 				scroll++;
 				return true;
 			}
+			case "prev":{
+				if(--seltype < 0) seltype = menu.types.size() - 1;
+				return true;
+			}
+			case "next":{
+				if(++seltype >= menu.types.size()) seltype = 0;
+				return true;
+			}
 		}
 		return true;
 	}
@@ -81,7 +90,7 @@ public class ATMSelectReceiver extends UserInterface {
 
 	private void search(){
 		if(accounts != null) accounts.clear();
-		String type = fields.get("type").text(), id = fields.get("id").text();
+		String type = menu.types.get(seltype), id = fields.get("id").text();
 		boolean notype = type.trim().length() == 0, noid = id.trim().length() == 0;
 		if(notype){
 			container.player.entity.send("&cYou need to enter the searched account type.");
@@ -108,6 +117,12 @@ public class ATMSelectReceiver extends UserInterface {
 
 	@Override
 	public void predraw(float ticks, int mx, int my){
+		if(seltype < 0 && menu.types != null){
+			seltype = menu.types.indexOf("player");
+		}
+		if(seltype >= 0){
+			texts.get("type").value(menu.types.get(seltype));
+		}
 		if(menu.account != null){
 			texts.get("account_name").value(menu.account.getName());
 			texts.get("account_id").value(menu.account.getType() + ":" + menu.account.getId());
