@@ -63,7 +63,8 @@
 		},
 		"info": {
 			"size": [ 8, 8 ],
-			"pos": [ 242, 42 ]
+			"pos": [ 242, 42 ],
+			"tooltip": "ui.fsmm.atm_info_id"
 		},
 		"result_0": {
 			"size": [ 246, 20 ],
