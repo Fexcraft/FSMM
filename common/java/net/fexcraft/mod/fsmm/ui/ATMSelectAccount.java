@@ -157,10 +157,6 @@ public class ATMSelectAccount extends UserInterface {
 				list.add(Formatter.format("&7Manage: " + (perm.manage ? "&atrue" : "&cfalse")));
 			}
 		}
-		if(buttons.get("info").hovered()){
-			list.add(Formatter.format("&7ID/Name of &9Account &7to be &6searched&7."));
-			list.add(Formatter.format(Config.PARTIAL_ACCOUNT_NAME_SEARCH ? "&7(you can just write bits of the name/id)" : "&7(enter the full account name/id)"));
-		}
 	}
 
 	@Override
