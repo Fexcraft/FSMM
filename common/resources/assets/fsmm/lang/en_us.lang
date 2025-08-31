@@ -50,4 +50,4 @@ ui.fsmm.atm_select_receiver=&7Open Account Selection
 ui.fsmm.atm_select_rec_info=Please select a receiver.
 ui.fsmm.atm_select_rec_click=&7Click to select this account.
 ui.fsmm.atm_search=&7Search/Filter
-ui.fsmm.atm_search=&7Name/ID of the &9Account &7to be &6searched&7.
+ui.fsmm.atm_info_id=&7Name/ID of the &9Account &7to be &6searched&7.
