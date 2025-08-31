@@ -19,7 +19,6 @@ import java.util.List;
 public class ATMSelectReceiver extends UserInterface {
 
 	private ATMContainer menu;
-	private List<AccountPermission> accounts;
 	private int seltype = -1;
 	private int scroll;
 
@@ -78,8 +77,8 @@ public class ATMSelectReceiver extends UserInterface {
 	}
 
 	private void select(int idx){
-		if(accounts == null || idx + scroll >= accounts.size()) return;
-		AccountPermission perm = accounts.get(idx + scroll);
+		if(menu.accounts == null || idx + scroll >= menu.accounts.size()) return;
+		AccountPermission perm = menu.accounts.get(idx + scroll);
 		TagCW compound = TagCW.create();
 		compound.set("cargo", "account_select");
 		compound.set("type", perm.getAccount().getType());
@@ -89,7 +88,7 @@ public class ATMSelectReceiver extends UserInterface {
 	}
 
 	private void search(){
-		if(accounts != null) accounts.clear();
+		if(menu.accounts != null) menu.accounts.clear();
 		String type = menu.types.get(seltype), id = fields.get("id").text();
 		boolean notype = type.trim().length() == 0, noid = id.trim().length() == 0;
 		if(notype){
@@ -107,7 +106,6 @@ public class ATMSelectReceiver extends UserInterface {
 		compound.set("id", id);
 		menu.SEND_TO_SERVER.accept(compound);
 		menu.accounts = null;
-		accounts = null;
 	}
 
 	@Override
@@ -128,21 +126,17 @@ public class ATMSelectReceiver extends UserInterface {
 			texts.get("account_id").value(menu.account.getType() + ":" + menu.account.getId());
 		}
 		if(menu.accounts != null){
-			if(accounts == null){
-				accounts = new ArrayList<>();
-				accounts.addAll(menu.accounts);
-			}
 			Account account;
 			for(int i = 0; i < 4; i++){
 				int k = i + scroll;
-				if(k >= accounts.size()){
+				if(k >= menu.accounts.size()){
 					buttons.get("result_" + i).visible(false);
 					texts.get("result_name_" + i).value("");
 					texts.get("result_id_" + i).value("");
 				}
 				else{
 					buttons.get("result_" + i).visible(true);
-					account = accounts.get(k).getAccount();
+					account = menu.accounts.get(k).getAccount();
 					texts.get("result_name_" + i).value(account.getName());
 					texts.get("result_id_" + i).value(account.getType() + ":" + account.getId());
 				}
