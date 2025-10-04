@@ -1,11 +1,11 @@
 package net.fexcraft.mod.fsmm.ui;
 
 import net.fexcraft.app.json.JsonMap;
-import net.fexcraft.lib.common.Static;
 import net.fexcraft.lib.common.utils.Formatter;
 import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.tag.TagCW;
 import net.fexcraft.mod.uni.ui.ContainerInterface;
 import net.fexcraft.mod.uni.ui.UIButton;
@@ -94,7 +94,7 @@ public class ATMDeposit extends UserInterface {
 		}
 		catch(Exception e){
 			container.player.entity.send( "INVALID INPUT: " + e.getMessage());
-			if(Static.dev()) e.printStackTrace();
+			if(EnvInfo.DEV) e.printStackTrace();
 			return 0;
 		}
 	}
