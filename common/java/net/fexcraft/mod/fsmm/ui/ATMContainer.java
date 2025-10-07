@@ -123,7 +123,7 @@ public class ATMContainer extends ContainerInterface {
 			}
 			case "withdraw":{
 				if(!FsmmUIKeys.IS_ATM.apply(player, pos)){
-					player.entity.send("Action not available via Mobile Banking.");
+					player.entity.send("ui.fsmm.not_mobile");
 					return;
 				}
 				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_WITHDRAW, pos);
@@ -131,7 +131,7 @@ public class ATMContainer extends ContainerInterface {
 			}
 			case "deposit":{
 				if(!FsmmUIKeys.IS_ATM.apply(player, pos)){
-					player.entity.send("Action not available via Mobile Banking.");
+					player.entity.send("ui.fsmm.not_mobile");
 					return;
 				}
 				player.entity.openUI(FsmmUIKeys.UI_ATM_ACC_DEPOSIT, pos);
@@ -148,7 +148,7 @@ public class ATMContainer extends ContainerInterface {
 			}
 			case "bank_select":{
 				if(!perm.manage){
-					player.entity.send("&cYou do not have permission to manage this account.");
+					player.entity.send("ui.fsmm.atm.account_no_manage_perm");
 					player.entity.closeUI();
 					break;
 				}
@@ -156,7 +156,7 @@ public class ATMContainer extends ContainerInterface {
 				String feeid = account.getType() + ":setup_account";
 				long fee = bank.hasFee(feeid) ? Long.parseLong(bank.getFees().get(feeid).replace("%", "")) : 0;
 				if(account.getBalance() < fee){
-					player.entity.send("&eNot enough money on account to pay the move/setup fee.");
+					player.entity.send("ui.fsmm.atm.not_enough_to_move_bank");
 					player.entity.closeUI();
 				}
 				else{
@@ -209,7 +209,7 @@ public class ATMContainer extends ContainerInterface {
 			case "action_withdraw":{
 				boolean deposit = com.getString("cargo").endsWith("deposit");
 				if(!(deposit ? perm.deposit : perm.withdraw)){
-					player.entity.send("&cNo permission to " + (deposit ? "deposit to" : "withdraw from") + " this account.");
+					player.entity.send(deposit ? "ui.fsmm.atm.no_deposit_perm" : "ui.fsmm.atm.no_withdraw_perm");
 					return;
 				}
 				if(processSelfAction(com.getLong("amount"), deposit)){
@@ -219,21 +219,21 @@ public class ATMContainer extends ContainerInterface {
 			}
 			case "action_transfer":{
 				if(!perm.transfer){
-					player.entity.send("&cNo permission to transfer from this account.");
+					player.entity.send("ui.fsmm.atm.no_transfer_perm");
 					return;
 				}
 				long amount = com.getLong("amount");
 				if(amount <= 0) return;
 				if(receiver == null){
-					player.entity.send("&cPlease select a receiver!");
+					player.entity.send("ui.fsmm.atm.select_receiver");
 					return;
 				}
 				if(account.getBank().processAction(Bank.Action.TRANSFER, player.entity, account, amount, receiver, false)){
-					player.entity.send("&bTransfer &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
+					player.entity.send("ui.fsmm.atm.transfer_processed", Config.getWorthAsString(amount, false));
 					player.entity.closeUI();
 				}
 				else{
-					player.entity.send("&bTransfer &cfailed&7.");
+					player.entity.send("ui.fsmm.atm.transfer_failed");
 				}
 				break;
 			}
@@ -276,7 +276,7 @@ public class ATMContainer extends ContainerInterface {
 					}
 				}
 				else{
-					player.entity.send("&cERROR: Account not found server side.");
+					player.entity.send("ui.fsmm.atm.no_account_server");
 					player.entity.closeUI();
 				}
 				break;
@@ -288,11 +288,11 @@ public class ATMContainer extends ContainerInterface {
 		if(amount <= 0) return false;
 		String dep = deposit ? "&eDeposit" : "&aWithdraw";
 		if(account.getBank().processAction(deposit ? Bank.Action.DEPOSIT : Bank.Action.WITHDRAW, player.entity, account, amount, account, false)){
-			player.entity.send(dep + " &7of &e" + Config.getWorthAsString(amount, false) + " &7processed.");
+			player.entity.send("ui.fsmm.atm."+ (deposit ? "deposit" : "withdraw") + "_processed", Config.getWorthAsString(amount, false));
 			return true;
 		}
 		else{
-			player.entity.send(dep + " &cfailed&7.");
+			player.entity.send("ui.fsmm.atm."+ (deposit ? "deposit" : "withdraw") + "_failed");
 			return false;
 		}
 	}
