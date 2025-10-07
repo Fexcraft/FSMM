@@ -29,6 +29,7 @@
 	"item.fsmm.500kfoney": "500k Foney",
 
 	"ui.fsmm.atm_only": "\u00A7eAction only available via Block ATM.",
+	"ui.fsmm.not_mobile": "\u00A7eAction not available via Mobile Banking.",
 	"ui.fsmm.atm_scroll_up": "\u00A77Scroll Up",
 	"ui.fsmm.atm_scroll_down": "\u00A77Scroll Down",
 	"ui.fsmm.atm_next_type": "\u00A77Next Account Type",
@@ -46,5 +47,18 @@
 	"ui.fsmm.atm_select_rec_info": "Please select a receiver.",
 	"ui.fsmm.atm_select_rec_click": "\u00A77Click to select this account.",
 	"ui.fsmm.atm_search": "\u00A77Search/Filter",
-	"ui.fsmm.atm_info_id": "\u00A77Name/ID of the \u00A79Account \u00A77to be \u00A76searched\u00A77."
+	"ui.fsmm.atm_info_id": "\u00A77Name/ID of the \u00A79Account \u00A77to be \u00A76searched\u00A77.",
+	"ui.fsmm.atm.account_no_manage_perm": "\u00A7cYou do not have permission to manage this account.",
+	"ui.fsmm.atm.not_enough_to_move_bank": "\u00A7eNot enough money on account to pay the move/setup fee.",
+	"ui.fsmm.atm.no_withdraw_perm": "\u00A7cNo permission to withdraw from this account.",
+	"ui.fsmm.atm.no_deposit_perm": "\u00A7cNo permission to deposit to this account.",
+	"ui.fsmm.atm.no_transfer_perm": "\u00A7cNo permission to transfer from this account.",
+	"ui.fsmm.atm.select_receiver": "\u00A7cPlease select a receiver!",
+	"ui.fsmm.atm.no_account_server": "\u00a7cERROR: Account not found server side.",
+	"ui.fsmm.atm.transfer_processed": "\u00a7bTransfer \u00a77of \u00a7e%s \u00a77processed.",
+	"ui.fsmm.atm.transfer_failed": "\u00a7bTransfer \u00a7cfailed\u00a77.",
+	"ui.fsmm.atm.deposit_processed": "&bDeposit &7of &e%s &7processed.",
+	"ui.fsmm.atm.deposit_failed": "&bDeposit &cfailed&7.",
+	"ui.fsmm.atm.withdraw_processed": "&bWithdraw &7of &e%s &7processed.",
+	"ui.fsmm.atm.withdraw_failed": "&bWithdraw &cfailed&7."
 }
