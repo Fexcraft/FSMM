@@ -21,6 +21,7 @@ import net.fexcraft.mod.fsmm.FSMM;
 import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.data.Bank;
 import net.fexcraft.mod.fsmm.data.Money;
+import net.fexcraft.mod.uni.EnvInfo;
 import net.fexcraft.mod.uni.IDL;
 
 /**
@@ -63,7 +64,7 @@ public class DataManager extends TimerTask {
 		ImmutableSet<String> set = ImmutableSet.copyOf(ACCOUNTS.keySet());
 		LAST_TIMERTASK = Time.getDate();
 		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY * Time.MIN_MS - 5000);
-		//Print.debug("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
+		if(EnvInfo.DEV) FSMM.LOGGER.info("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
 		for(String type : set){
 			ImmutableMap<String, Account> map = ImmutableMap.copyOf(ACCOUNTS.get(type));
 			for(Entry<String, Account> entry : map.entrySet()){
