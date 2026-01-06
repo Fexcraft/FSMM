@@ -7,6 +7,7 @@ import net.fexcraft.mod.fsmm.data.Account;
 import net.fexcraft.mod.fsmm.util.Config;
 import net.fexcraft.mod.fsmm.util.DataManager;
 import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -21,18 +22,18 @@ public class PlayerEvents {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     	if(event.player.world.isRemote){ return; }
 		Print.debug("Loading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
-    	Account account = DataManager.getAccount("player:" + event.player.getGameProfile().getId().toString(), false, true);
+    	Account account = DataManager.getAccount("player:" + event.player.getGameProfile().getId().toString(), 2);
+		account.addHolder(event.player);
     	if(Config.NOTIFY_BALANCE_ON_JOIN){
     		Print.chat(event.player, "&m&3Balance &r&7(in bank)&0: &a" + Config.getWorthAsString(account.getBalance()));
     		Print.chat(event.player, "&m&3Balance &r&7(in Inv0)&0: &a" + Config.getWorthAsString(ItemManager.countInInventory(event.player)));
     	}
-    	if(account.lastAccessed() >= 0){ account.setTemporary(false); }
     }
     
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
 		Print.debug("Unloading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
-		DataManager.unloadAccount("player", event.player.getGameProfile().getId().toString());
+		DataManager.unholdPlayerAccount(event.player.getGameProfile().getId(), EntityPlayer.class);
     }
     
     @SideOnly(Side.CLIENT) @SubscribeEvent
