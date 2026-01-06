@@ -23,7 +23,7 @@ public class PlayerAccData implements Appendable<UniEntity> {
 
 	public Account getAccount(){
 		if(account == null){
-			account = DataManager.getAccount("player:" + player.entity.getUUID().toString(), false, true);
+			account = DataManager.getAccount("player:" + player.entity.getUUID().toString(), 2);
 			account.setName(player.entity.getName());
 		}
 		return account;
