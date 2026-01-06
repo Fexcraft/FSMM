@@ -165,7 +165,7 @@ public class Command extends CommandBase{
     			long temp = 0;
     			for(String str : DataManager.getAccountTypes()){
     				Map<String, Account> map = DataManager.getAccountsOfType(str);
-    				temp = map.values().stream().filter(pre -> pre.lastAccessed() >= 0).count();
+    				temp = map.values().stream().filter(pre -> pre.lastActive() >= 0).count();
     				Print.chat(sender, "&2> &b" + str + ": &7" + map.size() + (temp > 0 ? " &8(&a" + temp + "temp.&8)" : ""));
     			}
     			Print.chat(sender, "&bBanks active: &7" + DataManager.getBanks().size());
@@ -217,9 +217,9 @@ public class Command extends CommandBase{
 			UUID uuid = Static.getServer().getPlayerProfileCache().getGameProfileForUsername(args[1]).getId();
 			rs = new ResourceLocation("player", uuid.toString());
 		}
-		Account account = DataManager.getAccount(rs.toString(), false, false);
+		Account account = DataManager.getAccount(rs.toString(), 0);
 		boolean online = account != null;
-		if(!online) account = DataManager.getAccount(rs.toString(), true, false);
+		if(!online) account = DataManager.getAccount(rs.toString(), 1);
 		if(account == null){
 			Print.chat(sender, "Account not found.");
 			return;
