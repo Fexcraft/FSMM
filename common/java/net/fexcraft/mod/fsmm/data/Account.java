@@ -1,6 +1,6 @@
 package net.fexcraft.mod.fsmm.data;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,14 +21,17 @@ import net.fexcraft.mod.uni.world.MessageSender;
  * 
  * @author Ferdinand Calo' (FEX___96)
  */
-public class Account extends Removable implements Manageable {
+public class Account implements Manageable {
 
+	private CopyOnWriteArrayList<Transfer> transfers = new CopyOnWriteArrayList<Transfer>();
+	private HashSet<Object> holders = new HashSet<>();
+	private JsonMap additionaldata;
+	private long last_activity;
+	//
 	private final IDL idtype;
+	private long balance;
 	private String name;
 	private Bank bank;
-	private long balance;
-	private JsonMap additionaldata;
-	private CopyOnWriteArrayList<Transfer> transfers = new CopyOnWriteArrayList<Transfer>();
 	
 	/** From JSON Constructor */
 	public Account(JsonMap map, String def_type, String def_id){
@@ -42,7 +45,7 @@ public class Account extends Removable implements Manageable {
 				transfers.add(new Transfer(elm.asMap()));
 			}
 		}
-		updateLastAccess();
+		updateActivity();
 	}
 	
 	/** Manual Constructor */
@@ -51,7 +54,7 @@ public class Account extends Removable implements Manageable {
 		balance = bal;
 		bank = bank_;
 		additionaldata = data;
-		updateLastAccess();
+		updateActivity();
 	}
 	
 	/** Unique ID of this Account. */
@@ -68,7 +71,7 @@ public class Account extends Removable implements Manageable {
 	 * @return new balance */
 	public long setBalance(long rpl){
 		FsmmEvent.run(new AccountEvent.BalanceUpdated(this, balance, rpl));
-		updateLastAccess();
+		updateActivity();
 		return balance = rpl;
 	}
 	
@@ -78,7 +81,7 @@ public class Account extends Removable implements Manageable {
 	}
 
 	public void setBank(Bank nbank){
-		updateLastAccess();
+		updateActivity();
 		bank = nbank;
 	}
 	
@@ -100,7 +103,7 @@ public class Account extends Removable implements Manageable {
 	}
 	
 	public void setData(JsonMap obj){
-		updateLastAccess();
+		updateActivity();
 		additionaldata = obj;
 	}
 
@@ -115,7 +118,7 @@ public class Account extends Removable implements Manageable {
 
 	/** Mainly used for saving. */
 	public JsonMap toJson(boolean withtransfers){
-		updateLastAccess();
+		updateActivity();
 		JsonMap obj = new JsonMap();
 		obj.add("id", idtype.id());
 		obj.add("type", idtype.space());
@@ -178,6 +181,37 @@ public class Account extends Removable implements Manageable {
 
 	public List<Transfer> getTransfers(){
 		return transfers;
+	}
+
+	/** Time of when this Account was last accessed, used for removing temporary loaded account. */
+	public long lastActive(){
+		return isHeld() ? -1 : last_activity;
+	}
+
+	public long updateActivity(){
+		return last_activity = System.currentTimeMillis();
+	}
+
+	public Account addHolder(Object obj){
+		holders.add(obj);
+		updateActivity();
+		return this;
+	}
+
+	public Account remHolder(Object obj){
+		holders.remove(obj);
+		updateActivity();
+		return this;
+	}
+
+	public Account remHolder(Class<?> type){
+		holders.removeIf(type::isInstance);
+		updateActivity();
+		return this;
+	}
+
+	public boolean isHeld(){
+		return holders.size() > 0;
 	}
 
 }
