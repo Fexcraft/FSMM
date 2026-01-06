@@ -8,13 +8,13 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.fexcraft.app.json.JsonHandler;
 import net.fexcraft.app.json.JsonHandler.PrintOption;
-import net.fexcraft.lib.common.Static;
 import net.fexcraft.lib.common.math.Time;
 import net.fexcraft.lib.common.utils.CallbackContainer;
 import net.fexcraft.mod.fsmm.FSMM;
@@ -64,11 +64,11 @@ public class DataManager extends TimerTask {
 		ImmutableSet<String> set = ImmutableSet.copyOf(ACCOUNTS.keySet());
 		LAST_TIMERTASK = Time.getDate();
 		long mndt = LAST_TIMERTASK - (Config.UNLOAD_FREQUENCY * Time.MIN_MS - 5000);
-		if(EnvInfo.DEV) FSMM.LOGGER.info("Starting scheduled account and bank clearance. (" + LAST_TIMERTASK + ")");
+		if(EnvInfo.DEV) FSMM.LOGGER.info("Starting scheduled inactive account unloading. (" + LAST_TIMERTASK + ")");
 		for(String type : set){
 			ImmutableMap<String, Account> map = ImmutableMap.copyOf(ACCOUNTS.get(type));
 			for(Entry<String, Account> entry : map.entrySet()){
-				if(entry.getValue().lastAccessed() >= 0 && entry.getValue().lastAccessed() < mndt){
+				if(entry.getValue().lastActive() >= 0 && entry.getValue().lastActive() < mndt){
 					unloadAccount(type, entry.getKey());
 				}
 			}
@@ -125,7 +125,7 @@ public class DataManager extends TimerTask {
 		unloadAccount(loc.space(), loc.path());
 	}
 
-	public static void unloadAccount(String type, String id){
+	private static void unloadAccount(String type, String id){
 		if(ACCOUNTS.containsKey(type) && ACCOUNTS.get(type).containsKey(id)){
 			try{
 				save(ACCOUNTS.get(type).remove(id));
@@ -137,25 +137,50 @@ public class DataManager extends TimerTask {
 		}
 	}
 
+	public static void unholdPlayerAccount(UUID id, Class<?> clazz){
+		unholdPlayerAccount(id.toString(), clazz);
+	}
+
+	public static void unholdPlayerAccount(String id, Class<?> clazz){
+		if(!ACCOUNTS.containsKey("player")) return;
+		if(ACCOUNTS.get("player").containsKey(id)){
+			Account acc = ACCOUNTS.get("player").get(id);
+			save(acc);
+			acc.remHolder(clazz);
+		}
+	}
+
 	public static final DataManager getInstance(){
 		return FSMM.CACHE;
 	}
 
-	public static final Account getAccount(String accid, boolean tempload){
-		return getAccount(accid, tempload, true);
+	/**
+	 *  Gets an account via account id.
+	 * @param accid account id in [type]:[id] format
+	 * @param mode 0 = only get from memory, 1 = load if file exists, 2 = create if missing
+	 * @return
+	 */
+	public static final Account getAccount(String accid, int mode){
+		return getAccount(accid, mode, null);
 	}
 
-	public static final Account getAccount(String accid, boolean tempload, boolean create){
+	/**
+	 *  Gets an account via account id.
+	 * @param accid account id in [type]:[id] format
+	 * @param mode 0 = only get from memory, 1 = load if file exists, 2 = create if missing
+	 * @param cons optional consumer that is run if a new account is created
+	 * @return
+	 */
+	public static final Account getAccount(String accid, int mode, Consumer<Account> cons){
 		String[] arr = accid.split(":");
 		if(arr.length < 2){ return null; }
 		if(ACCOUNTS.containsKey(arr[0]) && ACCOUNTS.get(arr[0]).containsKey(arr[1])){
-			Account account = ACCOUNTS.get(arr[0]).get(arr[1]);
-			return !tempload && account.isTemporary() ? account.setTemporary(false) : account;
+			return ACCOUNTS.get(arr[0]).get(arr[1]);
 		}
-		return tempload || create ? loadAccount(arr, tempload, create) : null;
+		return mode > 0 ? loadAccount(arr, mode > 1, cons) : null;
 	}
 	
-	private static final Account loadAccount(String[] arr, boolean tempload, boolean create){
+	private static Account loadAccount(String[] arr, boolean create, Consumer<Account> cons){
 		File file = new File(ACCOUNT_DIR, arr[0] + "/" + arr[1] + ".json");
 		if(file.exists()){
 			try{
@@ -165,7 +190,7 @@ public class DataManager extends TimerTask {
 					throw new RuntimeException("Account data from file doesn't match request! This is a file error which should get controlled.\n" + file.getPath());
 				}
 				addAccount(arr[0], account);
-				return account.setTemporary(tempload);
+				return account;
 			}
 			catch(RuntimeException e){
 				e.printStackTrace();
@@ -177,7 +202,15 @@ public class DataManager extends TimerTask {
 				Account account = new Account(arr[1], arr[0], arr[0].equals("player") ? Config.STARTING_BALANCE : 0, getDefaultBank(), null);
 				addAccount(arr[0], account);
 				FSMM.LOGGER.info("Created new account for " + arr[0] + ":" + arr[1] + " at Bank '" + account.getBank().id +"'!");
-				return account.setTemporary(tempload);
+				if(cons != null){
+					try{
+						cons.accept(account);
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				return account;
 			}
 			catch(RuntimeException e){
 				e.printStackTrace();
