@@ -50,7 +50,7 @@ public class AccountPermission {
 
 	public Account getAccount(){
 		if(account == null){
-			account = DataManager.getAccount(accid, true, true);
+			account = DataManager.getAccount(accid, 2);
 		}
 		return account;
 	}
