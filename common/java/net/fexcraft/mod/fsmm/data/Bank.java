@@ -220,7 +220,7 @@ public class Bank implements Manageable {
 		if(map.has("status")){
 			map.getArray("status").value.forEach(val -> status.add(val.string_value()));
 		}
-		account = DataManager.getAccount("bank:" + id, false, true);
+		account = DataManager.getAccount("bank:" + id, 2).addHolder(this);
 		if(map.has("balance")) account.setBalance(map.getLong("balance", 0));
 		account.setName(name);
 		account.setBank(this);
