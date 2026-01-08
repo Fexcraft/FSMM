@@ -32,7 +32,7 @@ public class PlayerEvents {
     
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event){
-		Print.debug("Unloading account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
+		Print.debug("Unlinking account of " + event.player.getName() + " || " + event.player.getGameProfile().getId().toString());
 		DataManager.unholdPlayerAccount(event.player.getGameProfile().getId(), EntityPlayer.class);
     }
     
