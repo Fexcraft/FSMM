@@ -31,6 +31,7 @@ import net.fexcraft.mod.uni.inv.ItemWrapper;
 import net.fexcraft.mod.uni.tag.TagCW;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,17 +65,17 @@ public class FSMM implements ModInitializer {
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			FSMM.LOGGER.info("Loading account of " + handler.player.getName() + " || " + handler.player.getGameProfile().getId().toString());
-			Account account = DataManager.getAccount("player:" + handler.player.getGameProfile().getId().toString(), false, true);
+			Account account = DataManager.getAccount("player:" + handler.player.getGameProfile().getId().toString(), 2);
+			account.addHolder(handler.player);
 			if(Config.NOTIFY_BALANCE_ON_JOIN){
 				UniEntity ent = UniEntity.get(handler.player);
 				ent.entity.send(format("&m&3Balance &r&7(in bank)&0: &a") + Config.getWorthAsString(account.getBalance()));
 				ent.entity.send(format("&m&3Balance &r&7(in Inv0)&0: &a") + Config.getWorthAsString(ItemManager.countInInventory(handler.player)));
 			}
-			if(account.lastAccessed() >= 0) account.setTemporary(false);
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			FSMM.LOGGER.info("Unloading account of " + handler.player.getName() + " || " + handler.player.getGameProfile().getId().toString());
-			DataManager.unloadAccount("player", handler.player.getGameProfile().getId().toString());
+			DataManager.unholdPlayerAccount(handler.player.getGameProfile().getId(), Player.class);
 		});
 		ServerWorldEvents.LOAD.register((server, level) -> {
 			if(level != server.overworld()) return;
