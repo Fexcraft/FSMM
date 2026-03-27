@@ -1,0 +1,176 @@
+{
+	"_info_": "FSMM ATM View Transfers",
+	"return": "fsmm:atm_main",
+	"background": true,
+	"size": [ 256, 198 ],
+	"tabs": {
+		"main": {
+			"texture": "fsmm:textures/gui/view_transfers.png",
+			"size": [ 256, 198 ],
+			"pos": [ 0, 0 ],
+			"buttons": [
+				"up", "down",
+				"transfer_0",
+				"transfer_1",
+				"transfer_2",
+				"transfer_3",
+				"transfer_4"
+			],
+			"texts": [
+				"account_name",
+				"account_id",
+				"transfer_receiver_0",
+				"transfer_amount_0",
+				"transfer_type_0",
+				"transfer_receiver_1",
+				"transfer_amount_1",
+				"transfer_type_1",
+				"transfer_receiver_2",
+				"transfer_amount_2",
+				"transfer_type_2",
+				"transfer_receiver_3",
+				"transfer_amount_3",
+				"transfer_type_3",
+				"transfer_receiver_4",
+				"transfer_amount_4",
+				"transfer_type_4"
+			]
+		}
+	},
+	"buttons": {
+		"up": {
+			"size": [ 7, 7 ],
+			"pos": [ 228, 156 ],
+			"tooltip": "ui.fsmm.atm_scroll_up"
+		},
+		"down": {
+			"size": [ 7, 7 ],
+			"pos": [ 237, 156 ],
+			"tooltip": "ui.fsmm.atm_scroll_down"
+		},
+		"transfer_0": {
+			"size": [ 246, 30 ],
+			"pos": [ 5, 31 ]
+		},
+		"transfer_1": {
+			"size": [ 246, 30 ],
+			"pos": [ 5, 63 ]
+		},
+		"transfer_2": {
+			"size": [ 246, 30 ],
+			"pos": [ 5, 95 ]
+		},
+		"transfer_3": {
+			"size": [ 246, 30 ],
+			"pos": [ 5, 127 ]
+		},
+		"transfer_4": {
+			"size": [ 246, 30 ],
+			"pos": [ 5, 159 ]
+		}
+	},
+	"texts": {
+		"account_name": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 7 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"account_id": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 16 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_receiver_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 33 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_amount_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 42 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_type_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 51 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_receiver_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 65 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_amount_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 74 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_type_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 83 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_receiver_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 97 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_amount_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 106 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_type_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 115 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_receiver_3": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 129 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_amount_3": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 138 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_type_3": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 147 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_receiver_4": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 161 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_amount_4": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 170 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"transfer_type_4": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 179 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		}
+	}
+}

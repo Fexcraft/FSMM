@@ -1,0 +1,74 @@
+{
+	"_info_": "FSMM ATM Bank Withdraw",
+	"return": "fsmm:atm_main",
+	"background": true,
+	"size": [ 256, 86 ],
+	"tabs": {
+		"main": {
+			"texture": "fsmm:textures/gui/account_self.png",
+			"size": [ 256, 86 ],
+			"pos": [ 0, 0 ],
+			"buttons": [
+				"confirm"
+			],
+			"texts": [
+				"account_name",
+				"account_id",
+				"balance",
+				"fee",
+				"total"
+			],
+			"fields": [
+				"amount"
+			]
+		}
+	},
+	"buttons": {
+		"confirm": {
+			"size": [ 10, 10 ],
+			"pos": [ 241, 67 ],
+			"uv": [ 0, 246 ],
+			"tooltip": "ui.fsmm.atm_withdraw"
+		}
+	},
+	"texts": {
+		"account_name": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 7 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"account_id": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 16 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"balance": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 33 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"fee": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 57 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"total": {
+			"size": [ 231, 7 ],
+			"pos": [ 7, 69 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		}
+	},
+	"fields": {
+		"amount": {
+			"size": [ 246, 8 ],
+			"pos": [ 7, 45 ],
+			"background": false,
+			"numberfield": true
+		}
+	}
+}

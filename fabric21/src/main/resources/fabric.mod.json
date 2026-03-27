@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "fsmm",
+	"version": "${version}",
+	"name": "Fex's Small Money Mod",
+	"description": "A mod providing a item-currency, account and banking system.",
+	"authors": [
+		"FEX___96"
+	],
+	"contact": {
+		"homepage": "https://fexcraft.net/",
+		"sources": "https://github.com/Fexcraft/FSMM"
+	},
+	"license": "https://fexcraft.net/license?id=mods",
+	"icon": "assets/fsmm/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.fexcraft.mod.fsmm.FSMM"
+		],
+		"client": [
+			"net.fexcraft.mod.fsmm.FSMMC"
+		]
+	},
+	"mixins": [
+		"fsmm.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.13",
+		"minecraft": "~1.21.5",
+		"java": ">=21",
+		"fabric-api": "*",
+		"fcl": "*"
+	}
+}

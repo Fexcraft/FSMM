@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "fsmm:block/atm" },
+        "facing=south": { "model": "fsmm:block/atm", "y": 180 },
+        "facing=west":  { "model": "fsmm:block/atm", "y": 270 },
+        "facing=east":  { "model": "fsmm:block/atm", "y": 90 }
+    }
+}

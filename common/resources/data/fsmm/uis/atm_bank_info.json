@@ -1,0 +1,116 @@
+{
+	"_info_": "FSMM ATM Bank Info",
+	"return": "fsmm:atm_bank_select",
+	"background": true,
+	"size": [ 256, 162 ],
+	"tabs": {
+		"main": {
+			"texture": "fsmm:textures/gui/bank_info.png",
+			"size": [ 256, 162 ],
+			"pos": [ 0, 0 ],
+			"buttons": [
+				"up", "down"
+			],
+			"texts": [
+				"bank_name",
+				"bank_line_0",
+				"bank_line_1",
+				"bank_line_2",
+				"bank_fees_0",
+				"bank_fees_1",
+				"bank_fees_2",
+				"bank_fees_3",
+				"bank_fees_4",
+				"bank_fees_5",
+				"bank_fees_6",
+				"bank_fees_7"
+			]
+		}
+	},
+	"buttons": {
+		"up": {
+			"size": [ 7, 7 ],
+			"pos": [ 228, 156 ],
+			"tooltip": "ui.fsmm.atm_scroll_up"
+		},
+		"down": {
+			"size": [ 7, 7 ],
+			"pos": [ 237, 156 ],
+			"tooltip": "ui.fsmm.atm_scroll_down"
+		}
+	},
+	"texts": {
+		"bank_name": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 6 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_line_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 23 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_line_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 35 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_line_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 47 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_0": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 63 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_1": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 75 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_2": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 87 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_3": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 99 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_4": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 111 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_5": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 123 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_6": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 135 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"bank_fees_7": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 147 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		}
+	}
+}

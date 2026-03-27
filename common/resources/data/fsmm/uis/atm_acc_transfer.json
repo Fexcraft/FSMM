@@ -1,0 +1,93 @@
+{
+	"_info_": "FSMM ATM Bank Transfer",
+	"return": "fsmm:atm_main",
+	"background": true,
+	"size": [ 256, 112 ],
+	"tabs": {
+		"main": {
+			"texture": "fsmm:textures/gui/account_transfer.png",
+			"size": [ 256, 112 ],
+			"pos": [ 0, 0 ],
+			"buttons": [
+				"confirm",
+				"select"
+			],
+			"texts": [
+				"sender_name",
+				"sender_id",
+				"receiver_name",
+				"receiver_id",
+				"balance",
+				"fee",
+				"total"
+			],
+			"fields": [
+				"amount"
+			]
+		}
+	},
+	"buttons": {
+		"select": {
+			"size": [ 8, 8 ],
+			"pos": [ 242, 32 ],
+			"tooltip": "ui.fsmm.atm_select_receiver"
+		},
+		"confirm": {
+			"size": [ 10, 10 ],
+			"pos": [ 241, 93 ],
+			"tooltip": "ui.fsmm.atm_transfer"
+		}
+	},
+	"texts": {
+		"sender_name": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 7 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"sender_id": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 16 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"receiver_name": {
+			"size": [ 233, 7 ],
+			"pos": [ 7, 33 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"receiver_id": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 42 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"balance": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 59 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"fee": {
+			"size": [ 242, 7 ],
+			"pos": [ 7, 83 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		},
+		"total": {
+			"size": [ 231, 7 ],
+			"pos": [ 7, 95 ],
+			"autoscale": true,
+			"color": "#4d4d4d"
+		}
+	},
+	"fields": {
+		"amount": {
+			"size": [ 246, 8 ],
+			"pos": [ 7, 71 ],
+			"background": false,
+			"numberfield": true
+		}
+	}
+}

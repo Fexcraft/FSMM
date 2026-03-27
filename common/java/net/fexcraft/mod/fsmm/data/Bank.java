@@ -1,0 +1,301 @@
+package net.fexcraft.mod.fsmm.data;
+
+import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import net.fexcraft.app.json.JsonArray;
+import net.fexcraft.app.json.JsonMap;
+import net.fexcraft.app.json.JsonValue;
+import net.fexcraft.mod.fcl.UniFCL;
+import net.fexcraft.mod.fsmm.FSMM;
+import net.fexcraft.mod.fsmm.util.ItemManager;
+import net.fexcraft.mod.fsmm.util.DataManager;
+import net.fexcraft.mod.uni.world.EntityW;
+import net.fexcraft.mod.uni.world.MessageSender;
+
+/**
+ * @author Ferdinand Calo' (FEX___96)
+ */
+public class Bank implements Manageable {
+	
+	public final String id;
+	protected String name;
+	protected Account account;
+	private JsonMap additionaldata;
+	protected TreeMap<String, String> fees;
+	protected ArrayList<String> status = new ArrayList<>();
+	
+	/** From JSON Constructor */
+	public Bank(JsonMap map){
+		id = map.getString("uuid", map.getString("id", null));
+		load(map);
+	}
+
+	/** For inserting a bank which gets loaded later or afterwards. */
+	public Bank(String bankid){
+		id = bankid;
+	}
+	
+	/** Manual Constructor */
+	public Bank(String id, String name, JsonMap data, TreeMap<String, String> map){
+		this.id = id;
+		this.name = name;
+		fees = map;
+		additionaldata = data;
+	}
+	
+	/** Name of this Bank. */
+	public String getName(){ return name; }
+
+	/** Method to set the Bank Name. */
+	public boolean setName(String name){
+		return this.name.equals(name) ? false : (this.name = name).equals(name);
+	}
+	
+	/** Current balance of this Bank (1000 = 1 currency unit). */
+	public long getBalance(){
+		return account.getBalance();
+	}
+	
+	/** Method to set the balance (1000 = 1 currency unit)
+	 * @param rpl new balance for this account
+	 * @return new balance */
+	public long setBalance(long rpl){
+		return account.setBalance(rpl);
+	}
+
+	public JsonMap getData(){
+		return additionaldata;
+	}
+	
+	public void setData(JsonMap obj){
+		additionaldata = obj;
+	}
+
+	public TreeMap<String, String> getFees(){
+		return fees;
+	}
+
+	public boolean processAction(Bank.Action action, MessageSender log, Account sender, long amount, Account receiver, boolean included){
+		EntityW player;
+		if(log == null) log = UniFCL.LOG;
+		long fee = 0, total;
+		switch(action){
+			case WITHDRAW:{
+				if(sender == null){
+					log.send("Withdraw failed! Account is null.");
+					FSMM.log(getName(log) + " -> player account is null.");
+					return false;
+				}
+				if(amount <= 0){
+					log.send("Withdraw failed! Amount is null or negative. (T:" + amount + " || B:" + sender.getBalance() + ");");
+					FSMM.log(getName(log) + " tried to withdraw a negative amount of money!");
+					return false;
+				}
+				player = (EntityW)log;
+				if(fees != null){
+					String feestr = fees.get(sender.getType() + ":self");
+					fee = parseFee(feestr, amount);
+				}
+				total = amount + (included ? 0 : fee);
+				if(sender.getBalance() - total >= 0){
+					sender.modifyBalance(Manageable.Action.SUB, total, log);
+					ItemManager.addToInventory(player, amount - (included ? fee : 0));
+					log(player, action, amount, fee, total, included, sender, receiver);
+					DataManager.save(sender);
+					return true;
+				}
+				player.send("Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
+				FSMM.log(sender.getTypeAndId() + " : Withdraw failed! Player does not have enough money. (T:" + amount + " || F:" + fee + ");");
+				return false;
+			}
+			case DEPOSIT:{
+				if(receiver == null){
+					log.send("Deposit failed! Account is null.");
+					FSMM.log(getName(log) + " -> player account is null.");
+					return false;
+				}
+				if(amount <= 0){
+					log.send("Deposit failed! Amount null or negative. (T:" + amount + " || I:" + ItemManager.countInInventory(((EntityW)log)) + ");");
+					FSMM.log(getName(log) + " tried to deposit a negative amount of money!");
+					return false;
+				}
+				player = (EntityW)log;
+				if(receiver.getBalance() + amount <= Long.MAX_VALUE){
+					fee = fees == null ? 0 : parseFee(fees.get("self:" + receiver.getType()), amount);
+					total = amount + (included ? 0 : fee);
+					if(ItemManager.countInInventory(player) - total >= 0){
+						ItemManager.removeFromInventory(player, total);
+						receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), log);
+						log(player, action, amount, fee, total, included, sender, receiver);
+						DataManager.save(receiver);
+						return true;
+					}
+					else{
+						player.send("Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+						FSMM.log(receiver.getTypeAndId() + ": Deposit failed! Not enough money in Inventory. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+						return false;
+					}
+				}
+				player.send("Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+				FSMM.log(receiver.getTypeAndId() + " : Deposit failed! Result is above technical limit. (D:" + amount + " || B:" + receiver.getBalance() + ");");
+				return false;
+			}
+			case TRANSFER:{
+				if(sender == null){
+					log.send("Transfer failed! Sender is null.");
+					FSMM.log(getName(log) + " -> sender account is null.");
+					return false;
+				}
+				if(receiver == null){
+					log.send("Transfer failed! Receiver is null.");
+					FSMM.log(getName(log) + " -> receiver account is null.");
+					return false;
+				}
+				if(amount <= 0){
+					log.send("Transfer failed! Amount is null or negative. (T:" + amount + ");");
+					FSMM.log(getName(log) + " tried to transfer a negative amount of money to " + receiver.getTypeAndId() + "!");
+					return false;
+				}
+				fee = fees == null ? 0 : parseFee(fees.get(sender.getType() + ":" + receiver.getType()), amount);
+				total = amount + (included ? 0 : fee);
+				if(sender.getBalance() - total >= 0){
+					sender.modifyBalance(Manageable.Action.SUB, total, log);
+					receiver.modifyBalance(Manageable.Action.ADD, amount - (included ? fee : 0), log);
+					log(null, action, amount, fee, total, included, sender, receiver);
+					DataManager.save(sender);
+					DataManager.save(receiver);
+					return true;
+				}
+				log.send("Transfer failed! Not enough money on sender Account.");
+				FSMM.log(sender.getTypeAndId() + " -> " + sender.getTypeAndId() + " : Transfer failed! Sender doesn't have enough money. (T:" + amount + " || F:" + fee + ");");
+				return false;
+			}
+			default:{
+				log.send("Invalid Bank Action. " + action.name() + " || " + getName(log) + " || "
+						+ (sender == null ? "null" : sender.getTypeAndId()) + " || " + amount + " || " + (receiver == null ? "null" : receiver.getTypeAndId()));
+				return false;
+			}
+		}
+	}
+	
+	public boolean processAction(Action action, MessageSender log, Account sender, long amount, Account receiver){
+		return processAction(action, log, sender, amount, receiver, true);
+	}
+
+	public static long parseFee(String fee, long amount){
+		if(fee == null){
+			return 0;
+		}
+		long result = 0;
+		if(fee.endsWith("%")){
+			float pc = Float.parseFloat(fee.replace("%", ""));
+			if(pc < 0) return 0;
+			if(pc > 100) pc = 100;
+			result = (long)((amount / 100) * pc);
+		}
+		else{
+			result = Long.parseLong(fee);
+			result = result < 0 ? 0 : /*result > amount ? amount :*/ result;
+		}
+		return result;
+	}
+
+	public Account getAccount(){
+		return account;
+	}
+
+	public static enum Action { TRANSFER, WITHDRAW, DEPOSIT }
+
+	public void load(JsonMap map){
+		name = map.getString("name", "Unnamed Bank");
+		additionaldata = map.has("data") ? map.getMap("data") : null;
+		if(map.has("fees")){
+			fees = new TreeMap<>();
+			for(Entry<String, JsonValue<?>> entry : map.getMap("fees").entries()){
+				fees.put(entry.getKey(), entry.getValue().string_value());
+			}
+		}
+		if(map.has("status")){
+			map.getArray("status").value.forEach(val -> status.add(val.string_value()));
+		}
+		account = DataManager.getAccount("bank:" + id, 2).addHolder(this);
+		if(map.has("balance")) account.setBalance(map.getLong("balance", 0));
+		account.setName(name);
+		account.setBank(this);
+	}
+
+	@Override
+	/** Mainly used for saving. */
+	public JsonMap toJson(){
+		JsonMap map = new JsonMap();
+		map.add("id", id);
+		map.add("name", name);
+		if(fees != null){
+			JsonMap of = new JsonMap();
+			for(Entry<String, String> entry : fees.entrySet()){
+				of.add(entry.getKey(), entry.getValue());
+			}
+			map.add("fees", of);
+		}
+		if(additionaldata != null){
+			map.add("data", additionaldata);
+		}
+		if(!status.isEmpty()){
+			JsonArray array = new JsonArray();
+			for(String str : status) array.add(str);
+			map.add("status", array);
+		}
+		return map;
+	}
+
+	@Override
+	public void modifyBalance(Manageable.Action action, long amount, MessageSender log){
+		account.modifyBalance(action, amount, log);
+	}
+	
+	public ArrayList<String> getStatus(){
+		return status;
+	}
+
+	public boolean hasFee(String fee_id){
+		return fees != null && fees.containsKey(fee_id);
+	}
+
+	//
+
+	private void log(MessageSender player, Action action, long amount, long fee, long total, boolean included, Account sender, Account receiver){
+		String s, r;
+		switch(action){
+			case DEPOSIT:
+				s = sender.getTypeAndId();
+				r = player.getName();
+				sender.addTransfer(new Transfer(amount, fee, included, action, sender.getName(), sender));
+				break;
+			case WITHDRAW:
+				s = player.getName();
+				r = receiver.getTypeAndId();
+				sender.addTransfer(new Transfer(-amount, fee, included, action, sender.getName(), sender));
+				break;
+			case TRANSFER:
+				s = sender.getTypeAndId();
+				r = receiver.getTypeAndId();
+				sender.addTransfer(new Transfer(-amount, fee, included, action, sender.getName(), receiver));
+				receiver.addTransfer(new Transfer(amount, fee, included, action, sender.getName(), sender));
+				break;
+			default:
+				s = "INVALID";
+				r = "ACTION";
+				break;
+		}
+		String str = s + " -> [A: " + amount + "] + [F: " + fee + (included ? "i" : "e") + "] == [R: " + total + "] -> " + r;
+		FSMM.log(str);
+
+	}
+
+	public String getName(MessageSender sender){
+		return sender == null ? "[NULL]" : sender.getName();
+	}
+
+}
