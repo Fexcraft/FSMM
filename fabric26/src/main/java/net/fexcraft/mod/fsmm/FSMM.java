@@ -4,8 +4,8 @@ import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fexcraft.app.json.JsonMap;
@@ -64,8 +64,8 @@ public class FSMM implements ModInitializer {
 		FsmmUIKeys.register(this);
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			FSMM.LOGGER.info("Loading account of " + handler.player.getName() + " || " + handler.player.getGameProfile().getId().toString());
-			Account account = DataManager.getAccount("player:" + handler.player.getGameProfile().getId().toString(), 2);
+			FSMM.LOGGER.info("Loading account of " + handler.player.getName() + " || " + handler.player.getGameProfile().id().toString());
+			Account account = DataManager.getAccount("player:" + handler.player.getGameProfile().id().toString(), 2);
 			account.addHolder(handler.player);
 			if(Config.NOTIFY_BALANCE_ON_JOIN){
 				UniEntity ent = UniEntity.get(handler.player);
@@ -74,15 +74,15 @@ public class FSMM implements ModInitializer {
 			}
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-			FSMM.LOGGER.info("Unloading account of " + handler.player.getName() + " || " + handler.player.getGameProfile().getId().toString());
-			DataManager.unholdPlayerAccount(handler.player.getGameProfile().getId(), Player.class);
+			FSMM.LOGGER.info("Unloading account of " + handler.player.getName() + " || " + handler.player.getGameProfile().id().toString());
+			DataManager.unholdPlayerAccount(handler.player.getGameProfile().id(), Player.class);
 		});
-		ServerWorldEvents.LOAD.register((server, level) -> {
+		ServerLevelEvents.LOAD.register((server, level) -> {
 			if(level != server.overworld()) return;
 			FSMM.loadDataManager();
 			setup();
 		});
-		ServerWorldEvents.UNLOAD.register((server, level) -> {
+		ServerLevelEvents.UNLOAD.register((server, level) -> {
 			if(level != server.overworld()) return;
 			FSMM.unloadDataManager();
 		});
@@ -126,9 +126,9 @@ public class FSMM implements ModInitializer {
 					event.getAccountsMap().put(account.getTypeAndId(), new AccountPermission(account));
 				}
 			}
-			Optional<GameProfile> gp = FCL.SERVER.get().getProfileCache().get(event.getSearchedId());
-			if(gp.isPresent() && new File(DataManager.ACCOUNT_DIR, "player/" + gp.get().getId().toString() + ".json").exists()){
-				putAccPerm(event.getAccountsMap(), "player:" + gp.get().getId().toString());
+			Optional<GameProfile> gp = FCL.SERVER.get().services().profileResolver().fetchByName(event.getSearchedId());
+			if(gp.isPresent() && new File(DataManager.ACCOUNT_DIR, "player/" + gp.get().id().toString() + ".json").exists()){
+				putAccPerm(event.getAccountsMap(), "player:" + gp.get().id());
 			}
 			else if(new File(DataManager.ACCOUNT_DIR, "player/" + event.getSearchedId() + ".json").exists()){
 				putAccPerm(event.getAccountsMap(), "player:" + event.getSearchedId());

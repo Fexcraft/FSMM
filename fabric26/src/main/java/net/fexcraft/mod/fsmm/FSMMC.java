@@ -2,7 +2,7 @@ package net.fexcraft.mod.fsmm;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.fexcraft.mod.fsmm.local.AtmBlock;
 import net.fexcraft.mod.fsmm.local.MobileAtm;
 import net.fexcraft.mod.fsmm.local.MoneyItem;
@@ -10,7 +10,7 @@ import net.fexcraft.mod.fsmm.util.Config;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,7 +36,7 @@ public class FSMMC implements ClientModInitializer {
 			}
 			lines.add(getFormatted(str));
 		});
-		TAB = FabricItemGroup.builder()
+		TAB = FabricCreativeModeTab.builder()
 			.icon(() -> new ItemStack(AtmBlock.INST))
 			.title(Component.literal("Fex's Small Money Mod"))
 			.displayItems((con, output) -> {
@@ -45,7 +45,7 @@ public class FSMMC implements ClientModInitializer {
 				for(MoneyItem item : MoneyItem.sorted) output.accept(item);
 			})
 			.build();
-		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ResourceLocation.parse("fsmm:main"), TAB);
+		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, Identifier.parse("fsmm:main"), TAB);
 	}
 
 }

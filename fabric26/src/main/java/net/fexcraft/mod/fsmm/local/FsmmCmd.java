@@ -21,7 +21,7 @@ import net.fexcraft.mod.uni.world.EntityW;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -65,7 +65,7 @@ public class FsmmCmd {
 				return 0;
 			}))
 			.then(literal("uuid").executes(cmd -> {
-				cmd.getSource().sendSystemMessage(Component.literal(cmd.getSource().getPlayerOrException().getGameProfile().getId().toString()));
+				cmd.getSource().sendSystemMessage(Component.literal(cmd.getSource().getPlayerOrException().getGameProfile().id().toString()));
 				return 0;
 			}))
 			.then(literal("set").requires(pre -> isOp(pre))
@@ -177,18 +177,18 @@ public class FsmmCmd {
 	public static boolean isOp(CommandSourceStack css){
 		if(css == null || !css.isPlayer()) return false;
 		if(FCL.SERVER.get().isSingleplayer()) return true;
-		return FCL.SERVER.get().getPlayerList().isOp(css.getPlayer().getGameProfile());
+		return FCL.SERVER.get().getPlayerList().isOp(css.getPlayer().nameAndId());
 	}
 
 	private static void process(ServerPlayer sender, String type, String acc, BiConsumer<Account, Boolean> cons){
-		ResourceLocation rs = ResourceLocation.fromNamespaceAndPath(type, acc.toLowerCase());
+		Identifier rs = Identifier.fromNamespaceAndPath(type, acc.toLowerCase());
 		if(rs.getNamespace().equals("player")){
 			try{
 				UUID.fromString(rs.getPath());
 			}
 			catch(Exception e){
-				Optional<GameProfile> gp = FCL.SERVER.get().getProfileCache().get(rs.getPath());
-				rs = ResourceLocation.fromNamespaceAndPath(type, gp.get().getId().toString());
+				Optional<GameProfile> gp = FCL.SERVER.get().services().profileResolver().fetchByName(rs.getPath());
+				rs = Identifier.fromNamespaceAndPath(type, gp.get().id().toString());
 			}
 		}
 		Account account = DataManager.getAccount(rs.toString(), 0);
@@ -205,11 +205,11 @@ public class FsmmCmd {
 		}
 	}
 
-	public static ResourceLocation getId(Item item){
+	public static Identifier getId(Item item){
 		return BuiltInRegistries.ITEM.getKey(item);
 	}
 
-	public static ResourceLocation getId(ItemStack item){
+	public static Identifier getId(ItemStack item){
 		return BuiltInRegistries.ITEM.getKey(item.getItem());
 	}
 

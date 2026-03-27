@@ -32,7 +32,7 @@ public class AtmBlock extends Block {
 
 	@Override
     public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult res){
-		if(!level.isClientSide && hand != InteractionHand.OFF_HAND){
+		if(!level.isClientSide() && hand != InteractionHand.OFF_HAND){
 			UniEntity.get(player).entity.openUI(FsmmUIKeys.UI_ATM_MAIN, new V3I(pos.getX(), pos.getY(), pos.getZ()));
         }
 		return InteractionResult.SUCCESS;

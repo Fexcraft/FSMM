@@ -23,7 +23,7 @@ public class MobileAtm extends Item {
 
 	@Override
 	public InteractionResult use(Level level, Player player, InteractionHand hand){
-		if(level.isClientSide || player.isCrouching() || hand == InteractionHand.OFF_HAND){
+		if(level.isClientSide() || player.isCrouching() || hand == InteractionHand.OFF_HAND){
 			return InteractionResult.PASS;
 		}
 		UniEntity.get(player).entity.openUI(FsmmUIKeys.UI_ATM_MAIN, V3I.NULL);
