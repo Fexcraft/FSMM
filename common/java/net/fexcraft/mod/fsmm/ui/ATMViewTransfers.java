@@ -78,6 +78,7 @@ public class ATMViewTransfers extends UserInterface {
 
 	@Override
 	public void getTooltip(int mx, int my, List<String> list){
+		if(menu.account == null) return;
 		for(Map.Entry<String, UIButton> entry : buttons.entrySet()){
 			if(!entry.getKey().startsWith("transfer")) continue;
 			if(entry.getValue().hovered(gLeft, gTop, mx, my)){
