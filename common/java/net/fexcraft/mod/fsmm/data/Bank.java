@@ -107,7 +107,7 @@ public class Bank implements Manageable {
 					return true;
 				}
 				player.send("Withdraw failed! Not enough money. (W:" + amount + " || B:" + sender.getBalance() + ");");
-				FSMM.log(sender.getTypeAndId() + " : Withdraw failed! Player does not have enough money. (T:" + amount + " || F:" + fee + ");");
+				FSMM.log(sender.getTypeAndId() + " : Withdraw failed! Account does not have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
 			case DEPOSIT:{
@@ -169,6 +169,7 @@ public class Bank implements Manageable {
 					return true;
 				}
 				log.send("Transfer failed! Not enough money on sender Account.");
+				log.send("Sender: " + sender.getTypeAndId() + " | " + sender.getName());
 				FSMM.log(sender.getTypeAndId() + " -> " + sender.getTypeAndId() + " : Transfer failed! Sender doesn't have enough money. (T:" + amount + " || F:" + fee + ");");
 				return false;
 			}
