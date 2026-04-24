@@ -57,8 +57,8 @@
 	"ui.fsmm.atm.no_account_server": "\u00a7cERROR: Account not found server side.",
 	"ui.fsmm.atm.transfer_processed": "\u00a7bTransfer \u00a77of \u00a7e%s \u00a77processed.",
 	"ui.fsmm.atm.transfer_failed": "\u00a7bTransfer \u00a7cfailed\u00a77.",
-	"ui.fsmm.atm.deposit_processed": "&bDeposit &7of &e%s &7processed.",
-	"ui.fsmm.atm.deposit_failed": "&bDeposit &cfailed&7.",
-	"ui.fsmm.atm.withdraw_processed": "&bWithdraw &7of &e%s &7processed.",
-	"ui.fsmm.atm.withdraw_failed": "&bWithdraw &cfailed&7."
+	"ui.fsmm.atm.deposit_processed": "\u00a7bDeposit \u00a77of \u00a7e%s \u00a77processed.",
+	"ui.fsmm.atm.deposit_failed": "\u00a7bDeposit \u00a7cfailed\u00a77.",
+	"ui.fsmm.atm.withdraw_processed": "\u00a7bWithdraw \u00a77of \u00a7e%s \u00a77processed.",
+	"ui.fsmm.atm.withdraw_failed": "\u00a7bWithdraw \u00a7cfailed\u00a77."
 }
